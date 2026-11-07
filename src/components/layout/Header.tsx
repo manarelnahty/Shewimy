@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Phone, User, Menu, X } from "lucide-react";
 
 interface HeaderProps {
   onOpenConsultation?: () => void;
@@ -12,70 +13,70 @@ export function Header({ onOpenConsultation }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-      <div className="h-20 max-w-[1380px] mx-auto px-6 lg:px-12 flex items-center justify-between gap-6">
+    <header className="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+      <div className="h-16 sm:h-18 max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between gap-4 sm:gap-6">
         {/* Brand Logo & Name */}
-        <Link href="/" className="flex items-center gap-3.5 shrink-0 group">
-          <div className="relative h-10 w-10 sm:h-11 sm:w-11 shrink-0 overflow-hidden rounded-lg">
+        <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-lg">
             <Image
               src="/images/logo.png"
               alt="شعار مطابخ الشويمي | Al Shewimy Kitchens"
-              width={44}
-              height={44}
+              width={40}
+              height={40}
               className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
               priority
             />
           </div>
-          <span className="font-title text-title text-primary tracking-tight font-bold font-readex">
+          <span className="text-base sm:text-lg text-primary tracking-tight font-bold font-readex">
             مطابخ الشويمي
           </span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav
-          className="hidden lg:flex items-center gap-8"
+          className="hidden lg:flex items-center gap-6 xl:gap-8"
           aria-label="قائمة التصفح الرئيسية"
         >
           <a
             href="#"
-            className="transition-colors py-2 px-3 bg-surface-container-high text-on-surface font-bold rounded-lg text-sm"
+            className="transition-colors py-1.5 px-3 bg-surface-container-high text-on-surface font-bold rounded-lg text-xs sm:text-sm"
           >
             الرئيسية
           </a>
           <a
             href="#portfolio-section"
-            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
           >
             مطابخ حديثة
           </a>
           <a
             href="#portfolio-section"
-            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
           >
             دريسينج روم
           </a>
           <a
             href="#journey-section"
-            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
           >
             مصانعنا
           </a>
           <a
             href="#branches-section"
-            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
           >
             فروعنا
           </a>
         </nav>
 
         {/* CTA & Actions */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={onOpenConsultation}
-            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white font-label-lg text-label-lg py-2.5 px-4 sm:px-5 rounded shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer active:translate-y-0.5"
+            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2 sm:py-2.5 px-3.5 sm:px-4.5 rounded shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer active:translate-y-0.5"
           >
-            <span className="material-symbols-outlined text-[20px]">call</span>
+            <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             <span className="hidden xs:inline">احجز معاينة مجانية</span>
             <span className="xs:hidden">معاينة</span>
           </button>
@@ -85,58 +86,56 @@ export function Header({ onOpenConsultation }: HeaderProps) {
             aria-label="اتصال مباشر"
             className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"
           >
-            <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
+            <User className="w-4 h-4 text-on-primary" />
           </a>
 
           {/* Mobile hamburger menu toggle */}
           <button
             type="button"
-            className="lg:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors cursor-pointer"
+            className="lg:hidden p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors cursor-pointer"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
           >
-            <span className="material-symbols-outlined text-[24px]">
-              {mobileMenuOpen ? "close" : "menu"}
-            </span>
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-surface-container-lowest border-t border-surface-container px-6 py-4 space-y-2 shadow-lg animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden bg-surface-container-lowest border-t border-surface-container px-5 py-3 space-y-1.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
           <a
             href="#"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2.5 px-3 rounded-lg bg-surface-container-high text-primary font-bold text-sm"
+            className="block py-2 px-3 rounded-lg bg-surface-container-high text-primary font-bold text-xs sm:text-sm"
           >
             الرئيسية
           </a>
           <a
             href="#portfolio-section"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+            className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
           >
             مطابخ حديثة
           </a>
           <a
             href="#portfolio-section"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+            className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
           >
             دريسينج روم
           </a>
           <a
             href="#journey-section"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+            className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
           >
             مصانعنا
           </a>
           <a
             href="#branches-section"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+            className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
           >
             فروعنا
           </a>

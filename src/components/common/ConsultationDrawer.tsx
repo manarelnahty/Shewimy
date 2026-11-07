@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { PenTool, X, CheckCircle2 } from "lucide-react";
 
 interface ConsultationDrawerProps {
   isOpen: boolean;
@@ -41,12 +42,12 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
-        className="relative z-10 w-full max-w-2xl bg-surface-container-lowest shadow-[0_-12px_40px_rgba(0,0,0,0.25)] rounded-t-2xl p-6 lg:p-8 animate-in slide-in-from-bottom duration-300 mx-auto"
+        className="relative z-10 w-full max-w-2xl bg-surface-container-lowest shadow-[0_-12px_40px_rgba(0,0,0,0.25)] rounded-t-2xl p-6 lg:p-8 animate-in slide-in-from-bottom duration-300 mx-auto border-t border-outline-variant/20"
       >
-        <div className="flex items-center justify-between pb-4 border-b border-surface-container">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[#1F5E4B] text-[26px]">draw</span>
-            <h3 id="drawer-title" className="font-headline-sm text-headline-sm text-primary font-bold">
+        <div className="flex items-center justify-between pb-3.5 border-b border-surface-container">
+          <div className="flex items-center gap-2.5">
+            <PenTool className="w-5 h-5 text-[#1F5E4B] shrink-0" />
+            <h3 id="drawer-title" className="text-base sm:text-lg text-primary font-bold font-readex">
               طلب حجز معاينة وتصميم 3D
             </h3>
           </div>
@@ -56,25 +57,27 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
             className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
             onClick={onClose}
           >
-            <span className="material-symbols-outlined text-[24px]">close</span>
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {submitted ? (
-          <div className="py-12 text-center space-y-4 animate-in fade-in duration-300">
-            <div className="w-16 h-16 mx-auto rounded-full bg-[#1F5E4B]/10 text-[#1F5E4B] flex items-center justify-center">
-              <span className="material-symbols-outlined text-[36px]">check_circle</span>
+          <div className="py-10 text-center space-y-3.5 animate-in fade-in duration-300">
+            <div className="w-14 h-14 mx-auto rounded-full bg-[#1F5E4B]/10 text-[#1F5E4B] flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-[#1F5E4B]" />
             </div>
-            <h4 className="text-xl font-bold text-primary">شكراً لك! تم استلام طلبك بنجاح</h4>
-            <p className="text-sm text-on-surface-variant max-w-md mx-auto">
+            <h4 className="text-lg font-bold text-primary font-readex">
+              شكراً لك! تم استلام طلبك بنجاح
+            </h4>
+            <p className="text-xs sm:text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed">
               سيتواصل معك أحد مهندسي التصميم المعماري في مطابخ الشويمي خلال ساعة لتأكيد موعد المعاينة ورفع المقاسات.
             </p>
           </div>
         ) : (
-          <form className="space-y-4 pt-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form className="space-y-3.5 pt-3.5" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-1">
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
                   الاسم بالكامل
                 </label>
                 <input
@@ -83,11 +86,11 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
                   placeholder="مثال: أحمد عبد الرحمن"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary font-body-md text-body-md border border-transparent focus:border-secondary transition-all"
+                  className="w-full px-3.5 py-2 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary text-xs sm:text-sm border border-transparent focus:border-secondary transition-all"
                 />
               </div>
               <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-1">
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
                   رقم الهاتف / الواتساب
                 </label>
                 <input
@@ -97,20 +100,20 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
                   placeholder="010XXXXXXXX"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary font-body-md text-body-md border border-transparent focus:border-secondary text-right transition-all"
+                  className="w-full px-3.5 py-2 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary text-xs sm:text-sm border border-transparent focus:border-secondary text-right transition-all"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-1">
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
                   الفرع الأقرب لك
                 </label>
                 <select
                   value={formData.branch}
                   onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary font-body-md text-body-md border border-transparent focus:border-secondary transition-all"
+                  className="w-full px-3.5 py-2 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary text-xs sm:text-sm border border-transparent focus:border-secondary transition-all cursor-pointer"
                 >
                   <option value="فرع المنصورة">فرع المنصورة</option>
                   <option value="فرع المحلة الكبرى">فرع المحلة الكبرى</option>
@@ -118,13 +121,13 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
                 </select>
               </div>
               <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-1">
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1">
                   نوع المشروع
                 </label>
                 <select
                   value={formData.projectType}
                   onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary font-body-md text-body-md border border-transparent focus:border-secondary transition-all"
+                  className="w-full px-3.5 py-2 rounded bg-surface-container-low text-primary focus:outline-none focus:ring-1 focus:ring-secondary text-xs sm:text-sm border border-transparent focus:border-secondary transition-all cursor-pointer"
                 >
                   <option value="مطبخ مودرن كامل">مطبخ مودرن كامل</option>
                   <option value="دريسينج روم فاخرة">دريسينج روم فاخرة</option>
@@ -134,17 +137,17 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-end gap-3">
+            <div className="pt-2 flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="font-label-md text-label-md text-on-surface-variant hover:text-primary px-4 py-2.5 rounded transition-colors cursor-pointer"
+                className="text-xs sm:text-sm text-on-surface-variant hover:text-primary px-3.5 py-2 rounded transition-colors cursor-pointer"
               >
                 إلغاء
               </button>
               <button
                 type="submit"
-                className="bg-[#1F5E4B] hover:bg-[#164638] text-white font-label-lg text-label-lg py-2.5 px-6 rounded shadow transition-all duration-200 cursor-pointer active:translate-y-0.5"
+                className="bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2 px-5 rounded shadow transition-all duration-200 cursor-pointer active:translate-y-0.5"
               >
                 تأكيد موعد المعاينة
               </button>

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { MessageCircle } from "lucide-react";
 
 interface ProjectItem {
   id: string;
@@ -85,28 +86,28 @@ export function Portfolio() {
       : projects.filter((p) => p.category === activeTab);
 
   return (
-    <section className="w-full bg-surface py-20 lg:py-28" id="portfolio-section">
-      <div className="max-w-[1380px] mx-auto px-6 lg:px-12 space-y-12">
+    <section className="w-full bg-surface py-16 lg:py-24" id="portfolio-section">
+      <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 space-y-10">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pb-2">
           <div>
-            <span className="font-label-md text-label-md text-secondary font-semibold uppercase tracking-wider block mb-2">
+            <span className="text-xs sm:text-sm text-secondary font-semibold uppercase tracking-wider block mb-1.5">
               أعمالنا الاستثنائية
             </span>
-            <h2 className="font-headline-lg text-headline-lg text-primary font-bold font-readex">
+            <h2 className="text-2xl sm:text-3xl font-bold text-primary font-readex">
               أحدث إبداعاتنا المنفذة
             </h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-xl">
+            <p className="text-xs sm:text-sm text-on-surface-variant mt-1.5 max-w-xl leading-relaxed">
               استكشف تشكيلات المطابخ والدريسنج روم التي نفذناها بدقة وإتقان في فلل وقصور عملاء الشويمي.
             </p>
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-lg bg-surface-container">
+          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-lg bg-surface-container">
             <button
               type="button"
               onClick={() => setActiveTab("all")}
-              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+              className={`text-xs sm:text-sm px-4 py-2 rounded font-semibold transition-all cursor-pointer ${
                 activeTab === "all"
                   ? "text-white bg-primary shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
@@ -117,7 +118,7 @@ export function Portfolio() {
             <button
               type="button"
               onClick={() => setActiveTab("modern")}
-              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+              className={`text-xs sm:text-sm px-4 py-2 rounded font-semibold transition-all cursor-pointer ${
                 activeTab === "modern"
                   ? "text-white bg-primary shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
@@ -128,7 +129,7 @@ export function Portfolio() {
             <button
               type="button"
               onClick={() => setActiveTab("dressing")}
-              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+              className={`text-xs sm:text-sm px-4 py-2 rounded font-semibold transition-all cursor-pointer ${
                 activeTab === "dressing"
                   ? "text-white bg-primary shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
@@ -139,7 +140,7 @@ export function Portfolio() {
             <button
               type="button"
               onClick={() => setActiveTab("furniture")}
-              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+              className={`text-xs sm:text-sm px-4 py-2 rounded font-semibold transition-all cursor-pointer ${
                 activeTab === "furniture"
                   ? "text-white bg-primary shadow-sm"
                   : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
@@ -151,11 +152,11 @@ export function Portfolio() {
         </div>
 
         {/* 3-Column Portfolio Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group border border-outline-variant/20"
+              className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group border border-outline-variant/15"
             >
               <div className="relative overflow-hidden aspect-[4/3] bg-surface-container">
                 <Image
@@ -165,21 +166,21 @@ export function Portfolio() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-                <span className="absolute top-4 right-4 bg-primary/80 backdrop-blur-md text-on-primary font-label-sm text-label-sm px-3 py-1 rounded">
+                <span className="absolute top-3 right-3 bg-primary/85 backdrop-blur-md text-on-primary text-[11px] font-semibold px-2.5 py-1 rounded">
                   {project.categoryLabel}
                 </span>
               </div>
 
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                 <div>
-                  <h3 className="font-headline-sm text-headline-sm text-primary font-bold group-hover:text-secondary transition-colors font-readex">
+                  <h3 className="text-base sm:text-lg text-primary font-bold group-hover:text-secondary transition-colors font-readex leading-snug">
                     {project.title}
                   </h3>
-                  <div className="flex flex-wrap gap-2 mt-3">
+                  <div className="flex flex-wrap gap-1.5 mt-2.5">
                     {project.tags.map((tag, i) => (
                       <span
                         key={i}
-                        className="font-label-sm text-label-sm bg-surface-container px-2.5 py-1 rounded text-on-surface-variant"
+                        className="text-[11px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-medium"
                       >
                         {tag}
                       </span>
@@ -188,12 +189,12 @@ export function Portfolio() {
                 </div>
 
                 <a
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white font-label-md text-label-md py-3 rounded-lg transition-colors duration-200 cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs sm:text-sm font-semibold py-2.5 rounded-lg transition-colors duration-200 cursor-pointer"
                   href={`https://wa.me/201002345678?text=${encodeURIComponent(project.whatsappMessage)}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  <span className="material-symbols-outlined text-[20px]">chat</span>
+                  <MessageCircle className="w-4 h-4 shrink-0" />
                   <span>استفسر عبر واتساب</span>
                 </a>
               </div>
