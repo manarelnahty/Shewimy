@@ -110,7 +110,7 @@ export default function ProductsPage() {
       {/* Header with consultation trigger */}
       <Header onOpenConsultation={() => setIsConsultationOpen(true)} />
 
-      <main className="flex-1 w-full pt-16 sm:pt-20">
+      <main className="flex-1 w-full pt-22 sm:pt-26 lg:pt-28">
         {/* SUB-HERO SECTION */}
         <section className="w-full bg-surface-container-low/70 py-10 lg:py-14 border-b border-charcoal/10">
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
@@ -173,7 +173,7 @@ export default function ProductsPage() {
         </section>
 
         {/* STICKY FILTER & SEARCH BAR */}
-        <section className="sticky top-16 sm:top-18 z-30 w-full bg-white shadow-sm border-b border-charcoal/10">
+        <section className="sticky top-20 sm:top-22 lg:top-24 z-30 w-full bg-white shadow-sm border-b border-charcoal/10">
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 py-3.5 space-y-3">
             {/* Category Tabs (Pills with exact Stitch AI style) */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">

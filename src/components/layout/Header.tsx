@@ -19,20 +19,20 @@ export function Header({ onOpenConsultation }: HeaderProps) {
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-      <div className="h-16 sm:h-18 max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between gap-4 sm:gap-6">
+      <div className="h-20 sm:h-22 lg:h-24 max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between gap-4 sm:gap-6">
         {/* Brand Logo & Name */}
-        <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-lg">
+        <Link href="/" className="flex items-center gap-3.5 sm:gap-4 shrink-0 group">
+          <div className="relative h-14 w-14 sm:h-16 sm:w-16 lg:h-18 lg:w-18 shrink-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
             <Image
               src="/images/logo.png"
               alt="شعار مطابخ الشويمي | Al Shewimy Kitchens"
-              width={40}
-              height={40}
-              className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
+              width={80}
+              height={80}
+              className="h-full w-full object-contain drop-shadow-sm"
               priority
             />
           </div>
-          <span className="text-base sm:text-lg text-primary tracking-tight font-bold font-readex">
+          <span className="text-xl sm:text-2xl text-primary tracking-tight font-black font-readex">
             مطابخ الشويمي
           </span>
         </Link>

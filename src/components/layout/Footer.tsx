@@ -17,17 +17,17 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-12 border-b border-outline-variant/20">
           {/* Col 1: Brand Info & Logo */}
           <div className="space-y-3.5">
-            <div className="flex items-center gap-3">
-              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-surface-container-lowest p-1 shadow-sm">
+            <div className="flex items-center gap-3.5 sm:gap-4">
+              <div className="relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 flex items-center justify-center rounded-2xl bg-surface-container-lowest p-2 shadow-sm">
                 <Image
                   src="/images/logo.png"
                   alt="شعار مطابخ الشويمي"
-                  width={36}
-                  height={36}
+                  width={64}
+                  height={64}
                   className="h-full w-full object-contain"
                 />
               </div>
-              <span className="text-base sm:text-lg text-on-primary font-bold font-readex">
+              <span className="text-xl sm:text-2xl text-on-primary font-bold font-readex">
                 مطابخ الشويمي
               </span>
             </div>

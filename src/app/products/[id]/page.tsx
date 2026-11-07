@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: PageProps) {
     <div className="flex flex-col min-h-screen bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">
       <Header />
 
-      <main className="flex-1 w-full pt-20 sm:pt-24 pb-16 lg:pb-24">
+      <main className="flex-1 w-full pt-22 sm:pt-26 lg:pt-28 pb-16 lg:pb-24">
         <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
           <ProductDetailClient
             product={product}

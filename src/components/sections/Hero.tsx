@@ -10,7 +10,7 @@ interface HeroProps {
 
 export function Hero({ onOpenConsultation }: HeroProps) {
   return (
-    <section className="relative w-full overflow-hidden bg-primary pt-24 pb-14 lg:pb-20 text-inverse-on-surface">
+    <section className="relative w-full overflow-hidden bg-primary pt-28 sm:pt-32 lg:pt-36 pb-14 lg:pb-20 text-inverse-on-surface">
       {/* Ambient architectural background lighting & subtle textures */}
       <div className="absolute inset-0 z-0">
         <div
