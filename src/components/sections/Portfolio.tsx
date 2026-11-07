@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { MessageCircle, ArrowLeft } from "lucide-react";
 
 interface ProjectItem {
   id: string;
@@ -190,7 +191,7 @@ export function Portfolio() {
 
                 <a
                   className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs sm:text-sm font-semibold py-2.5 rounded-lg transition-colors duration-200 cursor-pointer"
-                  href={`https://wa.me/201002345678?text=${encodeURIComponent(project.whatsappMessage)}`}
+                  href={`https://wa.me/201005557109?text=${encodeURIComponent(project.whatsappMessage)}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -200,6 +201,17 @@ export function Portfolio() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* View Full Catalog Link Banner */}
+        <div className="pt-4 text-center">
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-on-primary text-xs sm:text-sm font-bold py-3 px-8 rounded-xl shadow-md transition-all hover:-translate-y-0.5"
+          >
+            <span>استعراض كتالوج المنتجات والأسعار كاملة</span>
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </section>

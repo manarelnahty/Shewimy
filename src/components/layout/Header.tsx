@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Phone, User, Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Phone, User, Menu, X, Sparkles } from "lucide-react";
 
 interface HeaderProps {
   onOpenConsultation?: () => void;
@@ -11,6 +12,10 @@ interface HeaderProps {
 
 export function Header({ onOpenConsultation }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isProductsActive = pathname === "/products";
+  const isHomeActive = pathname === "/";
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
@@ -34,39 +39,56 @@ export function Header({ onOpenConsultation }: HeaderProps) {
 
         {/* Desktop Navigation */}
         <nav
-          className="hidden lg:flex items-center gap-6 xl:gap-8"
+          className="hidden lg:flex items-center gap-5 xl:gap-7"
           aria-label="قائمة التصفح الرئيسية"
         >
-          <a
-            href="#"
-            className="transition-colors py-1.5 px-3 bg-surface-container-high text-on-surface font-bold rounded-lg text-xs sm:text-sm"
+          <Link
+            href="/"
+            className={`transition-colors py-1.5 px-3 rounded-lg text-xs sm:text-sm font-semibold ${
+              isHomeActive
+                ? "bg-surface-container-high text-on-surface font-bold"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
           >
             الرئيسية
-          </a>
-          <a
-            href="#portfolio-section"
+          </Link>
+
+          {/* Dedicated Products Tab */}
+          <Link
+            href="/products"
+            className={`transition-all py-1.5 px-3.5 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 ${
+              isProductsActive
+                ? "bg-primary text-on-primary shadow-sm"
+                : "text-primary hover:bg-surface-container-high hover:text-secondary"
+            }`}
+          >
+            <Sparkles className={`w-3.5 h-3.5 ${isProductsActive ? "text-secondary-fixed" : "text-secondary"}`} />
+            <span>المنتجات</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-secondary/15 text-secondary font-bold">
+              الكتالوج
+            </span>
+          </Link>
+
+          <Link
+            href="/#portfolio-section"
             className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
           >
-            مطابخ حديثة
-          </a>
-          <a
-            href="#portfolio-section"
-            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
-          >
-            دريسينج روم
-          </a>
-          <a
-            href="#journey-section"
+            أعمالنا المنفذة
+          </Link>
+
+          <Link
+            href="/#journey-section"
             className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
           >
             مصانعنا
-          </a>
-          <a
-            href="#branches-section"
+          </Link>
+
+          <Link
+            href="/#branches-section"
             className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
           >
             فروعنا
-          </a>
+          </Link>
         </nav>
 
         {/* CTA & Actions */}
@@ -82,8 +104,8 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           </button>
 
           <a
-            href="tel:+201002345678"
-            aria-label="اتصال مباشر"
+            href="tel:+201005557109"
+            aria-label="اتصال بالفرع"
             className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"
           >
             <User className="w-4 h-4 text-on-primary" />
@@ -104,41 +126,52 @@ export function Header({ onOpenConsultation }: HeaderProps) {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-surface-container-lowest border-t border-surface-container px-5 py-3 space-y-1.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
-          <a
-            href="#"
+          <Link
+            href="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 px-3 rounded-lg bg-surface-container-high text-primary font-bold text-xs sm:text-sm"
+            className={`block py-2 px-3 rounded-lg text-xs sm:text-sm ${
+              isHomeActive
+                ? "bg-surface-container-high text-primary font-bold"
+                : "text-on-surface-variant hover:bg-surface-container"
+            }`}
           >
             الرئيسية
-          </a>
-          <a
-            href="#portfolio-section"
+          </Link>
+          <Link
+            href="/products"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`block py-2 px-3 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between ${
+              isProductsActive
+                ? "bg-primary text-on-primary font-bold"
+                : "text-primary hover:bg-surface-container"
+            }`}
+          >
+            <span>كتالوج المنتجات والأسعار</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary/20 text-secondary">
+              جديد
+            </span>
+          </Link>
+          <Link
+            href="/#portfolio-section"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
           >
-            مطابخ حديثة
-          </a>
-          <a
-            href="#portfolio-section"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
-          >
-            دريسينج روم
-          </a>
-          <a
-            href="#journey-section"
+            أعمالنا المنفذة
+          </Link>
+          <Link
+            href="/#journey-section"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
           >
             مصانعنا
-          </a>
-          <a
-            href="#branches-section"
+          </Link>
+          <Link
+            href="/#branches-section"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-xs sm:text-sm"
           >
             فروعنا
-          </a>
+          </Link>
         </div>
       )}
     </header>

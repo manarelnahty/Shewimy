@@ -5,9 +5,6 @@ import {
   MapPin,
   Mail,
   PhoneCall,
-  Cpu,
-  Store,
-  Clock,
   ArrowLeft,
 } from "lucide-react";
 
@@ -53,7 +50,7 @@ export function Footer() {
                 <Mail className="w-4 h-4" />
               </a>
               <a
-                href="tel:+201002345678"
+                href="tel:+201005557109"
                 aria-label="رقم الهاتف"
                 className="w-8 h-8 rounded-full bg-surface-container-high/10 hover:bg-secondary flex items-center justify-center text-inverse-on-surface transition-colors"
               >
@@ -69,29 +66,29 @@ export function Footer() {
             </h3>
             <ul className="space-y-2 text-xs sm:text-[13px] text-on-primary-container">
               <li>
-                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                <Link href="/products?category=kitchens" className="hover:text-secondary-fixed transition-colors block">
                   مطابخ خشب طبيعي مودرن
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                <Link href="/products?category=kitchens" className="hover:text-secondary-fixed transition-colors block">
                   مطابخ كلاسيك ونيوكلاسيك
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                <Link href="/products?category=dressing" className="hover:text-secondary-fixed transition-colors block">
                   دريسينج روم ووحدات تخزين فاخرة
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
-                  أسطح رخام طبيعي وكوارتز
-                </a>
+                <Link href="/products?category=cladding" className="hover:text-secondary-fixed transition-colors block">
+                  تجاليد حوائط وديكورات خشبية
+                </Link>
               </li>
               <li>
-                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
-                  إكسسوارات وحلول ذكية
-                </a>
+                <Link href="/products" className="hover:text-secondary-fixed transition-colors block font-semibold text-secondary-fixed">
+                  استعراض كتالوج المنتجات والأسعار ←
+                </Link>
               </li>
             </ul>
           </div>
@@ -99,20 +96,18 @@ export function Footer() {
           {/* Col 3: Factories & Showrooms */}
           <div className="space-y-3">
             <h3 className="text-xs sm:text-sm text-on-primary font-bold font-readex">
-              المصانع والفروع
+              فروع الشويمي
             </h3>
             <div className="space-y-2.5 text-xs sm:text-[13px] text-on-primary-container">
-              <div className="flex items-start gap-2">
-                <Cpu className="w-4 h-4 text-secondary-fixed shrink-0 mt-0.5" />
-                <span>المجمع الصناعي الرئيسي: طريق سمنود، بجوار المجمع الصناعي، الدلتا</span>
+              <div>
+                <span className="font-bold text-on-primary block">فرع المنصورة:</span>
+                <span className="block text-secondary-fixed" dir="ltr">01005557109 / 01012623138</span>
+                <span className="block text-on-primary-container/80">شارع المشاية السفلية، أمام حديقة شجر الدر</span>
               </div>
-              <div className="flex items-start gap-2">
-                <Store className="w-4 h-4 text-secondary-fixed shrink-0 mt-0.5" />
-                <span>صالات العرض: فرع المنصورة (المشاية السفلية)، فرع المحلة الكبرى (شارع البحر)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-secondary-fixed shrink-0" />
-                <span>السبت - الخميس: 10:00 ص - 10:00 م</span>
+              <div className="pt-1">
+                <span className="font-bold text-on-primary block">فرع سمنود والمحلة:</span>
+                <span className="block text-secondary-fixed" dir="ltr">01287153339 / 01098199288</span>
+                <span className="block text-on-primary-container/80">طريق سمنود الرئيسي، بجوار المجمع الصناعي</span>
               </div>
             </div>
           </div>
@@ -120,20 +115,31 @@ export function Footer() {
           {/* Col 4: Private Consultation */}
           <div className="space-y-3">
             <h3 className="text-xs sm:text-sm text-on-primary font-bold font-readex">
-              استشارة معمارية خاصة
+              استشارة معمارية وتصميم 3D
             </h3>
             <p className="text-xs sm:text-[13px] text-on-primary-container leading-relaxed">
-              تواصل مباشرة مع أحد مهندسينا المعماريين لتحديد موعد زيارة للموقع ومعاينة المساحات بدقة.
+              تواصل مباشرة مع مهندسينا المعماريين لتحديد موعد زيارة للموقع ومعاينة المساحات بدقة مع رسم ثلاثي الأبعاد مجاني.
             </p>
-            <a
-              href="https://wa.me/201002345678?text=مرحباً%20أود%20طلب%20كتالوج%20الخامات%20والمشاريع"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-secondary-fixed hover:text-on-primary text-xs sm:text-sm font-semibold transition-colors pt-1"
-            >
-              <ArrowLeft className="w-4 h-4 shrink-0" />
-              <span>طلب كتالوج الخامات والمشاريع</span>
-            </a>
+            <div className="space-y-1.5 pt-1">
+              <a
+                href="https://wa.me/201005557109?text=مرحباً%20فرع%20المنصورة%20أود%20طلب%20استشارة"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-secondary-fixed hover:text-on-primary text-xs font-semibold transition-colors block"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+                <span>واتساب فرع المنصورة: 01005557109</span>
+              </a>
+              <a
+                href="https://wa.me/201287153339?text=مرحباً%20فرع%20سمنود%20والمحلة%20أود%20طلب%20استشارة"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-secondary-fixed hover:text-on-primary text-xs font-semibold transition-colors block"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+                <span>واتساب فرع سمنود والمحلة: 01287153339</span>
+              </a>
+            </div>
           </div>
         </div>
 

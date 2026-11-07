@@ -6,19 +6,51 @@ import { Sparkles, X, CheckCircle2, ChevronDown, Phone, MessageCircle } from "lu
 interface ConsultationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultBranch?: "mansoura" | "samanoud_mahalla";
 }
 
-export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps) {
+export function ConsultationDrawer({
+  isOpen,
+  onClose,
+  defaultBranch = "mansoura",
+}: ConsultationDrawerProps) {
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
-    branch: "فرع المنصورة (المشاية السفلية)",
+    branch: defaultBranch,
     projectType: "مطبخ مودرن كامل",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Map branch selection to designated branch WhatsApp numbers
+    const branchPhoneMap: Record<string, string> = {
+      mansoura: "201005557109",
+      samanoud_mahalla: "201287153339",
+    };
+
+    const branchNameMap: Record<string, string> = {
+      mansoura: "فرع المنصورة (📞 01005557109)",
+      samanoud_mahalla: "فرع سمنود والمحلة (📞 01287153339)",
+    };
+
+    const targetNumber = branchPhoneMap[formData.branch] ?? "201005557109";
+    const branchName = branchNameMap[formData.branch] ?? "فرع المنصورة";
+
+    // Formatted WhatsApp message with lead details
+    const textMessage = `السلام عليكم مطابخ الشويمي، أود حجز موعد معاينة وتصميم 3D:
+• الاسم: ${formData.fullName.trim()}
+• الهاتف: ${formData.phone.trim()}
+• الفرع: ${branchName}
+• نوع المشروع: ${formData.projectType}`;
+
+    const whatsappUrl = `https://wa.me/${targetNumber}?text=${encodeURIComponent(textMessage)}`;
+
+    // Open WhatsApp directly with the pre-filled data
+    window.open(whatsappUrl, "_blank");
+
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
@@ -32,7 +64,7 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop with elegant blur */}
       <div
-        className="fixed inset-0 bg-[#070b0e]/70 backdrop-blur-md transition-opacity duration-300"
+        className="fixed inset-0 bg-[#070b0e]/75 backdrop-blur-md transition-opacity duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -58,7 +90,7 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
                 طلب حجز معاينة وتصميم 3D
               </h3>
               <p className="text-xs text-charcoal/60 mt-0.5">
-                معاينة هندسية مجانية ورفع مقاسات دقيق بالليزر لمساحتك
+                يتم تحويل البيانات مباشرة إلى واتساب الفرع المختص لتأكيد الموعد فورياً
               </p>
             </div>
           </div>
@@ -81,10 +113,10 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
             </div>
             <div className="space-y-1.5">
               <h4 className="text-xl font-bold text-charcoal font-readex">
-                شكراً لك! تم استلام طلبك بنجاح
+                جاري التحويل إلى محادثة واتساب الفرع...
               </h4>
               <p className="text-xs sm:text-sm text-charcoal/70 max-w-md mx-auto leading-relaxed">
-                سيتواصل معك أحد مهندسي التصميم المعماري في مطابخ الشويمي خلال ساعة لتأكيد موعد المعاينة وتقديم الاستشارة المجانية.
+                تم تجهيز بياناتك في رسالة واتساب، يرجى الضغط على إرسال داخل واتساب للتواصل مع مهندس الفرع فوراً.
               </p>
             </div>
           </div>
@@ -128,20 +160,24 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Preferred Branch */}
+              {/* Preferred Branch with Phone Numbers */}
               <div>
                 <label className="block text-xs font-bold text-charcoal mb-1.5">
-                  الفرع الأقرب لك
+                  الفرع الأقرب لك <span className="text-secondary font-normal">(اختر لتوجيه الرسالة)</span>
                 </label>
                 <div className="relative">
                   <select
                     value={formData.branch}
-                    onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        branch: e.target.value as "mansoura" | "samanoud_mahalla",
+                      })
+                    }
                     className="w-full pr-3.5 pl-9 py-2.5 rounded-xl bg-white text-charcoal font-medium text-xs sm:text-sm border border-charcoal/20 hover:border-charcoal/40 focus:border-emerald-cta focus:outline-none focus:ring-4 focus:ring-emerald-cta/10 transition-all appearance-none cursor-pointer shadow-sm"
                   >
-                    <option value="فرع المنصورة (المشاية السفلية)">فرع المنصورة (المشاية السفلية)</option>
-                    <option value="فرع المحلة الكبرى (شارع البحر)">فرع المحلة الكبرى (شارع البحر)</option>
-                    <option value="فرع سمنود والمجمع الصناعي">فرع سمنود والمجمع الصناعي</option>
+                    <option value="mansoura">فرع المنصورة (01005557109)</option>
+                    <option value="samanoud_mahalla">فرع سمنود والمحلة (01287153339)</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
@@ -162,22 +198,36 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
                     <option value="دريسينج روم فاخرة">دريسينج روم فاخرة</option>
                     <option value="مطبخ + دريسينج روم">مطبخ + دريسينج روم</option>
                     <option value="فرش فيلا / شقة متكامل">فرش فيلا / شقة متكامل</option>
+                    <option value="تجاليد وأعمال خشبية معمارية">تجاليد وأعمال خشبية معمارية</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
             </div>
 
+            {/* Branch Numbers Note */}
+            <div className="p-3 rounded-xl bg-surface-container-low text-[11px] sm:text-xs text-charcoal/75 space-y-1 border border-outline-variant/10">
+              <span className="font-bold text-primary block">أرقام التواصل المباشرة للفروع:</span>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span>📍 المنصورة: 01005557109 / 01012623138</span>
+                <span>📍 سمنود والمحلة: 01287153339 / 01098199288</span>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="pt-3 flex items-center justify-between border-t border-charcoal/10 gap-3">
               <a
-                href="https://wa.me/201002345678?text=مرحباً%20أود%20حجز%20معاينة%20مباشرة%20لمطبخي"
+                href={
+                  formData.branch === "mansoura"
+                    ? "https://wa.me/201005557109?text=مرحباً%20فرع%20المنصورة%20أود%20الاستفسار%20عن%20المطابخ"
+                    : "https://wa.me/201287153339?text=مرحباً%20فرع%20سمنود%20والمحلة%20أود%20الاستفسار%20عن%20المطابخ"
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-[#128C7E] hover:text-[#0b6459] font-semibold transition-colors"
               >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>أو تواصل فورياً عبر واتساب</span>
+                <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>محادثة فورية بالفرع</span>
               </a>
 
               <div className="flex items-center gap-2">
@@ -190,9 +240,10 @@ export function ConsultationDrawer({ isOpen, onClose }: ConsultationDrawerProps)
                 </button>
                 <button
                   type="submit"
-                  className="bg-emerald-cta hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-xl shadow-md shadow-emerald-950/20 transition-all duration-200 cursor-pointer active:translate-y-0.5"
+                  className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-xl shadow-md shadow-emerald-950/20 transition-all duration-200 cursor-pointer active:translate-y-0.5"
                 >
-                  تأكيد موعد المعاينة
+                  <MessageCircle className="w-4 h-4 shrink-0" />
+                  <span>تأكيد وتحويل للواتساب</span>
                 </button>
               </div>
             </div>

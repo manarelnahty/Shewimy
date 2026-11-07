@@ -42,7 +42,7 @@ export function CtaSection({ onOpenConsultation }: CtaSectionProps) {
             </button>
             <a
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-semibold py-3 px-5 rounded transition-colors shadow-md"
-              href="https://wa.me/201002345678?text=مرحباً%20أود%20الاستفسار%20عن%20حجز%20معاينة%20وتصميم%20مطبخ"
+              href="https://wa.me/201005557109?text=مرحباً%20أود%20الاستفسار%20عن%20حجز%20معاينة%20وتصميم%20مطبخ%20من%20مطابخ%20الشويمي"
               rel="noopener noreferrer"
               target="_blank"
             >

@@ -1,5 +1,5 @@
 import React from "react";
-import { Store, Cpu, MapPin, Phone, Clock, Calendar, Map } from "lucide-react";
+import { Store, Cpu, MapPin, Phone, Clock, Calendar, Map, MessageCircle } from "lucide-react";
 
 export function Branches() {
   const branches = [
@@ -8,28 +8,22 @@ export function Branches() {
       icon: <Store className="w-5 h-5 text-secondary" />,
       title: "فرع المنصورة",
       address: "شارع المشاية السفلية، أمام حديقة شجر الدر",
-      phone: "+20 100 234 5678",
-      phoneTel: "+201002345678",
+      phones: [
+        { display: "01005557109", tel: "+201005557109", wa: "201005557109" },
+        { display: "01012623138", tel: "+201012623138", wa: "201012623138" },
+      ],
       hours: "يومياً من 11 صباحاً حتى 11 مساءً",
       mapUrl: "https://maps.google.com/?q=Mansoura,Egypt",
     },
     {
-      badge: "صالة عرض متكاملة",
-      icon: <Store className="w-5 h-5 text-secondary" />,
-      title: "فرع المحلة الكبرى",
-      address: "شارع البحر الرئيسي، برج النخبة",
-      phone: "+20 101 876 5432",
-      phoneTel: "+201018765432",
-      hours: "يومياً من 11 صباحاً حتى 11 مساءً",
-      mapUrl: "https://maps.google.com/?q=El+Mahalla+El+Kubra,Egypt",
-    },
-    {
-      badge: "المصنع الرئيسي والمعرض",
+      badge: "المصنع والمعرض المتكامل",
       icon: <Cpu className="w-5 h-5 text-secondary" />,
-      title: "فرع سمنود والمجمع الصناعي",
-      address: "طريق سمنود الرئيسي، بجوار المجمع الصناعي",
-      phone: "+20 102 345 6789",
-      phoneTel: "+201023456789",
+      title: "فرع سمنود والمحلة",
+      address: "طريق سمنود الرئيسي، بجوار المجمع الصناعي - يخدم المحلة وسمنود",
+      phones: [
+        { display: "01287153339", tel: "+201287153339", wa: "201287153339" },
+        { display: "01098199288", tel: "+201098199288", wa: "201098199288" },
+      ],
       hours: "يومياً من 10 صباحاً حتى 10 مساءً",
       mapUrl: "https://maps.google.com/?q=Samanoud,Egypt",
     },
@@ -41,10 +35,10 @@ export function Branches() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pb-2">
           <div>
             <span className="text-xs sm:text-sm text-secondary font-semibold uppercase tracking-wider block mb-1.5">
-              شبكة معارضنا
+              شبكة معارضنا وفروعنا
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-primary font-readex">
-              زوروا معارضنا
+              زوروا معارض الشويمي
             </h2>
             <p className="text-xs sm:text-sm text-on-surface-variant mt-1.5 max-w-xl leading-relaxed">
               يسعدنا استقبالكم في أقرب فرع لمعاينة الخامات وتصاميم المطابخ على الطبيعة مع مهندسينا المختصين.
@@ -56,59 +50,92 @@ export function Branches() {
           </div>
         </div>
 
-        {/* 3 Branch Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+        {/* 2 Focused Branch Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
           {branches.map((b, idx) => (
             <div
               key={idx}
-              className="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-5 border border-outline-variant/10"
+              className="bg-surface-container-lowest p-6 sm:p-7 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 border border-outline-variant/15"
             >
-              <div className="space-y-3.5">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] bg-secondary-container/30 text-on-secondary-container px-2.5 py-1 rounded font-semibold">
+                  <span className="text-xs bg-secondary-container/30 text-on-secondary-container px-3 py-1 rounded-full font-semibold">
                     {b.badge}
                   </span>
-                  <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center">
                     {b.icon}
                   </div>
                 </div>
-                <h3 className="text-base sm:text-lg text-primary font-bold font-readex">
+
+                <h3 className="text-lg sm:text-xl text-primary font-bold font-readex">
                   {b.title}
                 </h3>
-                <div className="space-y-2 pt-1 text-xs text-on-surface-variant">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-secondary shrink-0 mt-0.5" />
+
+                <div className="space-y-3 pt-1 text-xs sm:text-sm text-on-surface-variant">
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
                     <span>{b.address}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-secondary shrink-0" />
-                    <span className="font-semibold text-primary" dir="ltr">
-                      {b.phone}
-                    </span>
+
+                  <div className="flex items-start gap-2.5">
+                    <Phone className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                    <div className="space-y-1" dir="ltr">
+                      {b.phones.map((p, pIdx) => (
+                        <div key={pIdx} className="flex items-center gap-3">
+                          <a
+                            href={`tel:${p.tel}`}
+                            className="font-bold text-primary hover:text-secondary transition-colors"
+                          >
+                            📞 {p.display}
+                          </a>
+                          <a
+                            href={`https://wa.me/${p.wa}?text=مرحباً%20أود%20الاستفسار%20عن%20مطابخ%20الشويمي`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] text-[#128C7E] hover:underline flex items-center gap-1 font-semibold"
+                          >
+                            <MessageCircle className="w-3 h-3" />
+                            واتساب
+                          </a>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-secondary shrink-0" />
+
+                  <div className="flex items-center gap-2.5">
+                    <Clock className="w-4 h-4 text-secondary shrink-0" />
                     <span>{b.hours}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5 pt-3 border-t border-surface-container">
+              <div className="flex items-center gap-3 pt-3 border-t border-surface-container">
                 <a
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-semibold py-2 px-3 rounded transition-colors duration-200"
-                  href={`tel:${b.phoneTel}`}
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200"
+                  href={`tel:${b.phones[0].tel}`}
                 >
-                  <Phone className="w-3.5 h-3.5 shrink-0" />
-                  <span>اتصل الآن</span>
+                  <Phone className="w-4 h-4 shrink-0" />
+                  <span>اتصال بالفرع</span>
                 </a>
+
                 <a
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 bg-surface-container hover:bg-surface-container-high text-primary text-xs font-semibold py-2 px-3 rounded transition-colors duration-200"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200"
+                  href={`https://wa.me/${b.phones[0].wa}?text=مرحباً%20أود%20الاستفسار%20عن%20مطابخ%20الشويمي`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="w-4 h-4 shrink-0" />
+                  <span>واتساب الفرع</span>
+                </a>
+
+                <a
+                  className="inline-flex items-center justify-center p-2.5 bg-surface-container hover:bg-surface-container-high text-primary text-xs rounded-xl transition-colors duration-200"
                   href={b.mapUrl}
                   rel="noopener noreferrer"
                   target="_blank"
+                  aria-label="الاتجاهات على الخريطة"
                 >
-                  <Map className="w-3.5 h-3.5 shrink-0" />
-                  <span>الاتجاهات</span>
+                  <Map className="w-4 h-4" />
                 </a>
               </div>
             </div>
