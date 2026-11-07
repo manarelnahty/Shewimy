@@ -22,7 +22,7 @@ const projects: ProjectItem[] = [
     categoryLabel: "مطابخ مودرن",
     title: "مطبخ مودرن شاتوه - مات رمادي وخشب جوز",
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDBAQBoMgePU5EkpY28MeJBMbBHzHwXdqSNsN5essXjxlYVDCyd2BbkCnoHsr-4pWz6HHbJ5_bpbf4Rq6km7CklupE5540gB_t7FiSH7jgphV5hSbglerw8oDdGAEBxHtP8R6Pe9wD4YK31Kr0-IxLVdkbqZJBqARxE6mpvfwL6D-D0tnnZaCvslyiq0oJNtwknKybkF6_lwl0biBCFkkbmXhPvxbDX__JPkFAppS0",
+      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
     tags: ["HPL ألماني", "رخام طبيعي كلكتا", "إضاءة Smart LED"],
     whatsappMessage: "مرحباً، أود الاستفسار عن تفاصيل وأسعار مطبخ مودرن شاتوه",
   },
@@ -32,7 +32,7 @@ const projects: ProjectItem[] = [
     categoryLabel: "مطابخ مودرن",
     title: "مطبخ فيلا المعادي - أسود كربوني وبانوهات خشبية",
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDrl2yP2VykpkKgYshjhQR3-WMJ1OxkC7THuF66GdkzQ_WTifViLlIT1bYTXlS0ok5Dgwwo6y_KFYS5HwntgOGpxd_4bwIm--kXwgBS7BwSFmzN6kdbiSKguU0ItSmnOg7i5rUDGLiqOyqH6uAzne6DdVRccaGIVOwzP8C85pEnm8Og31MXnV1ImHOL-ONZkQLg1S5fX75BadtAB16XRABhzPyINbLmiKuDI1fL4rI",
+      "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
     tags: ["بولاك ألماني", "كوارتز إسباني", "مفصلات بلوم نمساوي"],
     whatsappMessage: "مرحباً، أود الاستفسار عن تفاصيل مطبخ فيلا المعادي",
   },
@@ -42,7 +42,7 @@ const projects: ProjectItem[] = [
     categoryLabel: "دريسينج روم",
     title: "دريسينج روم فاخرة - زجاج فاميه وإضاءة داخلية",
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBXN8DNG20jjInUk91vYG81tR2cOfrwX5NLF9ZCXxGGbh4NE_CnBHjxZpWkkAQq17HX5IV1fTWM4ynOvSep-YZW_a1fFPTeXjSglO9o63ruFo8rfBzUlrNBrveUfZcCXVbop4slPnEhnEvx0uKKhxgJHqg2hk2vRpAEFSVFCJ_muomayXwIDXpZKzZOIa3RaMOYgEtS9jX7s92FCGkfX-68ULmt7xKliLcfru_mnsg",
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
     tags: ["أخشاب طبيعية", "إكسسوارات إيطالية", "أرفف مخفية"],
     whatsappMessage: "مرحباً، أود الاستفسار عن تفاصيل الدريسينج روم الفاخرة",
   },

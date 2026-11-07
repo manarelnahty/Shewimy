@@ -82,7 +82,8 @@ export const productsData: Product[] = [
     gallery: [
       "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "مساحة قياسية 4.0م × 3.2م مع جزيرة وسطية 2.2م × 1.1م (قابلة للتفصيل)",
     hardware: "مفصلات ومجاري أدراج Blum النمساوية الأصلية بتقنية Blumotion الهيدروليكية",
@@ -116,8 +117,9 @@ export const productsData: Product[] = [
       "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
     gallery: [
       "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "مساحة 5.2م × 3.6م مع جزيرة شلال Waterfall طول 3 أمتار",
     hardware: "ميكانيزم هيدروليك بلوم تيب-أون (فتح باللمس) + إغلاق ناعم سوفت كلوز",
@@ -151,8 +153,9 @@ export const productsData: Product[] = [
       "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80",
     gallery: [
       "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "مساحة 4.5م × 3.5م مع دولاب بيلت إن وبوفيه زجاجي",
     hardware: "مفصلات بلوم نمساوي مخفية + مقابض نحاس أثري معتق",
@@ -183,11 +186,11 @@ export const productsData: Product[] = [
       "غرفة ملابس ذكية مجهزة بأبواب زجاج فاميه عازلة للأتربة مع إضاءة عمودية مخفية وأدراج مغطاة بالمخمل الإيطالي للإكسسوارات.",
     specs: ["بروفايل أسود أنودايزد", "زجاج فاميه سيكوريت", "مستشعرات إضاءة", "تقسيمات ذكية"],
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAzW__PHhPL-efDNiLvz2AkFUDWfBrnU2eeOBZAaB0M73R0_Llx8vMxdvKdzvxVrOYKjs3l8rdb9ceaM0K9zHYY5xeOqNgdA5n5mfpjMI8B7vZ2Q_ldxREcj5ehcIs2JCy2l7NhJ94nJtZuKCDl9PGzNIvVVk8FPGF2LTb0vX3pxSj2MraeixnCvnhYB8YDjGQ2MYKaCVhKTDzkPB7fOt6K9K981Nwri8-2VaEc11w",
-    gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAzW__PHhPL-efDNiLvz2AkFUDWfBrnU2eeOBZAaB0M73R0_Llx8vMxdvKdzvxVrOYKjs3l8rdb9ceaM0K9zHYY5xeOqNgdA5n5mfpjMI8B7vZ2Q_ldxREcj5ehcIs2JCy2l7NhJ94nJtZuKCDl9PGzNIvVVk8FPGF2LTb0vX3pxSj2MraeixnCvnhYB8YDjGQ2MYKaCVhKTDzkPB7fOt6K9K981Nwri8-2VaEc11w",
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBXN8DNG20jjInUk91vYG81tR2cOfrwX5NLF9ZCXxGGbh4NE_CnBHjxZpWkkAQq17HX5IV1fTWM4ynOvSep-YZW_a1fFPTeXjSglO9o63ruFo8rfBzUlrNBrveUfZcCXVbop4slPnEhnEvx0uKKhxgJHqg2hk2vRpAEFSVFCJ_muomayXwIDXpZKzZOIa3RaMOYgEtS9jX7s92FCGkfX-68ULmt7xKliLcfru_mnsg",
       "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "جدارية 3.6م ارتفاع 2.7م عمق 60 سم مع جزيرة ساعات ومجوهرات",
     hardware: "بروفايل ألومنيوم إيطالي أسود غير لامع مع ميكانيزم سوفت كلوز صامت",
@@ -218,10 +221,11 @@ export const productsData: Product[] = [
       "بانوهات خشبية مفرغة من خشب الجوز المختار بدقة مع وحدة معلقة عائمة، ولزق PUR المقاوم للحرارة وإضاءة مخفية بتناغم معماري.",
     specs: ["خشب جوز طبيعي", "لزق PUR ألماني", "إضاءة Smart Strip", "شاسيه عائم خفي"],
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBUGpQOh5mrAnXoviGtgqbn7sMWGZvClvvaMmNHIdw5d52oY65iwMKqhcY8ma-Xx1T6nOK0DoYVOXRk1xjkSumjn-Cw3P-vkK_bWFbNDaQif9QM16n2rps16pUGcI73tTmQmuALQ8fSlfzqTyIblE5aP0dXCA1PtJmJkmjm-HzUBPU91eL9Acc8zZz-jplAzGwJMVVTBjzL_KnHSvhbId6IbEI6sjhVRwg7VbnReJI",
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBUGpQOh5mrAnXoviGtgqbn7sMWGZvClvvaMmNHIdw5d52oY65iwMKqhcY8ma-Xx1T6nOK0DoYVOXRk1xjkSumjn-Cw3P-vkK_bWFbNDaQif9QM16n2rps16pUGcI73tTmQmuALQ8fSlfzqTyIblE5aP0dXCA1PtJmJkmjm-HzUBPU91eL9Acc8zZz-jplAzGwJMVVTBjzL_KnHSvhbId6IbEI6sjhVRwg7VbnReJI",
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "عرض 3.8م ارتفاع كامل السقف 2.8م مع وحدة كونسول 2.4م",
     hardware: "حوامل إيطالية معلقة مخفية تتحمل حتى 150 كجم",
@@ -252,11 +256,12 @@ export const productsData: Product[] = [
       "تصميم عملي بأسطح HPL المقاومة للخدوش ودرجات الحرارة العالية مع جزيرة ممتدة ومكان مدمج للأجهزة الكهربائية الحديثة.",
     specs: ["HPL ألماني", "سطح كوارتز مضاد للبقع", "مقبض Gola مدمج", "ضمان 15 سنة"],
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDBAQBoMgePU5EkpY28MeJBMbBHzHwXdqSNsN5essXjxlYVDCyd2BbkCnoHsr-4pWz6HHbJ5_bpbf4Rq6km7CklupE5540gB_t7FiSH7jgphV5hSbglerw8oDdGAEBxHtP8R6Pe9wD4YK31Kr0-IxLVdkbqZJBqARxE6mpvfwL6D-D0tnnZaCvslyiq0oJNtwknKybkF6_lwl0biBCFkkbmXhPvxbDX__JPkFAppS0",
-    gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDBAQBoMgePU5EkpY28MeJBMbBHzHwXdqSNsN5essXjxlYVDCyd2BbkCnoHsr-4pWz6HHbJ5_bpbf4Rq6km7CklupE5540gB_t7FiSH7jgphV5hSbglerw8oDdGAEBxHtP8R6Pe9wD4YK31Kr0-IxLVdkbqZJBqARxE6mpvfwL6D-D0tnnZaCvslyiq0oJNtwknKybkF6_lwl0biBCFkkbmXhPvxbDX__JPkFAppS0",
-      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "مساحة 4.2م × 3.0م مع جزيرة طاولة طعام متصلة 2.4م",
     hardware: "نظام المقابض المدمجة جولا Gola إيطالي أنودايزد أسود",
@@ -324,7 +329,8 @@ export const productsData: Product[] = [
       "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
     gallery: [
       "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAzW__PHhPL-efDNiLvz2AkFUDWfBrnU2eeOBZAaB0M73R0_Llx8vMxdvKdzvxVrOYKjs3l8rdb9ceaM0K9zHYY5xeOqNgdA5n5mfpjMI8B7vZ2Q_ldxREcj5ehcIs2JCy2l7NhJ94nJtZuKCDl9PGzNIvVVk8FPGF2LTb0vX3pxSj2MraeixnCvnhYB8YDjGQ2MYKaCVhKTDzkPB7fOt6K9K981Nwri8-2VaEc11w",
+      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "عرض 4.0م × ارتفاع 2.7م × عمق 65 سم بأبواب سحب إيطالية",
     hardware: "أنظمة سحب هيدروليكية إيطالية ثقيلة تتحمل حتى 100 كجم للضلفة",

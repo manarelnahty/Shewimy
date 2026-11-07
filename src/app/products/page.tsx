@@ -219,7 +219,7 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                الكل (+48)
+                الكل
               </button>
               <button
                 type="button"
@@ -230,7 +230,7 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                مطابخ حديثة (28)
+                مطابخ حديثة
               </button>
               <button
                 type="button"
@@ -241,7 +241,7 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                دريسينج روم ووحدات تخزين (9)
+                دريسينج روم ووحدات تخزين
               </button>
               <button
                 type="button"
@@ -252,7 +252,7 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                أثاث منزلي مخصص (5)
+                أثاث منزلي مخصص
               </button>
               <button
                 type="button"
@@ -263,7 +263,7 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                ديكورات وتجاليد خشبية (4)
+                ديكورات وتجاليد خشبية
               </button>
             </div>
 

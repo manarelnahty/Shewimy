@@ -17,7 +17,7 @@ export function Hero({ onOpenConsultation }: HeroProps) {
           className="w-full h-full bg-cover bg-center opacity-40 mix-blend-luminosity scale-105 transform duration-1000 ease-out"
           style={{
             backgroundImage:
-              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDtrfwYXyPdVW7vkQLkOwT_qpKjlPvUpcxPaZ569OKPjrShBbB6i3X_kTs4GHSITMpoPO-qdDdgMeqRF4l6psC2Drc5SodNA-HFVJ45AcUqhf0fKUBZcyWpLFTE_FMWNFfh4Kd8BBgUdOyNkZcdrJ0V6rF98v0cIRn6d-4UV6JreLJu1a4B8KR8u2JrLuUZ2JmVuH_6ORbFfp4iu_lgDLHo_wxidqvZMlZT0YBJvI')",
+              "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80')",
           }}
           aria-hidden="true"
         />

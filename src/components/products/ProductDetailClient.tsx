@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,6 +14,8 @@ import {
   Clock,
   ArrowRight,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Product, BRANCH_CONTACTS } from "@/data/products";
 import { ConsultationDrawer } from "@/components/common/ConsultationDrawer";
@@ -41,7 +43,14 @@ export function ProductDetailClient({
   product,
   relatedProducts,
 }: ProductDetailClientProps) {
-  const [selectedImage, setSelectedImage] = useState(product.imageUrl);
+  const galleryImages = useMemo(() => {
+    if (product.gallery && product.gallery.length > 0) {
+      return product.gallery;
+    }
+    return [product.imageUrl];
+  }, [product.gallery, product.imageUrl]);
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
 
@@ -54,14 +63,24 @@ export function ProductDetailClient({
   const mansouraContact = BRANCH_CONTACTS.mansoura;
   const samanoudContact = BRANCH_CONTACTS.samanoud_mahalla;
 
-  const buildWhatsappUrl = (branchName: string, phone: string) => {
-    const text = `السلام عليكم مطابخ الشويمي (${branchName})، أود الاستفسار عن تفاصيل وحجز معاينة للموديل:
-• كود المنتج: ${product.code}
-• اسم الموديل: ${product.name}
-• السعر الاسترشادي: ${product.priceDisplay}
-• الرابط: https://shewimy.com/products/${product.id}`;
+  const handlePrevImage = () => {
+    setActiveImageIndex((prev) =>
+      prev === 0 ? galleryImages.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setActiveImageIndex((prev) =>
+      prev === galleryImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const buildWhatsappUrl = (phone: string) => {
+    const text = `مرحباً، أود الاستفسار عن تفاصيل وأسعار الموديل: ${product.name} (كود: ${product.code})`;
     return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
   };
+
+  const activeImageUrl = galleryImages[activeImageIndex] || product.imageUrl;
 
   return (
     <div className="w-full">
@@ -87,18 +106,44 @@ export function ProductDetailClient({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* RIGHT COLUMN (RTL): Multi-Image Interactive Gallery (7 Cols) */}
         <div className="lg:col-span-7 space-y-4">
-          {/* Main Featured Image */}
-          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#ECE8E1] border border-charcoal/10 shadow-md group">
+          {/* Main Featured Image with Carousel Navigation */}
+          <div className="relative aspect-[16/10] sm:aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#ECE8E1] border border-charcoal/10 shadow-md group">
             <Image
-              src={selectedImage}
-              alt={product.name}
+              src={activeImageUrl}
+              alt={`${product.name} - صورة ${activeImageIndex + 1}`}
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-102"
+              className="object-cover transition-all duration-500 group-hover:scale-102"
             />
+
+            {/* Overlay Navigation Arrows */}
+            {galleryImages.length > 1 && (
+              <>
+                {/* Right Arrow (Previous / Right in RTL) */}
+                <button
+                  type="button"
+                  onClick={handlePrevImage}
+                  aria-label="الصورة السابقة"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/75 text-white flex items-center justify-center backdrop-blur-md transition-all shadow-md cursor-pointer z-20 hover:scale-110 active:scale-95"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+
+                {/* Left Arrow (Next / Left in RTL) */}
+                <button
+                  type="button"
+                  onClick={handleNextImage}
+                  aria-label="الصورة التالية"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/75 text-white flex items-center justify-center backdrop-blur-md transition-all shadow-md cursor-pointer z-20 hover:scale-110 active:scale-95"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </>
+            )}
+
             {/* Top Badges */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-10 pointer-events-none">
               <span className="px-3 py-1 rounded-lg bg-[#1E2225]/90 backdrop-blur-md text-white text-xs font-semibold shadow-sm">
                 {product.badgePrimary}
               </span>
@@ -107,28 +152,35 @@ export function ProductDetailClient({
               </span>
             </div>
 
-            {/* Bottom Left Code */}
-            <div className="absolute bottom-4 left-4 px-3 py-1 rounded-lg bg-white/95 backdrop-blur-md text-primary text-xs font-bold font-mono border border-charcoal/10 shadow-sm">
+            {/* Bottom Left: Product Code */}
+            <div className="absolute bottom-4 left-4 px-3 py-1 rounded-lg bg-white/95 backdrop-blur-md text-primary text-xs font-bold font-mono border border-charcoal/10 shadow-sm z-10 pointer-events-none">
               كود الموديل : {product.code}
             </div>
+
+            {/* Bottom Right: Image Counter Badge */}
+            {galleryImages.length > 1 && (
+              <div className="absolute bottom-4 right-4 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-xs font-medium font-mono z-10 shadow-sm border border-white/10 pointer-events-none">
+                {activeImageIndex + 1} / {galleryImages.length}
+              </div>
+            )}
           </div>
 
           {/* Thumbnails Row (Multiple angles, interior details, hardware) */}
-          {product.gallery && product.gallery.length > 1 && (
+          {galleryImages.length > 1 && (
             <div className="space-y-2">
-              <span className="text-xs font-bold text-charcoal/60 block">
+              <span className="text-xs font-bold text-charcoal/70 block">
                 معرض زوايا وتفاصيل الموديل (اضغط للمعاينة):
               </span>
               <div className="grid grid-cols-4 gap-3">
-                {product.gallery.map((imgUrl, idx) => (
+                {galleryImages.map((imgUrl, idx) => (
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setSelectedImage(imgUrl)}
+                    onClick={() => setActiveImageIndex(idx)}
                     className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-[#ECE8E1] ${
-                      selectedImage === imgUrl
-                        ? "border-[#1F5E4B] ring-2 ring-[#1F5E4B]/20 shadow-sm scale-102"
-                        : "border-charcoal/10 hover:border-charcoal/30 opacity-80 hover:opacity-100"
+                      activeImageIndex === idx
+                        ? "ring-2 ring-[#1F5E4B] border-transparent shadow-sm scale-102"
+                        : "border-charcoal/10 hover:border-charcoal/30 opacity-70 hover:opacity-100"
                     }`}
                   >
                     <Image
@@ -175,7 +227,7 @@ export function ProductDetailClient({
                 شامل التصنيع والتركيب
               </span>
             </div>
-            <p className="text-xs text-charcoal/70 leading-relaxed border-t border-charcoal/10 pt-2.5">
+            <p className="text-xs text-gray-600 leading-relaxed border-t border-charcoal/10 pt-2.5 font-normal">
               {product.priceNote}. يشمل السعر التصميم الهندسي 3D المخصص لمساحتك، الشاسيه الداخلي، المفصلات الهيدروليكية، التوريد وضمان 15 سنة.
             </p>
           </div>
@@ -205,7 +257,7 @@ export function ProductDetailClient({
             </div>
           </div>
 
-          {/* WhatsApp Action Buttons */}
+          {/* Dynamic Branch WhatsApp & Consultation CTAs */}
           <div className="space-y-2.5 pt-1">
             {isBothBranches ? (
               <div className="space-y-2">
@@ -214,29 +266,29 @@ export function ProductDetailClient({
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <a
-                    href={buildWhatsappUrl(mansouraContact.name, mansouraContact.whatsapp)}
+                    href={buildWhatsappUrl(mansouraContact.whatsapp)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs font-bold py-3 px-3 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
                   >
                     <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                    <span>واتساب فرع المنصورة</span>
+                    <span>استفسر وتواصل مع واتساب فرع المنصورة</span>
                   </a>
 
                   <a
-                    href={buildWhatsappUrl(samanoudContact.name, samanoudContact.whatsapp)}
+                    href={buildWhatsappUrl(samanoudContact.whatsapp)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs font-bold py-3 px-3 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
                   >
                     <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                    <span>واتساب سمنود والمحلة</span>
+                    <span>استفسر وتواصل مع واتساب فرع سمنود والمحلة</span>
                   </a>
                 </div>
               </div>
             ) : isMansouraOnly ? (
               <a
-                href={buildWhatsappUrl(mansouraContact.name, mansouraContact.whatsapp)}
+                href={buildWhatsappUrl(mansouraContact.whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-3 px-4 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
@@ -246,7 +298,7 @@ export function ProductDetailClient({
               </a>
             ) : (
               <a
-                href={buildWhatsappUrl(samanoudContact.name, samanoudContact.whatsapp)}
+                href={buildWhatsappUrl(samanoudContact.whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-3 px-4 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
@@ -256,13 +308,13 @@ export function ProductDetailClient({
               </a>
             )}
 
-            {/* Book 3D Consultation Button */}
+            {/* Book 3D Consultation Button with Calendar Icon */}
             <button
               type="button"
               onClick={() => setIsConsultationOpen(true)}
               className="w-full inline-flex items-center justify-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-bold py-3 px-4 rounded-xl shadow-md transition-all cursor-pointer active:translate-y-0.5"
             >
-              <Sparkles className="w-4 h-4 shrink-0" />
+              <Calendar className="w-4 h-4 shrink-0" />
               <span>احجز معاينة ورفع مقاسات 3D لهذا الموديل</span>
             </button>
           </div>
@@ -301,7 +353,7 @@ export function ProductDetailClient({
             <h3 className="text-sm font-bold text-primary font-readex">
               المقاسات والأبعاد المقترحة
             </h3>
-            <p className="text-xs text-charcoal/70 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed font-normal">
               {product.dimensions || "يتم تفصيل وتعديل كافة المقاسات بدقة بالملي لتطابق مساحة مطبخك ومنزلك."}
             </p>
           </div>
@@ -314,7 +366,7 @@ export function ProductDetailClient({
             <h3 className="text-sm font-bold text-primary font-readex">
               الخامة السطحية والتشطيب
             </h3>
-            <p className="text-xs text-charcoal/70 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed font-normal">
               {product.materialLabel} — {product.finish || "تشطيب فائق الجودة مقاوم للحرارة والخدوش والزيوت اليومية."}
             </p>
           </div>
@@ -327,7 +379,7 @@ export function ProductDetailClient({
             <h3 className="text-sm font-bold text-primary font-readex">
               المفصلات والإكسسوارات
             </h3>
-            <p className="text-xs text-charcoal/70 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed font-normal">
               {product.hardware || "مفصلات ومجاري أدراج Blum النمساوية الأصلية سوفت كلوز صامتة وعالية التحمل."}
             </p>
           </div>
@@ -340,7 +392,7 @@ export function ProductDetailClient({
             <h3 className="text-sm font-bold text-primary font-readex">
               الشاسيه الداخلي والعزل
             </h3>
-            <p className="text-xs text-charcoal/70 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed font-normal">
               {product.chassis || "كونتر جودوود مستورد معزول HPL ألماني 100% ضد المياه والرطوبة."}
             </p>
           </div>
@@ -353,7 +405,7 @@ export function ProductDetailClient({
             <h3 className="text-sm font-bold text-primary font-readex">
               مدة التصنيع والتسليم
             </h3>
-            <p className="text-xs text-charcoal/70 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed font-normal">
               {product.leadTime || "من 25 إلى 35 يوم عمل شامل التصميم والمعاينة والتصنيع والتركيب الفندقي."}
             </p>
           </div>
@@ -366,7 +418,7 @@ export function ProductDetailClient({
             <h3 className="text-sm font-bold text-primary font-readex">
               الضمان وخدمات ما بعد البيع
             </h3>
-            <p className="text-xs text-charcoal/70 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed font-normal">
               ضمان {product.warrantyYears} سنة معتمد رسمياً وموثق بعقد، مع صيانة دورية مجانية وتوفير قطع غيار أصلية.
             </p>
           </div>
