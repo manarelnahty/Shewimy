@@ -39,15 +39,15 @@ export function Header({ onOpenConsultation }: HeaderProps) {
 
         {/* Desktop Navigation */}
         <nav
-          className="hidden lg:flex items-center gap-5 xl:gap-7"
+          className="hidden lg:flex items-center gap-8"
           aria-label="قائمة التصفح الرئيسية"
         >
           <Link
             href="/"
-            className={`transition-colors py-1.5 px-3 rounded-lg text-xs sm:text-sm font-semibold ${
+            className={`transition-colors py-1 px-0.5 text-xs sm:text-sm ${
               isHomeActive
-                ? "bg-surface-container-high text-on-surface font-bold"
-                : "text-on-surface-variant hover:text-on-surface"
+                ? "text-primary font-semibold relative after:absolute after:bottom-[-4px] after:inset-x-0 after:h-[2px] after:bg-[#1F5E4B]"
+                : "text-on-surface-variant hover:text-on-surface font-medium"
             }`}
           >
             الرئيسية
@@ -56,10 +56,10 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           {/* Dedicated Products Tab */}
           <Link
             href="/products"
-            className={`transition-colors py-1.5 px-3 rounded-lg text-xs sm:text-sm font-semibold ${
+            className={`transition-colors py-1 px-0.5 text-xs sm:text-sm ${
               isProductsActive
-                ? "bg-surface-container-high text-on-surface font-bold"
-                : "text-on-surface-variant hover:text-on-surface"
+                ? "text-primary font-semibold relative after:absolute after:bottom-[-4px] after:inset-x-0 after:h-[2px] after:bg-[#1F5E4B]"
+                : "text-on-surface-variant hover:text-on-surface font-medium"
             }`}
           >
             المنتجات
@@ -67,21 +67,21 @@ export function Header({ onOpenConsultation }: HeaderProps) {
 
           <Link
             href="/#portfolio-section"
-            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
+            className="text-xs sm:text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors py-1 px-0.5"
           >
             أعمالنا المنفذة
           </Link>
 
           <Link
             href="/#journey-section"
-            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
+            className="text-xs sm:text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors py-1 px-0.5"
           >
             مصانعنا
           </Link>
 
           <Link
             href="/#branches-section"
-            className="text-xs sm:text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors py-1.5 px-2.5"
+            className="text-xs sm:text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors py-1 px-0.5"
           >
             فروعنا
           </Link>
@@ -92,11 +92,10 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           <button
             type="button"
             onClick={onOpenConsultation}
-            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2 sm:py-2.5 px-3.5 sm:px-4.5 rounded shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer active:translate-y-0.5"
+            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 px-5 rounded-lg shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer active:translate-y-0.5 whitespace-nowrap"
           >
-            <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden xs:inline">احجز معاينة مجانية</span>
-            <span className="xs:hidden">معاينة</span>
+            <Phone className="w-4 h-4 shrink-0" />
+            <span>احجز معاينة مجانية</span>
           </button>
 
           <a

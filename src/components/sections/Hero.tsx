@@ -44,7 +44,7 @@ export function Hero({ onOpenConsultation }: HeroProps) {
             </h1>
 
             {/* Editorial Subtitle */}
-            <p className="text-sm sm:text-base text-on-primary-container max-w-xl leading-relaxed">
+            <p className="text-sm sm:text-base text-gray-300 max-w-xl leading-relaxed">
               من التصميم الهندسي ثلاثي الأبعاد إلى التصنيع بماكينات إيطالية بمصانعنا الخاصة، نبتكر مساحات تجمع بين الرقي والعملية بأعلى معايير الجودة العالمية.
             </p>
 
@@ -69,27 +69,27 @@ export function Hero({ onOpenConsultation }: HeroProps) {
 
             {/* Quick Stat Pills */}
             <div className="pt-4 grid grid-cols-3 gap-3 max-w-md">
-              <div className="p-2.5 sm:p-3 rounded-lg bg-surface-container-high/10 backdrop-blur-sm shadow-sm text-center border border-white/5">
-                <p className="text-lg sm:text-xl font-bold text-secondary-fixed font-readex">
+              <div className="bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center">
+                <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
                   +3,500
                 </p>
-                <p className="text-[11px] sm:text-xs text-on-primary-container mt-0.5">
+                <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
                   مطبخ منفّذ
                 </p>
               </div>
-              <div className="p-2.5 sm:p-3 rounded-lg bg-surface-container-high/10 backdrop-blur-sm shadow-sm text-center border border-white/5">
-                <p className="text-lg sm:text-xl font-bold text-secondary-fixed font-readex">
+              <div className="bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center">
+                <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
                   3 فروع
                 </p>
-                <p className="text-[11px] sm:text-xs text-on-primary-container mt-0.5">
+                <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
                   بمنطقة الدلتا
                 </p>
               </div>
-              <div className="p-2.5 sm:p-3 rounded-lg bg-surface-container-high/10 backdrop-blur-sm shadow-sm text-center border border-white/5">
-                <p className="text-lg sm:text-xl font-bold text-secondary-fixed font-readex">
+              <div className="bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center">
+                <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
                   100%
                 </p>
-                <p className="text-[11px] sm:text-xs text-on-primary-container mt-0.5">
+                <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
                   خامات أوروبية
                 </p>
               </div>
@@ -101,7 +101,7 @@ export function Hero({ onOpenConsultation }: HeroProps) {
             <div className="relative rounded-xl overflow-hidden shadow-2xl bg-primary-container group border border-white/10">
               <div className="relative w-full h-[340px] sm:h-[390px]">
                 <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZPi3rNDLqy4PubhaFsY0GXjPOjvVzOgqKuRgPTQWqadFBkULDj0RBFBqXIDIgUbF8D98lS88Acqk_0UjzJMJ89X107_xdCZSbQt7Y9xZ-_Z94RmBAMU7JqCwk_iazTG1vytPQbdwDdwHzZJeVgGf5GftCquoevscR6RbVO4eRWZ-twqWF-u4rNjgONOmgQb2MgcEdHwjf6pZPoIu0eFea5Iaz8K_DZuz_Uo03or4"
+                  src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1600&q=85"
                   alt="مطبخ مودرن فخم مدمج مع جزيرة رخامية وأجهزة إيطالية"
                   fill
                   sizes="(max-width: 1024px) 100vw, 40vw"
