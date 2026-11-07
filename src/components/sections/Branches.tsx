@@ -1,174 +1,125 @@
 import React from "react";
-import { Container } from "@/components/common/Container";
-import { SectionHeading } from "@/components/common/SectionHeading";
-import { Button } from "@/components/common/Button";
-import type { Branch } from "@/types/schema";
-import { MapPin, Phone, Clock, Navigation, Building2 } from "lucide-react";
-
-const initialBranches: Branch[] = [
-  {
-    id: "branch-new-cairo",
-    name: "New Cairo Flagship Showroom",
-    nameAr: "المعرض الرئيسي - التجمع الخامس",
-    type: "flagship_showroom",
-    city: "Cairo",
-    cityAr: "القاهرة الجديدة",
-    address: "North 90th Street, Sector 1, New Cairo",
-    addressAr: "شارع التسعين الشمالي، القطاع التجاري الأول، بجوار داون تاون مول",
-    phones: ["+20 10 1234 5671", "+20 2 2811 0000"],
-    workingHours: {
-      days: "Saturday - Thursday",
-      daysAr: "السبت – الخميس",
-      hours: "10:00 AM - 10:00 PM",
-      hoursAr: "10:00 ص – 10:00 م (الجمعة: 2:00 م – 10:00 م)",
-    },
-    googleMapsUrl: "https://maps.google.com",
-    isActive: true,
-    isPrimary: true,
-  },
-  {
-    id: "branch-mohandessin",
-    name: "Mohandessin Design Studio",
-    nameAr: "استوديو التصميم - المهندسين",
-    type: "design_studio",
-    city: "Giza",
-    cityAr: "الجيزة",
-    address: "Lebanon Street, Mohandessin",
-    addressAr: "شارع لبنان الرئيسي، متفرع من ميدان لبنان، المهندسين",
-    phones: ["+20 10 1234 5672", "+20 2 3760 0000"],
-    workingHours: {
-      days: "Saturday - Thursday",
-      daysAr: "السبت – الخميس",
-      hours: "11:00 AM - 09:00 PM",
-      hoursAr: "11:00 ص – 09:00 م",
-    },
-    googleMapsUrl: "https://maps.google.com",
-    isActive: true,
-    isPrimary: false,
-  },
-  {
-    id: "branch-factory",
-    name: "Obour Industrial Manufacturing Complex",
-    nameAr: "المجمع الصناعي ومصنع الأخشاب - العبور",
-    type: "factory_workshop",
-    city: "Qalyubia",
-    cityAr: "مدينة العبور",
-    address: "1st Industrial Zone, Block 13000, Obour City",
-    addressAr: "المنطقة الصناعية الأولى، قطعة 13000، مدينة العبور",
-    phones: ["+20 10 1234 5673", "+20 2 4480 0000"],
-    workingHours: {
-      days: "Saturday - Thursday",
-      daysAr: "السبت – الخميس",
-      hours: "08:00 AM - 05:00 PM",
-      hoursAr: "08:00 ص – 05:00 م (مخصص للزيارات الهندسية المسبقة)",
-    },
-    googleMapsUrl: "https://maps.google.com",
-    isActive: true,
-    isPrimary: false,
-  },
-];
 
 export function Branches() {
+  const branches = [
+    {
+      badge: "صالة عرض رئيسية",
+      icon: "storefront",
+      title: "فرع المنصورة",
+      address: "شارع المشاية السفلية، أمام حديقة شجر الدر",
+      phone: "+20 100 234 5678",
+      phoneTel: "+201002345678",
+      hours: "يومياً من 11 صباحاً حتى 11 مساءً",
+      mapUrl: "https://maps.google.com/?q=Mansoura,Egypt",
+    },
+    {
+      badge: "صالة عرض متكاملة",
+      icon: "storefront",
+      title: "فرع المحلة الكبرى",
+      address: "شارع البحر الرئيسي، برج النخبة",
+      phone: "+20 101 876 5432",
+      phoneTel: "+201018765432",
+      hours: "يومياً من 11 صباحاً حتى 11 مساءً",
+      mapUrl: "https://maps.google.com/?q=El+Mahalla+El+Kubra,Egypt",
+    },
+    {
+      badge: "المصنع الرئيسي والمعرض",
+      icon: "factory",
+      title: "فرع سمنود والمجمع الصناعي",
+      address: "طريق سمنود الرئيسي، بجوار المجمع الصناعي",
+      phone: "+20 102 345 6789",
+      phoneTel: "+201023456789",
+      hours: "يومياً من 10 صباحاً حتى 10 مساءً",
+      mapUrl: "https://maps.google.com/?q=Samanoud,Egypt",
+    },
+  ];
+
   return (
-    <section id="branches" className="py-20 sm:py-28 bg-alabaster-200/50 border-t border-charcoal/10">
-      <Container>
-        <SectionHeading
-          eyebrow="فروعنا وشبكة المعارض"
-          title="نرحب بزيارتكم في صالات العرض واستوديوهات التصميم"
-          subtitle="تفضل بزيارة أقرب معرض لتلمس خامات الأخشاب الطبيعية، وتطلع على تشكيلات الأقمشة والدهانات برفقة مستشارينا المعماريين."
-        />
+    <section className="w-full bg-surface py-20 lg:py-28" id="branches-section">
+      <div className="max-w-[1380px] mx-auto px-6 lg:px-12 space-y-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4">
+          <div>
+            <span className="font-label-md text-label-md text-secondary font-semibold uppercase tracking-wider block mb-2">
+              شبكة معارضنا
+            </span>
+            <h2 className="font-headline-lg text-headline-lg text-primary font-bold font-readex">
+              زوروا معارضنا
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-xl">
+              يسعدنا استقبالكم في أقرب فرع لمعاينة الخامات وتصاميم المطابخ على الطبيعة مع مهندسينا المختصين.
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-2 text-secondary font-label-lg text-label-lg">
+            <span className="material-symbols-outlined text-[20px]">calendar_month</span>
+            <span>مفتوح طوال أيام الأسبوع</span>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {initialBranches.map((branch) => (
+        {/* 3 Branch Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {branches.map((b, idx) => (
             <div
-              key={branch.id}
-              className={`rounded-2xl p-6 sm:p-8 bg-white border transition-all duration-300 flex flex-col justify-between ${
-                branch.isPrimary
-                  ? "border-bronze shadow-lg relative ring-1 ring-bronze/30"
-                  : "border-charcoal/10 hover:border-bronze/40 hover:shadow-md"
-              }`}
+              key={idx}
+              className="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 border border-outline-variant/10"
             >
-              <div>
-                {branch.isPrimary && (
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-bronze/10 text-bronze border border-bronze/20 mb-4">
-                    المقر الرئيسي وصالة العرض المركزية
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="font-label-sm text-label-sm bg-secondary-container/30 text-on-secondary-container px-3 py-1 rounded font-semibold">
+                    {b.badge}
                   </span>
-                )}
-
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 rounded-xl bg-charcoal text-alabaster">
-                    <Building2 className="w-5 h-5 text-bronze" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-charcoal font-readex">
-                      {branch.nameAr}
-                    </h3>
-                    <span className="text-xs text-charcoal/60">{branch.cityAr}</span>
-                  </div>
+                  <span className="material-symbols-outlined text-secondary text-[24px]">
+                    {b.icon}
+                  </span>
                 </div>
-
-                {/* Details list */}
-                <div className="space-y-3.5 text-xs sm:text-sm text-charcoal/80 mt-6 pt-6 border-t border-charcoal/10">
+                <h3 className="font-headline-sm text-headline-sm text-primary font-bold font-readex">
+                  {b.title}
+                </h3>
+                <div className="space-y-2.5 pt-2 font-body-sm text-body-sm text-on-surface-variant">
                   <div className="flex items-start gap-2.5">
-                    <MapPin className="w-4 h-4 text-bronze shrink-0 mt-0.5" />
-                    <span>{branch.addressAr}</span>
+                    <span className="material-symbols-outlined text-secondary text-[18px] mt-0.5 shrink-0">
+                      location_on
+                    </span>
+                    <span>{b.address}</span>
                   </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <Clock className="w-4 h-4 text-bronze shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-semibold block text-charcoal">{branch.workingHours.daysAr}</span>
-                      <span className="text-charcoal/60">{branch.workingHours.hoursAr}</span>
-                    </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">
+                      call
+                    </span>
+                    <span className="font-semibold text-primary" dir="ltr">
+                      {b.phone}
+                    </span>
                   </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <Phone className="w-4 h-4 text-bronze shrink-0 mt-0.5" />
-                    <div className="space-y-0.5" dir="ltr">
-                      {branch.phones.map((phone) => (
-                        <a
-                          key={phone}
-                          href={`tel:${phone.replace(/\s+/g, "")}`}
-                          className="block hover:text-bronze transition-colors"
-                        >
-                          {phone}
-                        </a>
-                      ))}
-                    </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">
+                      schedule
+                    </span>
+                    <span>{b.hours}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="mt-8 pt-5 border-t border-charcoal/10 flex items-center gap-3">
+              <div className="flex items-center gap-3 pt-4">
                 <a
-                  href={`tel:${branch.phones[0].replace(/\s+/g, "")}`}
-                  className="flex-1"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white font-label-md text-label-md py-2.5 px-4 rounded transition-colors duration-200"
+                  href={`tel:${b.phoneTel}`}
                 >
-                  <Button variant="outline" size="sm" className="w-full text-xs">
-                    اتصال بالفرع
-                  </Button>
+                  <span className="material-symbols-outlined text-[18px]">phone</span>
+                  <span>اتصل الآن</span>
                 </a>
                 <a
-                  href={branch.googleMapsUrl ?? "https://maps.google.com"}
-                  target="_blank"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md py-2.5 px-4 rounded transition-colors duration-200"
+                  href={b.mapUrl}
                   rel="noopener noreferrer"
-                  className="flex-1"
+                  target="_blank"
                 >
-                  <Button
-                    variant="emerald"
-                    size="sm"
-                    className="w-full text-xs"
-                    icon={<Navigation className="w-3.5 h-3.5" />}
-                  >
-                    اتجاهات الموقع
-                  </Button>
+                  <span className="material-symbols-outlined text-[18px]">map</span>
+                  <span>الاتجاهات</span>
                 </a>
               </div>
             </div>
           ))}
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

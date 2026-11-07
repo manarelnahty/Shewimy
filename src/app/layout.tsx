@@ -17,20 +17,29 @@ const readexPro = Readex_Pro({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#1E2225",
+  themeColor: "#070b0e",
   width: "device-width",
   initialScale: 1,
 };
 
 export const metadata: Metadata = {
-  title: "الشويحي للأثاث والتصميم الراقي | Shewimy",
+  title: "مطابخ الشويمي | تصاميم معمارية فاخرة ومطابخ خشبية",
   description:
-    "مؤسسة الشويحي للتصميم الداخلي والأثاث الفاخر والأعمال الخشبية المعمارية. أصالة، جودة، وحرفية تدوم عبر الأجيال.",
-  keywords: ["أثاث", "الشويحي", "تصميم داخلي", "خشب طبيعي", "ديكور راقي", "Shewimy"],
-  authors: [{ name: "Shewimy Woodworks & Interiors" }],
+    "مطابخ فاخرة تُصنع بحرفية استثنائية لمنزلك العصري. خبرة ٢٤ عاماً وضمان ١٥ سنة حقيقي مع تصنيع بماكينات إيطالية وخامات أوروبية 100%.",
+  keywords: [
+    "مطابخ الشويمي",
+    "مطابخ مودرن",
+    "دريسينج روم",
+    "خشب طبيعي",
+    "تصميم مطابخ 3D",
+    "المنصورة",
+    "المحلة",
+    "سمنود",
+  ],
+  authors: [{ name: "Al Shewimy Kitchens" }],
   openGraph: {
-    title: "الشويحي للأثاث والتصميم الراقي | Shewimy",
-    description: "تصاميم استثنائية من الخشب الطبيعي وحلول ديكور داخلي فاخرة.",
+    title: "مطابخ الشويمي | Al Shewimy Kitchens",
+    description: "مطابخ فاخرة تُصنع بحرفية استثنائية لمنزلك العصري.",
     locale: "ar_EG",
     type: "website",
   },
@@ -47,7 +56,7 @@ export default function RootLayout({
       dir="rtl"
       className={`${cairo.variable} ${readexPro.variable} scroll-smooth`}
     >
-      <body className="min-h-screen flex flex-col font-cairo bg-alabaster text-charcoal antialiased selection:bg-bronze selection:text-white">
+      <body className="min-h-screen flex flex-col font-cairo bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">
         {children}
       </body>
     </html>

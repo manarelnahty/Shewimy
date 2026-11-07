@@ -1,132 +1,155 @@
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Container } from "@/components/common/Container";
-import { Compass, MapPin, Phone, Mail, Clock, ShieldCheck } from "lucide-react";
 
 export function Footer() {
   const currentYear = 2026;
 
   return (
-    <footer className="bg-charcoal text-alabaster border-t border-charcoal/20 pt-16 pb-10">
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 pb-12 border-b border-alabaster/10">
-          {/* Col 1: Brand Info */}
+    <footer className="w-full bg-primary-container text-inverse-on-surface">
+      <div className="max-w-[1380px] mx-auto px-6 lg:px-12 pt-16 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 pb-14 border-b border-outline-variant/20">
+          {/* Col 1: Brand Info & Logo */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-bronze text-white flex items-center justify-center">
-                <Compass className="w-5 h-5 text-white" />
+              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-surface-container-lowest p-1 shadow-sm">
+                <Image
+                  src="/images/logo.png"
+                  alt="شعار مطابخ الشويمي"
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-contain"
+                />
               </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold font-readex text-alabaster">
-                  الشويحي
-                </span>
-                <span className="text-xs text-bronze font-medium">
-                  للأثاث والأعمال الخشبية المعمارية
-                </span>
-              </div>
+              <span className="font-title text-title text-on-primary font-bold font-readex">
+                مطابخ الشويمي
+              </span>
             </div>
-            <p className="text-sm text-alabaster/70 leading-relaxed">
-              رواد صناعة الأثاث الفاخر والأعمال الخشبية المعمارية في مصر. نجمع بين عراقة الحرفية المصرية ودقة التصميم الحديث لابتكار مساحات تعيش لأجيال.
+            <p className="font-body-sm text-body-sm text-on-primary-container leading-relaxed">
+              تصاميم معمارية فاخرة ومطابخ خشبية مخصصة تجمع بين الحرفية اليدوية الرفيعة وأحدث التقنيات الأوروبية للمنازل الراقية.
             </p>
-            <div className="flex items-center gap-2 text-xs text-bronze pt-2">
-              <ShieldCheck className="w-4 h-4 text-bronze shrink-0" />
-              <span>معتمدون في تنفيذ القصور، الفيلات والمشاريع التجارية</span>
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="#branches-section"
+                aria-label="الموقع الجغرافي"
+                className="w-9 h-9 rounded-full bg-surface-container-high/10 hover:bg-secondary flex items-center justify-center text-inverse-on-surface transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">location_on</span>
+              </a>
+              <a
+                href="mailto:info@shewimy.com"
+                aria-label="البريد الإلكتروني"
+                className="w-9 h-9 rounded-full bg-surface-container-high/10 hover:bg-secondary flex items-center justify-center text-inverse-on-surface transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">mail</span>
+              </a>
+              <a
+                href="tel:+201002345678"
+                aria-label="رقم الهاتف"
+                className="w-9 h-9 rounded-full bg-surface-container-high/10 hover:bg-secondary flex items-center justify-center text-inverse-on-surface transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">phone_in_talk</span>
+              </a>
             </div>
           </div>
 
-          {/* Col 2: Quick Links */}
-          <div>
-            <h3 className="text-base font-semibold text-alabaster font-readex mb-4 border-r-2 border-bronze pr-2">
-              روابط سريعة
+          {/* Col 2: Collections & Designs */}
+          <div className="space-y-4">
+            <h3 className="font-label-lg text-label-lg text-on-primary font-semibold">
+              التشكيلات والتصاميم
             </h3>
-            <ul className="space-y-2.5 text-sm text-alabaster/70">
+            <ul className="space-y-2.5 font-body-sm text-body-sm text-on-primary-container">
               <li>
-                <a href="#hero" className="hover:text-bronze transition-colors">
-                  الرئيسية
+                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                  مطابخ خشب طبيعي مودرن
                 </a>
               </li>
               <li>
-                <a href="#portfolio" className="hover:text-bronze transition-colors">
-                  مجموعات الأثاث والمشاريع
+                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                  مطابخ كلاسيك ونيوكلاسيك
                 </a>
               </li>
               <li>
-                <a href="#branches" className="hover:text-bronze transition-colors">
-                  فروعنا ومعارضنا
+                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                  دريسينج روم ووحدات تخزين فاخرة
                 </a>
               </li>
               <li>
-                <a href="#trust" className="hover:text-bronze transition-colors">
-                  لماذا تختار الشويحي
+                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                  أسطح رخام طبيعي وكوارتز
                 </a>
               </li>
               <li>
-                <Link href="#" className="hover:text-bronze transition-colors">
-                  كتالوج الأعمال الحصرية (PDF)
-                </Link>
+                <a href="#portfolio-section" className="hover:text-secondary-fixed transition-colors block">
+                  إكسسوارات وحلول ذكية
+                </a>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Branches Quick Info */}
-          <div>
-            <h3 className="text-base font-semibold text-alabaster font-readex mb-4 border-r-2 border-bronze pr-2">
-              المعارض والمصنع
+          {/* Col 3: Factories & Showrooms */}
+          <div className="space-y-4">
+            <h3 className="font-label-lg text-label-lg text-on-primary font-semibold">
+              المصانع والفروع
             </h3>
-            <ul className="space-y-3 text-sm text-alabaster/70">
-              <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-bronze shrink-0 mt-1" />
-                <span>المعرض الرئيسي: القاهرة - التجمع الخامس، شارع التسعين الشمالي</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-bronze shrink-0 mt-1" />
-                <span>معرض الجيزة: المهندسين، شارع لبنان</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-bronze shrink-0 mt-1" />
-                <span>المجمع الصناعي: المنطقة الصناعية - مدينة العبور</span>
-              </li>
-            </ul>
+            <div className="space-y-3 font-body-sm text-body-sm text-on-primary-container">
+              <div className="flex items-start gap-2">
+                <span className="material-symbols-outlined text-secondary-fixed text-[18px] mt-1 shrink-0">
+                  factory
+                </span>
+                <span>المجمع الصناعي الرئيسي: طريق سمنود، بجوار المجمع الصناعي، الدلتا</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="material-symbols-outlined text-secondary-fixed text-[18px] mt-1 shrink-0">
+                  storefront
+                </span>
+                <span>صالات العرض: فرع المنصورة (المشاية السفلية)، فرع المحلة الكبرى (شارع البحر)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-secondary-fixed text-[18px] shrink-0">
+                  schedule
+                </span>
+                <span>السبت - الخميس: 10:00 ص - 10:00 م</span>
+              </div>
+            </div>
           </div>
 
-          {/* Col 4: Contact & Support */}
-          <div>
-            <h3 className="text-base font-semibold text-alabaster font-readex mb-4 border-r-2 border-bronze pr-2">
-              خدمة العملاء والاستشارات
+          {/* Col 4: Private Consultation */}
+          <div className="space-y-4">
+            <h3 className="font-label-lg text-label-lg text-on-primary font-semibold">
+              استشارة معمارية خاصة
             </h3>
-            <ul className="space-y-3 text-sm text-alabaster/70">
-              <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-bronze shrink-0" />
-                <span dir="ltr">+20 (2) 2345-6789</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-bronze shrink-0" />
-                <span>info@shewimy.com</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-bronze shrink-0" />
-                <span>يومياً: 10:00 صباحاً – 10:00 مساءً</span>
-              </li>
-            </ul>
+            <p className="font-body-sm text-body-sm text-on-primary-container">
+              تواصل مباشرة مع أحد مهندسينا المعماريين لتحديد موعد زيارة للموقع ومعاينة المساحات بدقة.
+            </p>
+            <a
+              href="https://wa.me/201002345678?text=مرحباً%20أود%20طلب%20كتالوج%20الخامات%20والمشاريع"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-secondary-fixed hover:text-on-primary font-label-md text-label-md transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <span>طلب كتالوج الخامات والمشاريع</span>
+            </a>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-alabaster/50 gap-4">
-          <p>© {currentYear} شركة الشويحي للأثاث والتصميم الداخلي. جميع الحقوق محفوظة.</p>
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-on-primary-container/80">
+          <p>© {currentYear} مطابخ الشويمي. جميع الحقوق محفوظة. تنفيذ وتصميم مخصص بأعلى معايير الجودة.</p>
           <div className="flex items-center gap-6">
-            <Link href="#" className="hover:text-bronze transition-colors">
+            <Link href="#" className="hover:text-inverse-on-surface transition-colors">
               سياسة الخصوصية
             </Link>
-            <Link href="#" className="hover:text-bronze transition-colors">
+            <Link href="#" className="hover:text-inverse-on-surface transition-colors">
               الشروط والأحكام
             </Link>
-            <Link href="#" className="hover:text-bronze transition-colors">
-              شهادات الجودة والضمان
+            <Link href="#" className="hover:text-inverse-on-surface transition-colors">
+              الضمان وخدمات ما بعد البيع
             </Link>
           </div>
         </div>
-      </Container>
+      </div>
     </footer>
   );
 }

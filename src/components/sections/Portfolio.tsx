@@ -1,251 +1,206 @@
 "use client";
 
 import React, { useState } from "react";
-import { Container } from "@/components/common/Container";
-import { SectionHeading } from "@/components/common/SectionHeading";
-import { Button } from "@/components/common/Button";
-import type { Item, ItemCategory } from "@/types/schema";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import Image from "next/image";
 
-// Mock DRD Items adhering strictly to the Item schema
-const initialItems: Item[] = [
-  {
-    id: "item-1",
-    title: "Royal Oak Dining Set",
-    titleAr: "طاولة طعام رويال من خشب البلوط الطبيعي",
-    description: "Solid natural oak table with hand-carved accents and 8 bespoke chairs upholstered in velvet.",
-    descriptionAr: "طاولة طعام فاخرة تسع 10 أفراد من خشب البلوط الأوروبي الصلب مع كراسي مكسوة بالمخمل المقاوم للبقع.",
-    category: "dining_room",
-    woodType: "بلوط أوروبي صلب (Oak)",
-    featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1200&q=80",
-    gallery: [],
-    tags: ["سفرة", "خشب بلوط", "تشطيب يدوي", "مقاوم للحرارة"],
-    status: "available",
-    estimatedDeliveryWeeks: 3,
-    price: {
-      amount: 85000,
-      currency: "EGP",
-      isStartingFrom: true,
-    },
-    createdAt: "2026-01-10T12:00:00.000Z",
-    updatedAt: "2026-01-10T12:00:00.000Z",
-  },
-  {
-    id: "item-2",
-    title: "Walnut & Brass Architectural Wall Cladding",
-    titleAr: "تجليد جداري معماري من خشب الجوز والنحاس",
-    description: "Custom geometric wall cladding with integrated ambient warm LED backlighting.",
-    descriptionAr: "تجليد جدران متكامل بدقة هندسية يدمج ألواح الجوز الطبيعي مع شرائح النحاس المصقول والإضاءة المخفية.",
-    category: "architectural_woodwork",
-    woodType: "جوز تركي وأمريكي (Walnut)",
-    featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    gallery: [],
-    tags: ["تجليد جدران", "إضاءة مخفية", "نحاس طبيعي", "عزل صوتي"],
-    status: "made_to_order",
-    estimatedDeliveryWeeks: 4,
-    price: {
-      amount: 120000,
-      currency: "EGP",
-      isStartingFrom: true,
-    },
-    createdAt: "2026-01-12T12:00:00.000Z",
-    updatedAt: "2026-01-12T12:00:00.000Z",
-  },
-  {
-    id: "item-3",
-    title: "Imperial Master Bedroom Suite",
-    titleAr: "جناح نوم إمبيريال من خشب الزان الروماني",
-    description: "Luxury king bed with extended headboard paneling, nightstands, and customized wardrobe.",
-    descriptionAr: "غرفة نوم ماستر متكاملة تشمل سرير ملكي مع ظهر ممتد من الخشب والقماش، وخزانة ملابس ذكية مدمجة.",
-    category: "bedroom",
-    woodType: "زان أحمر روماني مجفف",
-    featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
-    gallery: [],
-    tags: ["غرفة نوم", "زان روماني", "دولاب ذكي", "تشطيب مط"],
-    status: "made_to_order",
-    estimatedDeliveryWeeks: 5,
-    price: {
-      amount: 145000,
-      currency: "EGP",
-      isStartingFrom: true,
-    },
-    createdAt: "2026-01-15T12:00:00.000Z",
-    updatedAt: "2026-01-15T12:00:00.000Z",
-  },
-  {
-    id: "item-4",
-    title: "Contemporary Minimalist Salon",
-    titleAr: "صالون مودرن معاصر بتفاصيل أرو ماسيف",
-    description: "Sculptural living room seating arrangement prioritizing comfort and timeless aesthetics.",
-    descriptionAr: "طقم صالون بتصميم إيطالي انسيابي مع قواعد خشبية بارزة وإسفنج عالي الكثافة لراحة استثنائية.",
-    category: "living_room",
-    woodType: "أرو أمريكي وقواعد زان",
-    featured: false,
-    imageUrl: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80",
-    gallery: [],
-    tags: ["صالون", "أقمشة مستوردة", "تصميم إيطالي", "ألوان ترابية"],
-    status: "available",
-    estimatedDeliveryWeeks: 2,
-    price: {
-      amount: 95000,
-      currency: "EGP",
-      isStartingFrom: true,
-    },
-    createdAt: "2026-01-18T12:00:00.000Z",
-    updatedAt: "2026-01-18T12:00:00.000Z",
-  },
-];
+interface ProjectItem {
+  id: string;
+  category: "modern" | "dressing" | "furniture";
+  categoryLabel: string;
+  title: string;
+  imageUrl: string;
+  tags: string[];
+  whatsappMessage: string;
+}
 
-const categoryTabs: { label: string; value: ItemCategory | "all" }[] = [
-  { label: "كافة الأعمال", value: "all" },
-  { label: "غرف المعيشة والصالون", value: "living_room" },
-  { label: "غرف الطعام والمآدب", value: "dining_room" },
-  { label: "أجنحة النوم الفاخرة", value: "bedroom" },
-  { label: "الأعمال الخشبية والتجاليد", value: "architectural_woodwork" },
+const projects: ProjectItem[] = [
+  {
+    id: "proj-1",
+    category: "modern",
+    categoryLabel: "مطابخ مودرن",
+    title: "مطبخ مودرن شاتوه - مات رمادي وخشب جوز",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDBAQBoMgePU5EkpY28MeJBMbBHzHwXdqSNsN5essXjxlYVDCyd2BbkCnoHsr-4pWz6HHbJ5_bpbf4Rq6km7CklupE5540gB_t7FiSH7jgphV5hSbglerw8oDdGAEBxHtP8R6Pe9wD4YK31Kr0-IxLVdkbqZJBqARxE6mpvfwL6D-D0tnnZaCvslyiq0oJNtwknKybkF6_lwl0biBCFkkbmXhPvxbDX__JPkFAppS0",
+    tags: ["HPL ألماني", "رخام طبيعي كلكتا", "إضاءة Smart LED"],
+    whatsappMessage: "مرحباً، أود الاستفسار عن تفاصيل وأسعار مطبخ مودرن شاتوه",
+  },
+  {
+    id: "proj-2",
+    category: "modern",
+    categoryLabel: "مطابخ مودرن",
+    title: "مطبخ فيلا المعادي - أسود كربوني وبانوهات خشبية",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDrl2yP2VykpkKgYshjhQR3-WMJ1OxkC7THuF66GdkzQ_WTifViLlIT1bYTXlS0ok5Dgwwo6y_KFYS5HwntgOGpxd_4bwIm--kXwgBS7BwSFmzN6kdbiSKguU0ItSmnOg7i5rUDGLiqOyqH6uAzne6DdVRccaGIVOwzP8C85pEnm8Og31MXnV1ImHOL-ONZkQLg1S5fX75BadtAB16XRABhzPyINbLmiKuDI1fL4rI",
+    tags: ["بولاك ألماني", "كوارتز إسباني", "مفصلات بلوم نمساوي"],
+    whatsappMessage: "مرحباً، أود الاستفسار عن تفاصيل مطبخ فيلا المعادي",
+  },
+  {
+    id: "proj-3",
+    category: "dressing",
+    categoryLabel: "دريسينج روم",
+    title: "دريسينج روم فاخرة - زجاج فاميه وإضاءة داخلية",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBXN8DNG20jjInUk91vYG81tR2cOfrwX5NLF9ZCXxGGbh4NE_CnBHjxZpWkkAQq17HX5IV1fTWM4ynOvSep-YZW_a1fFPTeXjSglO9o63ruFo8rfBzUlrNBrveUfZcCXVbop4slPnEhnEvx0uKKhxgJHqg2hk2vRpAEFSVFCJ_muomayXwIDXpZKzZOIa3RaMOYgEtS9jX7s92FCGkfX-68ULmt7xKliLcfru_mnsg",
+    tags: ["أخشاب طبيعية", "إكسسوارات إيطالية", "أرفف مخفية"],
+    whatsappMessage: "مرحباً، أود الاستفسار عن تفاصيل الدريسينج روم الفاخرة",
+  },
+  {
+    id: "proj-4",
+    category: "furniture",
+    categoryLabel: "أثاث وديكور",
+    title: "تجليد جداري معماري خشب جوز مع وحدة TV مدمجة",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    tags: ["بانوهات خشب جوز", "شرائح ليد مخفية", "عزل صوتي"],
+    whatsappMessage: "مرحباً، أود الاستفسار عن تجليد الجدران المعماري",
+  },
+  {
+    id: "proj-5",
+    category: "modern",
+    categoryLabel: "مطابخ مودرن",
+    title: "مطبخ مينيماليست كلاسيكي - أبيض وأخشاب أرو أوروبي",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
+    tags: ["أرو طبيعي", "مفصلات هيدروليك", "كونترتوب كوارتز"],
+    whatsappMessage: "مرحباً، أود الاستفسار عن المطبخ المودرن الأبيض",
+  },
+  {
+    id: "proj-6",
+    category: "dressing",
+    categoryLabel: "دريسينج روم",
+    title: "خزانة ملابس إيطالية متكاملة بقطاعات ألومنيوم سوداء",
+    imageUrl:
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
+    tags: ["قطاعات ألومنيوم", "أدراج مخملية", "مستشعرات إضاءة"],
+    whatsappMessage: "مرحباً، أود الاستفسار عن وحدات الدريسينج روم الذكية",
+  },
 ];
 
 export function Portfolio() {
-  const [selectedCategory, setSelectedCategory] = useState<ItemCategory | "all">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "modern" | "dressing" | "furniture">("all");
 
-  const filteredItems =
-    selectedCategory === "all"
-      ? initialItems
-      : initialItems.filter((item) => item.category === selectedCategory);
+  const filteredProjects =
+    activeTab === "all"
+      ? projects
+      : projects.filter((p) => p.category === activeTab);
 
   return (
-    <section id="portfolio" className="py-20 sm:py-28 bg-alabaster">
-      <Container>
-        <SectionHeading
-          eyebrow="سابقة الأعمال والمجموعات"
-          title="قطع متميزة تعكس جوهر الفخامة والأصالة"
-          subtitle="تصفح مختارات من أحدث مشاريعنا المنفذة بدقة استثنائية وبأيدي أمهر الحرفيين المصريين وفق المعايير العالمية."
-        />
+    <section className="w-full bg-surface py-20 lg:py-28" id="portfolio-section">
+      <div className="max-w-[1380px] mx-auto px-6 lg:px-12 space-y-12">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4">
+          <div>
+            <span className="font-label-md text-label-md text-secondary font-semibold uppercase tracking-wider block mb-2">
+              أعمالنا الاستثنائية
+            </span>
+            <h2 className="font-headline-lg text-headline-lg text-primary font-bold font-readex">
+              أحدث إبداعاتنا المنفذة
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-xl">
+              استكشف تشكيلات المطابخ والدريسنج روم التي نفذناها بدقة وإتقان في فلل وقصور عملاء الشويمي.
+            </p>
+          </div>
 
-        {/* Category Filter Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-12">
-          {categoryTabs.map((tab) => {
-            const isActive = selectedCategory === tab.value;
-            return (
-              <button
-                key={tab.value}
-                onClick={() => setSelectedCategory(tab.value)}
-                className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-full transition-all duration-200 cursor-pointer ${
-                  isActive
-                    ? "bg-charcoal text-alabaster shadow-md"
-                    : "bg-alabaster-200/60 text-charcoal/70 hover:bg-alabaster-200 hover:text-charcoal"
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+          {/* Filter Tabs */}
+          <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-lg bg-surface-container">
+            <button
+              type="button"
+              onClick={() => setActiveTab("all")}
+              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+                activeTab === "all"
+                  ? "text-white bg-primary shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
+              }`}
+            >
+              الكل
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("modern")}
+              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+                activeTab === "modern"
+                  ? "text-white bg-primary shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
+              }`}
+            >
+              مطابخ مودرن
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("dressing")}
+              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+                activeTab === "dressing"
+                  ? "text-white bg-primary shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
+              }`}
+            >
+              دريسينج روم
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("furniture")}
+              className={`font-label-md text-label-md px-5 py-2.5 rounded font-semibold transition-all cursor-pointer ${
+                activeTab === "furniture"
+                  ? "text-white bg-primary shadow-sm"
+                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
+              }`}
+            >
+              أثاث وديكور
+            </button>
+          </div>
         </div>
 
-        {/* Items Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
-          {filteredItems.map((item) => (
-            <article
-              key={item.id}
-              className="group bg-white rounded-2xl overflow-hidden border border-charcoal/10 hover:border-bronze/40 hover:shadow-xl transition-all duration-300 flex flex-col"
+        {/* 3-Column Portfolio Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProjects.map((project) => (
+            <div
+              key={project.id}
+              className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group border border-outline-variant/20"
             >
-              {/* Image banner with status tag */}
-              <div className="relative aspect-[16/10] overflow-hidden bg-charcoal-50">
-                <div
-                  className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                  style={{ backgroundImage: `url(${item.imageUrl})` }}
-                  role="img"
-                  aria-label={item.titleAr}
+              <div className="relative overflow-hidden aspect-[4/3] bg-surface-container">
+                <Image
+                  src={project.imageUrl}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-
-                {/* Status Badge */}
-                <div className="absolute top-4 right-4 flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-md text-xs font-semibold bg-charcoal/90 text-alabaster backdrop-blur-sm">
-                    {item.woodType}
-                  </span>
-                </div>
-
-                {item.featured && (
-                  <div className="absolute top-4 left-4">
-                    <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-bronze text-white flex items-center gap-1 shadow-sm">
-                      <Sparkles className="w-3 h-3" />
-                      تصميم حصري
-                    </span>
-                  </div>
-                )}
+                <span className="absolute top-4 right-4 bg-primary/80 backdrop-blur-md text-on-primary font-label-sm text-label-sm px-3 py-1 rounded">
+                  {project.categoryLabel}
+                </span>
               </div>
 
-              {/* Card Body */}
-              <div className="p-6 sm:p-8 flex flex-col flex-1 justify-between">
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-charcoal font-readex group-hover:text-bronze transition-colors">
-                    {item.titleAr}
+                  <h3 className="font-headline-sm text-headline-sm text-primary font-bold group-hover:text-secondary transition-colors font-readex">
+                    {project.title}
                   </h3>
-                  <p className="mt-3 text-sm text-charcoal/70 leading-relaxed">
-                    {item.descriptionAr}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {item.tags.map((tag) => (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {project.tags.map((tag, i) => (
                       <span
-                        key={tag}
-                        className="text-xs px-2.5 py-1 rounded bg-alabaster text-charcoal/80 border border-charcoal/10 font-medium"
+                        key={i}
+                        className="font-label-sm text-label-sm bg-surface-container px-2.5 py-1 rounded text-on-surface-variant"
                       >
-                        #{tag}
+                        {tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                {/* Card Footer with Price and CTA */}
-                <div className="mt-6 pt-5 border-t border-charcoal/10 flex items-center justify-between">
-                  <div>
-                    {item.price && (
-                      <div className="text-xs text-charcoal/60">
-                        {item.price.isStartingFrom ? "يبدأ من: " : "السعر: "}
-                        <span className="text-base sm:text-lg font-bold text-charcoal font-readex">
-                          {item.price.amount.toLocaleString("ar-EG")} {item.price.currency}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <a
-                    href="https://wa.me/201000000000"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button variant="emerald" size="sm" icon={<ArrowLeft className="w-4 h-4" />} iconPosition="end">
-                      طلب تسعير
-                    </Button>
-                  </a>
-                </div>
+                <a
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white font-label-md text-label-md py-3 rounded-lg transition-colors duration-200 cursor-pointer"
+                  href={`https://wa.me/201002345678?text=${encodeURIComponent(project.whatsappMessage)}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span className="material-symbols-outlined text-[20px]">chat</span>
+                  <span>استفسر عبر واتساب</span>
+                </a>
               </div>
-            </article>
+            </div>
           ))}
         </div>
-
-        {/* Bottom CTA for custom bespoke projects */}
-        <div className="mt-16 text-center p-8 rounded-2xl bg-gradient-to-r from-charcoal via-charcoal-700 to-charcoal text-alabaster border border-charcoal/20 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="text-right">
-            <h4 className="text-xl font-bold font-readex text-alabaster">
-              هل لديك تصميم معماري أو مخطط خاص وتريد تنفيذه؟
-            </h4>
-            <p className="text-sm text-alabaster/70 mt-1">
-              يقوم مهندسونا المتخصصون بمراجعة المخططات وتقديم جداول كميات وعينات أخشاب مطابقة لمواصفاتك.
-            </p>
-          </div>
-          <a href="https://wa.me/201000000000" target="_blank" rel="noopener noreferrer">
-            <Button variant="bronze" size="md" className="whitespace-nowrap">
-              إرسال المخطط للمراجعة الهندسية
-            </Button>
-          </a>
-        </div>
-      </Container>
+      </div>
     </section>
   );
 }

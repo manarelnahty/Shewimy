@@ -1,134 +1,145 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Container } from "@/components/common/Container";
-import { Button } from "@/components/common/Button";
-import { Phone, Menu, X, Compass, ShieldCheck } from "lucide-react";
 
-export function Header() {
+interface HeaderProps {
+  onOpenConsultation?: () => void;
+}
+
+export function Header({ onOpenConsultation }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navigation = [
-    { name: "الرئيسية", href: "#hero" },
-    { name: "أعمالنا والمجموعات", href: "#portfolio" },
-    { name: "فروعنا والمعارض", href: "#branches" },
-    { name: "عن الشويحي", href: "#trust" },
-  ];
-
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-alabaster/90 border-b border-charcoal/10 transition-colors">
-      {/* Top micro bar for direct contact / emergency line */}
-      <div className="bg-charcoal text-alabaster text-xs py-1.5 px-4">
-        <Container className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-alabaster/80">
-            <span className="flex items-center gap-1.5 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5 text-bronze" />
-              ضمان حقيقي يصل إلى 10 سنوات على الأخشاب الطبيعية
-            </span>
+    <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+      <div className="h-20 max-w-[1380px] mx-auto px-6 lg:px-12 flex items-center justify-between gap-6">
+        {/* Brand Logo & Name */}
+        <Link href="/" className="flex items-center gap-3.5 shrink-0 group">
+          <div className="relative h-10 w-10 sm:h-11 sm:w-11 shrink-0 overflow-hidden rounded-lg">
+            <Image
+              src="/images/logo.png"
+              alt="شعار مطابخ الشويمي | Al Shewimy Kitchens"
+              width={44}
+              height={44}
+              className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
+              priority
+            />
           </div>
-          <div className="flex items-center gap-4 text-xs font-medium">
-            <a
-              href="tel:+201000000000"
-              className="hover:text-bronze transition-colors flex items-center gap-1.5"
-            >
-              <Phone className="w-3 h-3 text-bronze" />
-              <span>الخط الساخن: 19XXX</span>
-            </a>
-          </div>
-        </Container>
-      </div>
-
-      {/* Main navigation bar */}
-      <Container className="flex items-center justify-between h-20">
-        {/* Brand identity */}
-        <Link
-          href="/"
-          className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze rounded-lg"
-          aria-label="الشويحي للأثاث - الصفحة الرئيسية"
-        >
-          <div className="w-11 h-11 rounded-xl bg-charcoal text-bronze flex items-center justify-center font-bold text-xl shadow-md group-hover:bg-charcoal-700 transition-colors">
-            <Compass className="w-6 h-6 text-bronze group-hover:rotate-45 transition-transform duration-300" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl sm:text-2xl font-black tracking-tight text-charcoal font-readex">
-              الشويحي
-            </span>
-            <span className="text-[10px] sm:text-xs text-bronze font-semibold tracking-wider">
-              للأثاث والأعمال الخشبية المعمارية
-            </span>
-          </div>
+          <span className="font-title text-title text-primary tracking-tight font-bold font-readex">
+            مطابخ الشويمي
+          </span>
         </Link>
 
-        {/* Desktop navigation links */}
+        {/* Desktop Navigation */}
         <nav
-          className="hidden md:flex items-center gap-8"
+          className="hidden lg:flex items-center gap-8"
           aria-label="قائمة التصفح الرئيسية"
         >
-          {navigation.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-sm font-semibold text-charcoal/80 hover:text-bronze transition-colors duration-150 relative py-1 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-bronze after:scale-x-0 hover:after:scale-x-100 after:transition-transform"
-            >
-              {item.name}
-            </a>
-          ))}
+          <a
+            href="#"
+            className="transition-colors py-2 px-3 bg-surface-container-high text-on-surface font-bold rounded-lg text-sm"
+          >
+            الرئيسية
+          </a>
+          <a
+            href="#portfolio-section"
+            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+          >
+            مطابخ حديثة
+          </a>
+          <a
+            href="#portfolio-section"
+            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+          >
+            دريسينج روم
+          </a>
+          <a
+            href="#journey-section"
+            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+          >
+            مصانعنا
+          </a>
+          <a
+            href="#branches-section"
+            className="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-2 px-3"
+          >
+            فروعنا
+          </a>
         </nav>
 
-        {/* Action Button & Mobile Toggle */}
-        <div className="flex items-center gap-3">
-          <a
-            href="https://wa.me/201000000000"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex"
-          >
-            <Button variant="emerald" size="sm" icon={<Phone className="w-3.5 h-3.5" />}>
-              طلب استشارة وتصميم
-            </Button>
-          </a>
-
-          {/* Mobile menu trigger */}
+        {/* CTA & Actions */}
+        <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
-            className="md:hidden p-2.5 rounded-lg text-charcoal hover:bg-charcoal/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-bronze"
+            onClick={onOpenConsultation}
+            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white font-label-lg text-label-lg py-2.5 px-4 sm:px-5 rounded shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer active:translate-y-0.5"
+          >
+            <span className="material-symbols-outlined text-[20px]">call</span>
+            <span className="hidden xs:inline">احجز معاينة مجانية</span>
+            <span className="xs:hidden">معاينة</span>
+          </button>
+
+          <a
+            href="tel:+201002345678"
+            aria-label="اتصال مباشر"
+            className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"
+          >
+            <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </a>
+
+          {/* Mobile hamburger menu toggle */}
+          <button
+            type="button"
+            className="lg:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors cursor-pointer"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <span className="material-symbols-outlined text-[24px]">
+              {mobileMenuOpen ? "close" : "menu"}
+            </span>
           </button>
         </div>
-      </Container>
+      </div>
 
-      {/* Mobile drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-charcoal/10 bg-alabaster px-4 pt-3 pb-6 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-          <nav className="flex flex-col space-y-2">
-            {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2.5 text-base font-semibold text-charcoal hover:bg-charcoal/5 rounded-lg transition-colors"
-              >
-                {item.name}
-              </a>
-            ))}
-          </nav>
-          <div className="pt-2">
-            <a
-              href="https://wa.me/201000000000"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full"
-            >
-              <Button variant="emerald" size="md" className="w-full">
-                طلب استشارة وتصميم
-              </Button>
-            </a>
-          </div>
+        <div className="lg:hidden bg-surface-container-lowest border-t border-surface-container px-6 py-4 space-y-2 shadow-lg animate-in slide-in-from-top-2 duration-200">
+          <a
+            href="#"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2.5 px-3 rounded-lg bg-surface-container-high text-primary font-bold text-sm"
+          >
+            الرئيسية
+          </a>
+          <a
+            href="#portfolio-section"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+          >
+            مطابخ حديثة
+          </a>
+          <a
+            href="#portfolio-section"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+          >
+            دريسينج روم
+          </a>
+          <a
+            href="#journey-section"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+          >
+            مصانعنا
+          </a>
+          <a
+            href="#branches-section"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2.5 px-3 rounded-lg text-on-surface-variant hover:bg-surface-container text-sm"
+          >
+            فروعنا
+          </a>
         </div>
       )}
     </header>

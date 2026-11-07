@@ -1,60 +1,53 @@
 import React from "react";
-import { Container } from "@/components/common/Container";
-import { Trophy, Clock, ShieldCheck, Factory } from "lucide-react";
 
 export function TrustBar() {
-  const stats = [
+  const cards = [
     {
-      icon: <Clock className="w-6 h-6 text-bronze" />,
-      value: "+30",
-      label: "عاماً من الريادة",
-      description: "خبرة متوارثة في صياغة الأخشاب الراقية",
+      icon: "verified_user",
+      title: "ضمان 15 سنة",
+      desc: "ضمان حقيقي شامل الخامات والإكسسوارات والمفصلات دون أي شروط خفية.",
     },
     {
-      icon: <Trophy className="w-6 h-6 text-bronze" />,
-      value: "+1,500",
-      label: "مشروع منجز",
-      description: "فيلات، قصور ومقرات شركات كبرى",
+      icon: "precision_manufacturing",
+      title: "مصانعنا الخاصة - أول يد",
+      desc: "إنتاج مباشر بدون وسطاء بأفضل سعر تصنيع وجودة تفصيلية مضمونة ومطابقة للمواصفات.",
     },
     {
-      icon: <ShieldCheck className="w-6 h-6 text-bronze" />,
-      value: "10 سنوات",
-      label: "ضمان حقيقي",
-      description: "على جودة وثبات الهياكل الخشبية",
+      icon: "water_drop",
+      title: "ماكينات إيطالي ولزق ألماني",
+      desc: "تقنيات PUR الألمانية المقاومة للمياه والحرارة بالكامل لحماية حواف الخشب لسنوات.",
     },
     {
-      icon: <Factory className="w-6 h-6 text-bronze" />,
-      value: "10,000 م²",
-      label: "مجمع التصنيع",
-      description: "أحدث خطوط الإنتاج والدهانات المعتمدة",
+      icon: "view_in_ar",
+      title: "تصميم هندسي 3D",
+      desc: "معاينة واقعية لمطبخك وتوزيع مثلث الحركة الذكي قبل بدء خط التصنيع الفعلي.",
     },
   ];
 
   return (
-    <section id="trust" className="py-14 bg-charcoal text-alabaster border-y border-charcoal/20">
-      <Container>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
-          {stats.map((stat, idx) => (
+    <section className="w-full bg-surface-container-low py-12">
+      <div className="max-w-[1380px] mx-auto px-6 lg:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {cards.map((card, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-white/5 transition-colors duration-200"
+              className="bg-surface-container-lowest p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col justify-between"
             >
-              <div className="p-3 rounded-xl bg-charcoal-700/80 mb-3 border border-alabaster/10">
-                {stat.icon}
+              <div className="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-secondary mb-4">
+                <span className="material-symbols-outlined text-[26px]">{card.icon}</span>
               </div>
-              <span className="text-3xl sm:text-4xl font-extrabold text-alabaster font-readex tracking-tight">
-                {stat.value}
-              </span>
-              <span className="text-sm sm:text-base font-semibold text-bronze mt-1">
-                {stat.label}
-              </span>
-              <p className="text-xs text-alabaster/60 mt-1 max-w-[180px]">
-                {stat.description}
-              </p>
+              <div>
+                <h3 className="font-headline-sm text-headline-sm text-primary mb-2 font-bold font-readex">
+                  {card.title}
+                </h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  {card.desc}
+                </p>
+              </div>
             </div>
           ))}
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
