@@ -32,8 +32,8 @@ export function ConsultationDrawer({
     };
 
     const branchNameMap: Record<string, string> = {
-      mansoura: "فرع المنصورة (📞 01005557109)",
-      samanoud_mahalla: "فرع سمنود والمحلة (📞 01287153339)",
+      mansoura: "فرع المنصورة (01005557109)",
+      samanoud_mahalla: "فرع سمنود والمحلة (01287153339)",
     };
 
     const targetNumber = branchPhoneMap[formData.branch] ?? "201005557109";
@@ -209,8 +209,8 @@ export function ConsultationDrawer({
             <div className="p-3 rounded-xl bg-surface-container-low text-[11px] sm:text-xs text-charcoal/75 space-y-1 border border-outline-variant/10">
               <span className="font-bold text-primary block">أرقام التواصل المباشرة للفروع:</span>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span>📍 المنصورة: 01005557109 / 01012623138</span>
-                <span>📍 سمنود والمحلة: 01287153339 / 01098199288</span>
+                <span>فرع المنصورة: 01005557109 / 01012623138</span>
+                <span>فرع سمنود والمحلة: 01287153339 / 01098199288</span>
               </div>
             </div>
 

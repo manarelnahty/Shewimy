@@ -256,9 +256,9 @@ export default function ProductsPage() {
                   onChange={(e) => setSelectedBranch(e.target.value as BranchFilter)}
                   className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-8 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-semibold"
                 >
-                  <option value="all">📍 تواجد المنتج: كافة الفروع</option>
-                  <option value="mansoura">📍 فرع المنصورة</option>
-                  <option value="samanoud_mahalla">📍 فرع سمنود والمحلة</option>
+                  <option value="all">تواجد المنتج: كافة الفروع</option>
+                  <option value="mansoura">فرع المنصورة</option>
+                  <option value="samanoud_mahalla">فرع سمنود والمحلة</option>
                 </select>
                 <MapPin className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-[#1F5E4B] pointer-events-none" />
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
