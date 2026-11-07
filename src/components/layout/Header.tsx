@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, User, Menu, X, Sparkles } from "lucide-react";
+import { Phone, User, Menu, X } from "lucide-react";
 
 interface HeaderProps {
   onOpenConsultation?: () => void;
@@ -56,17 +56,13 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           {/* Dedicated Products Tab */}
           <Link
             href="/products"
-            className={`transition-all py-1.5 px-3.5 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-1.5 ${
+            className={`transition-colors py-1.5 px-3 rounded-lg text-xs sm:text-sm font-semibold ${
               isProductsActive
-                ? "bg-primary text-on-primary shadow-sm"
-                : "text-primary hover:bg-surface-container-high hover:text-secondary"
+                ? "bg-surface-container-high text-on-surface font-bold"
+                : "text-on-surface-variant hover:text-on-surface"
             }`}
           >
-            <Sparkles className={`w-3.5 h-3.5 ${isProductsActive ? "text-secondary-fixed" : "text-secondary"}`} />
-            <span>المنتجات</span>
-            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-secondary/15 text-secondary font-bold">
-              الكتالوج
-            </span>
+            المنتجات
           </Link>
 
           <Link
@@ -140,16 +136,13 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           <Link
             href="/products"
             onClick={() => setMobileMenuOpen(false)}
-            className={`block py-2 px-3 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between ${
+            className={`block py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold ${
               isProductsActive
-                ? "bg-primary text-on-primary font-bold"
-                : "text-primary hover:bg-surface-container"
+                ? "bg-surface-container-high text-primary font-bold"
+                : "text-on-surface-variant hover:bg-surface-container"
             }`}
           >
-            <span>كتالوج المنتجات والأسعار</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary/20 text-secondary">
-              جديد
-            </span>
+            المنتجات
           </Link>
           <Link
             href="/#portfolio-section"
