@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { productsData } from "@/data/products";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
+import { ProductDetailSkeleton } from "@/components/products/ProductDetailSkeleton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ProductPage({ params }: PageProps) {
+async function ProductDetailContent({ params }: PageProps) {
   const { id } = await params;
   const product = productsData.find(
     (p) => p.id === id || p.code.toLowerCase() === id.toLowerCase()
@@ -49,15 +50,23 @@ export default async function ProductPage({ params }: PageProps) {
   );
 
   return (
+    <ProductDetailClient
+      product={product}
+      relatedProducts={relatedProducts}
+    />
+  );
+}
+
+export default function ProductPage({ params }: PageProps) {
+  return (
     <div className="flex flex-col min-h-screen bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">
       <Header />
 
       <main className="flex-1 w-full pt-22 sm:pt-26 lg:pt-28 pb-16 lg:pb-24">
         <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
-          <ProductDetailClient
-            product={product}
-            relatedProducts={relatedProducts}
-          />
+          <Suspense fallback={<ProductDetailSkeleton />}>
+            <ProductDetailContent params={params} />
+          </Suspense>
         </div>
       </main>
 
