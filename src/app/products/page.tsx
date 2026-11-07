@@ -11,12 +11,41 @@ import { productsData, Product, BranchKey } from "@/data/products";
 import {
   Search,
   ChevronDown,
-  RotateCcw,
-  Sparkles,
-  MessageSquare,
   MapPin,
   ArrowLeft,
+  Sparkles,
 } from "lucide-react";
+
+function WhatsAppIcon({ className = "w-4 h-4 shrink-0" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662a11.835 11.835 0 005.712 1.465h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 00-3.483-8.413z" />
+    </svg>
+  );
+}
+
+function ReloadIcon({ className = "w-3.5 h-3.5 shrink-0" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+    </svg>
+  );
+}
 
 type CategoryFilter = "all" | "kitchens" | "dressing" | "furniture" | "cladding";
 type StyleFilter = "all" | "modern" | "classic" | "neoclassic" | "ultramodern";
@@ -142,29 +171,29 @@ export default function ProductsPage() {
               </div>
 
               {/* Quick Highlights Bar */}
-              <div className="grid grid-cols-3 gap-3 p-3 bg-white rounded-xl shadow-sm shrink-0 border border-charcoal/10">
-                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low">
+              <div className="grid grid-cols-3 gap-3 p-3 bg-white rounded-xl shadow-sm shrink-0 border border-charcoal/10" dir="rtl">
+                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low" dir="rtl">
                   <span className="text-lg sm:text-xl font-bold text-primary font-readex">
                     {productsData.length}
                   </span>
-                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-medium">
+                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-semibold font-cairo">
                     موديل معروض
                   </span>
                 </div>
-                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low">
+                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low" dir="rtl">
                   <span className="text-lg sm:text-xl font-bold text-[#1F5E4B] font-readex">
                     100%
                   </span>
-                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-medium">
-                    أخشاب أوروبية
+                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-semibold font-cairo">
+                    خامات أوروبية
                   </span>
                 </div>
-                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low">
+                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low" dir="rtl">
                   <span className="text-lg sm:text-xl font-bold text-secondary font-readex">
                     15 سنة
                   </span>
-                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-medium">
-                    ضمان معتمد
+                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-semibold font-cairo">
+                    ضمان حقيقي
                   </span>
                 </div>
               </div>
@@ -173,8 +202,8 @@ export default function ProductsPage() {
         </section>
 
         {/* STICKY FILTER & SEARCH BAR */}
-        <section className="sticky top-16 sm:top-18 z-30 w-full bg-white shadow-sm border-b border-charcoal/10">
-          <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 py-3.5 space-y-3">
+        <section className="sticky top-16 sm:top-18 lg:top-20 z-40 w-full bg-[#fbf9f5] border-b border-gray-200/70 py-4 shadow-sm">
+          <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 space-y-3">
             {/* Category Tabs (Pills with exact Stitch AI style) */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
               <button
@@ -238,13 +267,13 @@ export default function ProductsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-2.5">
               {/* Search Input */}
               <div className="lg:col-span-3 relative">
-                <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
+                <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="ابحث بالاسم أو الكود..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-surface-container-low text-charcoal placeholder:text-charcoal/40 text-xs sm:text-sm pr-9 pl-3.5 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white transition-all"
+                  className="w-full bg-white text-gray-700 placeholder:text-gray-400 text-sm pr-9 pl-3.5 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] transition-all"
                 />
               </div>
 
@@ -253,14 +282,14 @@ export default function ProductsPage() {
                 <select
                   value={selectedBranch}
                   onChange={(e) => setSelectedBranch(e.target.value as BranchFilter)}
-                  className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-9 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-semibold"
+                  className="w-full appearance-none bg-white border border-gray-300 rounded-lg pr-9 pl-8 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] cursor-pointer transition-all font-semibold"
                 >
                   <option value="all">كافة الفروع</option>
                   <option value="mansoura">فرع المنصورة</option>
                   <option value="samanoud_mahalla">فرع سمنود والمحلة</option>
                 </select>
                 <MapPin className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-[#1F5E4B] pointer-events-none" />
-                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
 
               {/* Style Dropdown */}
@@ -268,7 +297,7 @@ export default function ProductsPage() {
                 <select
                   value={selectedStyle}
                   onChange={(e) => setSelectedStyle(e.target.value as StyleFilter)}
-                  className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-3.5 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-medium"
+                  className="w-full appearance-none bg-white border border-gray-300 rounded-lg px-3 pl-8 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] cursor-pointer transition-all font-medium"
                 >
                   <option value="all">كافة الأنماط</option>
                   <option value="modern">مودرن حديث</option>
@@ -276,7 +305,7 @@ export default function ProductsPage() {
                   <option value="neoclassic">نيو كلاسيك</option>
                   <option value="ultramodern">ألترا مودرن</option>
                 </select>
-                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
 
               {/* Material Dropdown */}
@@ -284,7 +313,7 @@ export default function ProductsPage() {
                 <select
                   value={selectedMaterial}
                   onChange={(e) => setSelectedMaterial(e.target.value as MaterialFilter)}
-                  className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-3.5 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-medium"
+                  className="w-full appearance-none bg-white border border-gray-300 rounded-lg px-3 pl-8 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] cursor-pointer transition-all font-medium"
                 >
                   <option value="all">كافة الخامات</option>
                   <option value="polylac">بولاك تركي</option>
@@ -293,7 +322,7 @@ export default function ProductsPage() {
                   <option value="massive_oak">أرو ماسيف</option>
                   <option value="fume_glass">زجاج فاميه</option>
                 </select>
-                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
 
               {/* Sort Select */}
@@ -301,21 +330,21 @@ export default function ProductsPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-3.5 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-medium"
+                  className="w-full appearance-none bg-white border border-gray-300 rounded-lg px-3 pl-8 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] cursor-pointer transition-all font-medium"
                 >
                   <option value="default">الترتيب الافتراضي</option>
                   <option value="price_asc">السعر: من الأقل للأعلى</option>
                   <option value="price_desc">السعر: من الأعلى للأقل</option>
                 </select>
-                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
             {/* Filter Status & Reset Sub-bar (Stitch AI Layout) */}
-            <div className="flex items-center justify-between pt-2 border-t border-charcoal/5 text-xs">
+            <div className="flex items-center justify-between pt-2 border-t border-gray-200/50 text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block animate-pulse" />
-                <span className="text-charcoal/80 font-medium">
+                <span className="text-gray-700 font-medium">
                   عرض <strong>{filteredProducts.length}</strong> من إجمالي <strong>{productsData.length}</strong> تصميماً جاهزاً للمعاينة
                 </span>
               </div>
@@ -323,9 +352,9 @@ export default function ProductsPage() {
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="inline-flex items-center gap-1.5 text-charcoal/60 hover:text-primary transition-colors text-xs font-semibold cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors text-xs font-semibold cursor-pointer"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <ReloadIcon className="w-3.5 h-3.5" />
                 <span>إعادة ضبط الفلاتر</span>
               </button>
             </div>
@@ -350,9 +379,9 @@ export default function ProductsPage() {
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="inline-flex items-center gap-2 bg-primary text-on-primary text-xs sm:text-sm font-semibold py-2.5 px-6 rounded-xl hover:bg-primary-container transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 bg-[#1F5E4B] text-white text-xs sm:text-sm font-semibold py-2.5 px-6 rounded-xl hover:bg-[#164638] transition-colors cursor-pointer shadow-sm"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <ReloadIcon className="w-4 h-4" />
                   <span>عرض كافة المنتجات</span>
                 </button>
               </div>
@@ -372,13 +401,13 @@ export default function ProductsPage() {
                     >
                       <div>
                         {/* Image Container with Badges */}
-                        <Link href={`/products/${product.id}`} className="block relative aspect-[4/3] w-full overflow-hidden bg-[#ECE8E1]">
+                        <Link href={`/products/${product.id}`} className="block relative w-full h-56 overflow-hidden rounded-t-xl bg-[#ECE8E1]">
                           <Image
                             src={product.imageUrl}
                             alt={product.name}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="w-full h-56 object-cover rounded-t-xl transition-transform duration-700 group-hover:scale-105"
                           />
                           {/* Top Badges */}
                           <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
@@ -455,7 +484,7 @@ export default function ProductsPage() {
                             onClick={() => setBranchModalProduct(product)}
                             className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 cursor-pointer border border-[#1F5E4B]/15"
                           >
-                            <MessageSquare className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
+                            <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
                             <span>استفسر عن الموديل بالواتساب</span>
                           </button>
                         ) : isMansouraOnly ? (
@@ -467,7 +496,7 @@ export default function ProductsPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <MessageSquare className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
+                            <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
                             <span>استفسر عن الموديل بالواتساب</span>
                           </a>
                         ) : (
@@ -479,7 +508,7 @@ export default function ProductsPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <MessageSquare className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
+                            <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
                             <span>استفسر عن الموديل بالواتساب</span>
                           </a>
                         )}
