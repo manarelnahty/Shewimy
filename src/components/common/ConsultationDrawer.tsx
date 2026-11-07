@@ -32,8 +32,8 @@ export function ConsultationDrawer({
     };
 
     const branchNameMap: Record<string, string> = {
-      mansoura: "فرع المنصورة (01005557109)",
-      samanoud_mahalla: "فرع سمنود والمحلة (01287153339)",
+      mansoura: "فرع المنصورة",
+      samanoud_mahalla: "فرع سمنود والمحلة",
     };
 
     const targetNumber = branchPhoneMap[formData.branch] ?? "201005557109";
@@ -160,10 +160,10 @@ export function ConsultationDrawer({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Preferred Branch with Phone Numbers */}
+              {/* Preferred Branch */}
               <div>
                 <label className="block text-xs font-bold text-charcoal mb-1.5">
-                  الفرع الأقرب لك <span className="text-secondary font-normal">(اختر لتوجيه الرسالة)</span>
+                  الفرع الأقرب لك
                 </label>
                 <div className="relative">
                   <select
@@ -176,8 +176,8 @@ export function ConsultationDrawer({
                     }
                     className="w-full pr-3.5 pl-9 py-2.5 rounded-xl bg-white text-charcoal font-medium text-xs sm:text-sm border border-charcoal/20 hover:border-charcoal/40 focus:border-emerald-cta focus:outline-none focus:ring-4 focus:ring-emerald-cta/10 transition-all appearance-none cursor-pointer shadow-sm"
                   >
-                    <option value="mansoura">فرع المنصورة (01005557109)</option>
-                    <option value="samanoud_mahalla">فرع سمنود والمحلة (01287153339)</option>
+                    <option value="mansoura">فرع المنصورة</option>
+                    <option value="samanoud_mahalla">فرع سمنود والمحلة</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
@@ -202,15 +202,6 @@ export function ConsultationDrawer({
                   </select>
                   <ChevronDown className="w-4 h-4 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
-              </div>
-            </div>
-
-            {/* Branch Numbers Note */}
-            <div className="p-3 rounded-xl bg-surface-container-low text-[11px] sm:text-xs text-charcoal/75 space-y-1 border border-outline-variant/10">
-              <span className="font-bold text-primary block">أرقام التواصل المباشرة للفروع:</span>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span>فرع المنصورة: 01005557109 / 01012623138</span>
-                <span>فرع سمنود والمحلة: 01287153339 / 01098199288</span>
               </div>
             </div>
 

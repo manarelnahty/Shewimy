@@ -109,7 +109,7 @@ export function BranchSelectionModal({
                 </span>
               </div>
               <p className="text-xs text-charcoal/60 pr-6">
-                شارع قناة السويس / المشاية • أرقام الهاتف: 01005557109 / 01012623138
+                شارع المشاية السفلية، أمام حديقة شجر الدر
               </p>
             </div>
 
@@ -136,7 +136,7 @@ export function BranchSelectionModal({
                 </span>
               </div>
               <p className="text-xs text-charcoal/60 pr-6">
-                طريق سمنود - المحلة • أرقام الهاتف: 01287153339 / 01098199288
+                طريق سمنود الرئيسي، بجوار المجمع الصناعي
               </p>
             </div>
 
