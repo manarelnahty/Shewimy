@@ -13,10 +13,9 @@ import {
   ChevronDown,
   RotateCcw,
   Sparkles,
-  MessageCircle,
-  Tag,
-  SlidersHorizontal,
+  MessageSquare,
   MapPin,
+  ArrowLeft,
 } from "lucide-react";
 
 type CategoryFilter = "all" | "kitchens" | "dressing" | "furniture" | "cladding";
@@ -176,62 +175,62 @@ export default function ProductsPage() {
         {/* STICKY FILTER & SEARCH BAR */}
         <section className="sticky top-16 sm:top-18 z-30 w-full bg-white shadow-sm border-b border-charcoal/10">
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 py-3.5 space-y-3">
-            {/* Category Tabs (Scrollable) */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            {/* Category Tabs (Pills with exact Stitch AI style) */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
               <button
                 type="button"
                 onClick={() => setSelectedCategory("all")}
-                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   selectedCategory === "all"
-                    ? "bg-primary text-on-primary shadow-sm"
-                    : "bg-surface-container-low hover:bg-surface-container text-on-surface"
+                    ? "bg-[#1E2225] text-white shadow-sm"
+                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                الكل ({productsData.length})
+                الكل (+48)
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedCategory("kitchens")}
-                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   selectedCategory === "kitchens"
-                    ? "bg-primary text-on-primary shadow-sm"
-                    : "bg-surface-container-low hover:bg-surface-container text-on-surface"
+                    ? "bg-[#1E2225] text-white shadow-sm"
+                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                مطابخ حديثة وكلاسيك
+                مطابخ حديثة (28)
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedCategory("dressing")}
-                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   selectedCategory === "dressing"
-                    ? "bg-primary text-on-primary shadow-sm"
-                    : "bg-surface-container-low hover:bg-surface-container text-on-surface"
+                    ? "bg-[#1E2225] text-white shadow-sm"
+                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                دريسينج روم ووحدات تخزين
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedCategory("cladding")}
-                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "cladding"
-                    ? "bg-primary text-on-primary shadow-sm"
-                    : "bg-surface-container-low hover:bg-surface-container text-on-surface"
-                }`}
-              >
-                تجاليد خشبية ووحدات TV
+                دريسينج روم ووحدات تخزين (9)
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedCategory("furniture")}
-                className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   selectedCategory === "furniture"
-                    ? "bg-primary text-on-primary shadow-sm"
-                    : "bg-surface-container-low hover:bg-surface-container text-on-surface"
+                    ? "bg-[#1E2225] text-white shadow-sm"
+                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                أثاث منزلي مخصص
+                أثاث منزلي مخصص (5)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory("cladding")}
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  selectedCategory === "cladding"
+                    ? "bg-[#1E2225] text-white shadow-sm"
+                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
+                }`}
+              >
+                ديكورات وتجاليد خشبية (4)
               </button>
             </div>
 
@@ -312,72 +311,23 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Quick Price Pills & Reset Bar */}
-            <div className="flex flex-wrap items-center justify-between pt-1 gap-2 text-xs">
+            {/* Filter Status & Reset Sub-bar (Stitch AI Layout) */}
+            <div className="flex items-center justify-between pt-2 border-t border-charcoal/5 text-xs">
               <div className="flex items-center gap-2">
-                <span className="text-on-surface-variant font-semibold flex items-center gap-1">
-                  <SlidersHorizontal className="w-3.5 h-3.5" />
-                  <span>تصفية بالسعر:</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block animate-pulse" />
+                <span className="text-charcoal/80 font-medium">
+                  عرض <strong>{filteredProducts.length}</strong> من إجمالي <strong>{productsData.length}</strong> تصميماً جاهزاً للمعاينة
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setPriceRange("all")}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
-                    priceRange === "all"
-                      ? "bg-secondary text-white font-bold"
-                      : "bg-surface-container-low text-charcoal hover:bg-surface-container"
-                  }`}
-                >
-                  الكل
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPriceRange("under_80k")}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
-                    priceRange === "under_80k"
-                      ? "bg-secondary text-white font-bold"
-                      : "bg-surface-container-low text-charcoal hover:bg-surface-container"
-                  }`}
-                >
-                  أقل من 80 ألف
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPriceRange("80k_to_120k")}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
-                    priceRange === "80k_to_120k"
-                      ? "bg-secondary text-white font-bold"
-                      : "bg-surface-container-low text-charcoal hover:bg-surface-container"
-                  }`}
-                >
-                  80 ألف - 120 ألف
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPriceRange("above_120k")}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
-                    priceRange === "above_120k"
-                      ? "bg-secondary text-white font-bold"
-                      : "bg-surface-container-low text-charcoal hover:bg-surface-container"
-                  }`}
-                >
-                  أكثر من 120 ألف
-                </button>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="text-charcoal/70">
-                  عرض <strong>{filteredProducts.length}</strong> منتج
-                </span>
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="inline-flex items-center gap-1 text-secondary hover:text-primary transition-colors text-xs font-semibold cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>إعادة ضبط الفلاتر</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="inline-flex items-center gap-1.5 text-charcoal/60 hover:text-primary transition-colors text-xs font-semibold cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>إعادة ضبط الفلاتر</span>
+              </button>
             </div>
           </div>
         </section>
@@ -418,11 +368,11 @@ export default function ProductsPage() {
                   return (
                     <article
                       key={product.id}
-                      className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-charcoal/10"
+                      className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-charcoal/10"
                     >
                       <div>
-                        {/* Image Container with Badges */}
-                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-container">
+                        {/* Image Container with Exact Stitch AI Badges */}
+                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#ECE8E1]">
                           <Image
                             src={product.imageUrl}
                             alt={product.name}
@@ -430,63 +380,67 @@ export default function ProductsPage() {
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                           />
-                          <div className="absolute top-3 right-3 flex flex-wrap gap-1.5 z-10">
-                            <span className="px-2.5 py-1 rounded bg-primary/85 backdrop-blur-md text-on-primary text-[11px] font-semibold">
-                              {product.categoryLabel}
+                          {/* Top Badges */}
+                          <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                            <span className="px-2.5 py-1 rounded-md bg-[#1E2225]/90 backdrop-blur-md text-white text-[11px] font-semibold shadow-2xs">
+                              {product.badgePrimary}
                             </span>
-                            <span className="px-2.5 py-1 rounded bg-secondary-fixed/90 backdrop-blur-md text-on-secondary-fixed text-[11px] font-bold">
-                              ضمان {product.warrantyYears} سنة
+                            <span className="px-2.5 py-1 rounded-md bg-[#F5E6D3]/95 backdrop-blur-md text-[#8C5D33] text-[11px] font-bold shadow-2xs">
+                              {product.badgeSecondary}
                             </span>
                           </div>
-                          <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded bg-white/90 backdrop-blur-md text-primary text-[11px] font-bold font-mono border border-charcoal/10">
-                            كود: {product.code}
+
+                          {/* Bottom Left Code Badge */}
+                          <div className="absolute bottom-3 left-3 px-2.5 py-0.5 rounded bg-white/95 backdrop-blur-md text-primary text-[11px] font-bold font-mono border border-charcoal/10 shadow-2xs">
+                            كود : {product.code}
                           </div>
                         </div>
 
-                        {/* Content Area */}
-                        <div className="p-5 sm:p-6 space-y-3">
-                          {/* Branch Availability Tag */}
-                          <div className="flex items-center gap-1.5">
+                        {/* Content Area - Center Aligned exactly like Stitch AI */}
+                        <div className="p-5 sm:p-6 text-center space-y-2.5">
+                          {/* Subheading Tag */}
+                          <span className="text-xs text-secondary font-bold tracking-wide block">
+                            {product.subtitle}
+                          </span>
+
+                          {/* Title */}
+                          <h2 className="text-base sm:text-lg font-bold text-primary group-hover:text-secondary transition-colors font-readex leading-snug">
+                            {product.name}
+                          </h2>
+
+                          {/* Price Tag & Branch Notice */}
+                          <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5">
+                            <span className="px-2.5 py-0.5 rounded-md bg-surface-container-low border border-charcoal/10 text-xs font-bold text-primary font-mono">
+                              السعر: {product.priceDisplay}
+                            </span>
                             {isBothBranches && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#1F5E4B]/10 text-[#1F5E4B] text-[11px] font-bold">
-                                <MapPin className="w-3 h-3 text-[#1F5E4B]" />
-                                <span>متوفر بكلا الفرعين (المنصورة وسمنود)</span>
+                              <span className="text-[11px] text-[#1F5E4B] font-semibold">
+                                (متوفر بكلا الفرعين)
                               </span>
                             )}
                             {isMansouraOnly && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-900 text-[11px] font-bold">
-                                <MapPin className="w-3 h-3 text-amber-700" />
-                                <span>متوفر بفرع المنصورة فقط</span>
+                              <span className="text-[11px] text-amber-800 font-semibold">
+                                (فرع المنصورة فقط)
                               </span>
                             )}
                             {isSamanoudOnly && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-900 text-[11px] font-bold">
-                                <MapPin className="w-3 h-3 text-blue-700" />
-                                <span>متوفر بفرع سمنود والمحلة فقط</span>
+                              <span className="text-[11px] text-blue-800 font-semibold">
+                                (فرع سمنود والمحلة فقط)
                               </span>
                             )}
                           </div>
 
-                          <div>
-                            <div className="flex items-center justify-between text-xs text-secondary font-bold mb-1">
-                              <span>{product.styleLabel}</span>
-                              <span>{product.materialLabel}</span>
-                            </div>
-                            <h2 className="text-base sm:text-lg font-bold text-primary group-hover:text-secondary transition-colors font-readex leading-snug">
-                              {product.name}
-                            </h2>
-                          </div>
-
-                          <p className="text-xs sm:text-sm text-on-surface-variant line-clamp-2 leading-relaxed">
+                          {/* Description */}
+                          <p className="text-xs text-charcoal/70 line-clamp-2 leading-relaxed max-w-sm mx-auto">
                             {product.description}
                           </p>
 
-                          {/* Specs Chips */}
-                          <div className="flex flex-wrap gap-1.5 pt-1">
+                          {/* Specs Chips - Centered */}
+                          <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
                             {product.specs.map((spec, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[11px] font-medium"
+                                className="px-2 py-0.5 rounded bg-surface-container-low border border-charcoal/10 text-charcoal/80 text-[11px] font-medium"
                               >
                                 {spec}
                               </span>
@@ -495,56 +449,53 @@ export default function ProductsPage() {
                         </div>
                       </div>
 
-                      {/* Card Price & Direct Branch Contact (NO Cart / NO Checkout) */}
-                      <div className="p-5 sm:p-6 pt-0 space-y-3 border-t border-surface-container mt-2">
-                        {/* Explicit Price Display Badge */}
-                        <div className="flex items-center justify-between pt-3">
-                          <div className="flex items-center gap-1.5 text-xs text-charcoal/60">
-                            <Tag className="w-3.5 h-3.5 text-secondary" />
-                            <span>{product.priceNote}:</span>
-                          </div>
-                          <div className="text-base sm:text-lg font-extrabold text-primary font-readex">
-                            {product.priceDisplay}
-                          </div>
-                        </div>
+                      {/* Action Buttons - Stacked 2 Buttons (Stitch AI Layout) */}
+                      <div className="p-5 sm:p-6 pt-0 space-y-2 mt-auto">
+                        {/* WhatsApp Button (Mint green with Message icon) */}
+                        {isBothBranches ? (
+                          <button
+                            type="button"
+                            onClick={() => setBranchModalProduct(product)}
+                            className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 cursor-pointer border border-[#1F5E4B]/15"
+                          >
+                            <MessageSquare className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
+                            <span>استفسر عن الموديل بالواتساب</span>
+                          </button>
+                        ) : isMansouraOnly ? (
+                          <a
+                            className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-[#1F5E4B]/15"
+                            href={`https://wa.me/201005557109?text=${encodeURIComponent(
+                              `السلام عليكم مطابخ الشويمي (فرع المنصورة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <MessageSquare className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
+                            <span>استفسر عن الموديل بالواتساب</span>
+                          </a>
+                        ) : (
+                          <a
+                            className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-[#1F5E4B]/15"
+                            href={`https://wa.me/201287153339?text=${encodeURIComponent(
+                              `السلام عليكم مطابخ الشويمي (فرع سمنود والمحلة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <MessageSquare className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
+                            <span>استفسر عن الموديل بالواتساب</span>
+                          </a>
+                        )}
 
-                        {/* WhatsApp Action Button with Branch-Aware Logic */}
-                        <div>
-                          {isBothBranches ? (
-                            <button
-                              type="button"
-                              onClick={() => setBranchModalProduct(product)}
-                              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:translate-y-0.5"
-                            >
-                              <MessageCircle className="w-4 h-4 shrink-0 text-white" />
-                              <span>تواصل عبر واتساب (اختر الفرع الأقرب)</span>
-                            </button>
-                          ) : isMansouraOnly ? (
-                            <a
-                              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
-                              href={`https://wa.me/201005557109?text=${encodeURIComponent(
-                                `السلام عليكم مطابخ الشويمي (فرع المنصورة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
-                              )}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <MessageCircle className="w-4 h-4 shrink-0 text-white" />
-                              <span>تواصل مع واتساب فرع المنصورة</span>
-                            </a>
-                          ) : (
-                            <a
-                              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
-                              href={`https://wa.me/201287153339?text=${encodeURIComponent(
-                                `السلام عليكم مطابخ الشويمي (فرع سمنود والمحلة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
-                              )}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <MessageCircle className="w-4 h-4 shrink-0 text-white" />
-                              <span>تواصل مع واتساب فرع سمنود والمحلة</span>
-                            </a>
-                          )}
-                        </div>
+                        {/* Secondary Button: Details & Dimensions */}
+                        <button
+                          type="button"
+                          onClick={() => setIsConsultationOpen(true)}
+                          className="w-full inline-flex items-center justify-center gap-2 bg-[#F5F4F0] hover:bg-[#EAE8E2] text-charcoal text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 cursor-pointer border border-charcoal/5"
+                        >
+                          <span>تفاصيل الموديل والمقاسات</span>
+                          <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+                        </button>
                       </div>
                     </article>
                   );
