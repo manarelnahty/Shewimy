@@ -368,11 +368,11 @@ export default function ProductsPage() {
                   return (
                     <article
                       key={product.id}
-                      className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-charcoal/10"
+                      className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col border border-charcoal/10"
                     >
                       <div>
-                        {/* Image Container with Exact Stitch AI Badges */}
-                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#ECE8E1]">
+                        {/* Image Container with Badges */}
+                        <Link href={`/products/${product.id}`} className="block relative aspect-[4/3] w-full overflow-hidden bg-[#ECE8E1]">
                           <Image
                             src={product.imageUrl}
                             alt={product.name}
@@ -394,49 +394,46 @@ export default function ProductsPage() {
                           <div className="absolute bottom-3 left-3 px-2.5 py-0.5 rounded bg-white/95 backdrop-blur-md text-primary text-[11px] font-bold font-mono border border-charcoal/10 shadow-2xs">
                             كود : {product.code}
                           </div>
-                        </div>
+                        </Link>
 
-                        {/* Content Area - Center Aligned exactly like Stitch AI */}
-                        <div className="p-5 sm:p-6 text-center space-y-2.5">
-                          {/* Subheading Tag */}
-                          <span className="text-xs text-secondary font-bold tracking-wide block">
-                            {product.subtitle}
-                          </span>
-
-                          {/* Title */}
-                          <h2 className="text-base sm:text-lg font-bold text-primary group-hover:text-secondary transition-colors font-readex leading-snug">
-                            {product.name}
-                          </h2>
-
-                          {/* Price Tag & Branch Notice */}
-                          <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5">
-                            <span className="px-2.5 py-0.5 rounded-md bg-surface-container-low border border-charcoal/10 text-xs font-bold text-primary font-mono">
-                              السعر: {product.priceDisplay}
+                        {/* Content Area - Right Aligned with zero dead space */}
+                        <div className="p-4 sm:p-5 text-right space-y-2">
+                          {/* Subheading & Branch Tag */}
+                          <div className="flex items-center justify-between gap-2 text-xs">
+                            <span className="text-secondary font-bold tracking-wide">
+                              {product.subtitle}
                             </span>
                             {isBothBranches && (
-                              <span className="text-[11px] text-[#1F5E4B] font-semibold">
-                                (متوفر بكلا الفرعين)
+                              <span className="text-[11px] text-[#1F5E4B] font-semibold bg-emerald-50 px-2 py-0.5 rounded">
+                                متوفر بالفرعين
                               </span>
                             )}
                             {isMansouraOnly && (
-                              <span className="text-[11px] text-amber-800 font-semibold">
-                                (فرع المنصورة فقط)
+                              <span className="text-[11px] text-amber-800 font-semibold bg-amber-50 px-2 py-0.5 rounded">
+                                فرع المنصورة
                               </span>
                             )}
                             {isSamanoudOnly && (
-                              <span className="text-[11px] text-blue-800 font-semibold">
-                                (فرع سمنود والمحلة فقط)
+                              <span className="text-[11px] text-blue-800 font-semibold bg-blue-50 px-2 py-0.5 rounded">
+                                فرع سمنود
                               </span>
                             )}
                           </div>
 
+                          {/* Title (Clickable) */}
+                          <Link href={`/products/${product.id}`} className="block">
+                            <h2 className="text-base sm:text-lg font-bold text-primary hover:text-secondary transition-colors font-readex leading-snug">
+                              {product.name}
+                            </h2>
+                          </Link>
+
                           {/* Description */}
-                          <p className="text-xs text-charcoal/70 line-clamp-2 leading-relaxed max-w-sm mx-auto">
+                          <p className="text-xs text-charcoal/70 line-clamp-2 leading-relaxed">
                             {product.description}
                           </p>
 
-                          {/* Specs Chips - Centered */}
-                          <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                          {/* Specs Chips - Right Aligned (Side) */}
+                          <div className="flex flex-wrap items-center justify-start gap-1.5 pt-1">
                             {product.specs.map((spec, i) => (
                               <span
                                 key={i}
@@ -449,9 +446,9 @@ export default function ProductsPage() {
                         </div>
                       </div>
 
-                      {/* Action Buttons - Stacked 2 Buttons (Stitch AI Layout) */}
-                      <div className="p-5 sm:p-6 pt-0 space-y-2 mt-auto">
-                        {/* WhatsApp Button (Mint green with Message icon) */}
+                      {/* Action Buttons - Compact gap right below specs chips */}
+                      <div className="p-4 sm:p-5 pt-2 space-y-2 border-t border-charcoal/5 mt-1">
+                        {/* WhatsApp Button */}
                         {isBothBranches ? (
                           <button
                             type="button"
@@ -465,7 +462,7 @@ export default function ProductsPage() {
                           <a
                             className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-[#1F5E4B]/15"
                             href={`https://wa.me/201005557109?text=${encodeURIComponent(
-                              `السلام عليكم مطابخ الشويمي (فرع المنصورة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
+                              `السلام عليكم مطابخ الشويمي (فرع المنصورة)، أود الاستفسار عن كود [${product.code}] - ${product.name}`
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -477,7 +474,7 @@ export default function ProductsPage() {
                           <a
                             className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-[#1F5E4B]/15"
                             href={`https://wa.me/201287153339?text=${encodeURIComponent(
-                              `السلام عليكم مطابخ الشويمي (فرع سمنود والمحلة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
+                              `السلام عليكم مطابخ الشويمي (فرع سمنود والمحلة)، أود الاستفسار عن كود [${product.code}] - ${product.name}`
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -487,15 +484,14 @@ export default function ProductsPage() {
                           </a>
                         )}
 
-                        {/* Secondary Button: Details & Dimensions */}
-                        <button
-                          type="button"
-                          onClick={() => setIsConsultationOpen(true)}
-                          className="w-full inline-flex items-center justify-center gap-2 bg-[#F5F4F0] hover:bg-[#EAE8E2] text-charcoal text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 cursor-pointer border border-charcoal/5"
+                        {/* Secondary Button: Navigates to Product Details Page */}
+                        <Link
+                          href={`/products/${product.id}`}
+                          className="w-full inline-flex items-center justify-center gap-2 bg-[#F5F4F0] hover:bg-[#EAE8E2] text-charcoal text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-charcoal/5"
                         >
                           <span>تفاصيل الموديل والمقاسات</span>
                           <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
-                        </button>
+                        </Link>
                       </div>
                     </article>
                   );
