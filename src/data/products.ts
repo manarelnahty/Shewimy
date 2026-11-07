@@ -82,7 +82,6 @@ export const productsData: Product[] = [
     gallery: [
       "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDBAQBoMgePU5EkpY28MeJBMbBHzHwXdqSNsN5essXjxlYVDCyd2BbkCnoHsr-4pWz6HHbJ5_bpbf4Rq6km7CklupE5540gB_t7FiSH7jgphV5hSbglerw8oDdGAEBxHtP8R6Pe9wD4YK31Kr0-IxLVdkbqZJBqARxE6mpvfwL6D-D0tnnZaCvslyiq0oJNtwknKybkF6_lwl0biBCFkkbmXhPvxbDX__JPkFAppS0",
       "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
     ],
     dimensions: "مساحة قياسية 4.0م × 3.2م مع جزيرة وسطية 2.2م × 1.1م (قابلة للتفصيل)",
@@ -114,9 +113,8 @@ export const productsData: Product[] = [
       "مزيج درامي فاخر بين الأسطح الفحمية المطفية وبانوهات خشب الجوز المفرغة رأسياً مع رخام شلالي ممتد للأرضية وإضاءة خطية LED مخفية.",
     specs: ["أسود كربوني مطفي", "قشرة جوز طبيعي", "رخام شلال Waterfall", "إضاءة Smart Warm"],
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDrl2yP2VykpkKgYshjhQR3-WMJ1OxkC7THuF66GdkzQ_WTifViLlIT1bYTXlS0ok5Dgwwo6y_KFYS5HwntgOGpxd_4bwIm--kXwgBS7BwSFmzN6kdbiSKguU0ItSmnOg7i5rUDGLiqOyqH6uAzne6DdVRccaGIVOwzP8C85pEnm8Og31MXnV1ImHOL-ONZkQLg1S5fX75BadtAB16XRABhzPyINbLmiKuDI1fL4rI",
+      "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDrl2yP2VykpkKgYshjhQR3-WMJ1OxkC7THuF66GdkzQ_WTifViLlIT1bYTXlS0ok5Dgwwo6y_KFYS5HwntgOGpxd_4bwIm--kXwgBS7BwSFmzN6kdbiSKguU0ItSmnOg7i5rUDGLiqOyqH6uAzne6DdVRccaGIVOwzP8C85pEnm8Og31MXnV1ImHOL-ONZkQLg1S5fX75BadtAB16XRABhzPyINbLmiKuDI1fL4rI",
       "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
@@ -150,9 +148,9 @@ export const productsData: Product[] = [
       "فخامة القصور الملكية بلمسة نيوكلاسيك متطورة، أخشاب أرو روماني مجفف بدهانات أوف وايت مطعمة بمقابض نحاسية أصلية.",
     specs: ["أرو روماني صلب", "دهانات بولي يوريثان", "زجاج بلجيكي عاكس", "تجميع زوايا ليزر"],
     imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBa96KSolSwP2PgM4Qi4gcQFboWFmuDaKMyrMLHRh35kAzny8VoX1mOVjJb3hunzSQOJ8I00tw0-hX_GTsJYxTRnarsdWO3EjXswEDtAR62fy3m-DGA_qHpJYK6mxLoOdgwoVyiLNEIcbWIQ29YGGZ0uvqHBlj4I3T-NdmAktdNddCEOvW2YqiDySzdL4HwKAwBHaZt3j5UwM6TY7Dut3IeLY-AC1A6-fWxc4ZxNxE",
+      "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80",
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBa96KSolSwP2PgM4Qi4gcQFboWFmuDaKMyrMLHRh35kAzny8VoX1mOVjJb3hunzSQOJ8I00tw0-hX_GTsJYxTRnarsdWO3EjXswEDtAR62fy3m-DGA_qHpJYK6mxLoOdgwoVyiLNEIcbWIQ29YGGZ0uvqHBlj4I3T-NdmAktdNddCEOvW2YqiDySzdL4HwKAwBHaZt3j5UwM6TY7Dut3IeLY-AC1A6-fWxc4ZxNxE",
+      "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1200&q=80",
     ],

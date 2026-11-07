@@ -139,7 +139,7 @@ export default function ProductsPage() {
       {/* Header with consultation trigger */}
       <Header onOpenConsultation={() => setIsConsultationOpen(true)} />
 
-      <main className="flex-1 w-full pt-18 sm:pt-20">
+      <main className="flex-1 w-full pt-20">
         {/* SUB-HERO SECTION */}
         <section className="w-full bg-surface-container-low/70 py-10 lg:py-14 border-b border-charcoal/10">
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
@@ -202,7 +202,11 @@ export default function ProductsPage() {
         </section>
 
         {/* STICKY FILTER & SEARCH BAR */}
-        <section className="sticky top-16 sm:top-18 lg:top-20 z-40 w-full bg-[#fbf9f5] border-b border-gray-200/70 py-4 shadow-sm">
+        <section
+          id="filter-bar"
+          className="bg-[#fbf9f5] z-30 sticky top-20 border-b border-gray-200/80 shadow-sm py-3 w-full"
+          style={{ backgroundColor: "#fbf9f5" }}
+        >
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 space-y-3">
             {/* Category Tabs (Pills with exact Stitch AI style) */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -401,13 +405,13 @@ export default function ProductsPage() {
                     >
                       <div>
                         {/* Image Container with Badges */}
-                        <Link href={`/products/${product.id}`} className="block relative w-full h-56 overflow-hidden rounded-t-xl bg-[#ECE8E1]">
+                        <Link href={`/products/${product.id}`} className="block relative w-full h-64 overflow-hidden rounded-t-xl bg-[#ECE8E1]">
                           <Image
                             src={product.imageUrl}
                             alt={product.name}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="w-full h-56 object-cover rounded-t-xl transition-transform duration-700 group-hover:scale-105"
+                            className="w-full h-64 object-cover rounded-t-xl transition-transform duration-700 group-hover:scale-105"
                           />
                           {/* Top Badges */}
                           <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">

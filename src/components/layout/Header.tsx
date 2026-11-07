@@ -19,7 +19,7 @@ export function Header({ onOpenConsultation }: HeaderProps) {
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-      <div className="h-16 sm:h-18 max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between gap-4 sm:gap-6">
+      <div className="h-20 max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between gap-4 sm:gap-6">
         {/* Brand Logo & Name */}
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
           <div className="relative h-10 w-auto shrink-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
