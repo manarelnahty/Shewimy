@@ -66,7 +66,7 @@ export const productsData: Product[] = [
       "تصميم مينيمالي معاصر يجمع بين ألواح البولاك التركية المقاومة للبصمات مع جزيرة رخامية ضخمة ومفصلات Blum النمساوية الذكية.",
     specs: ["بولاك مطفي تركي أصلي", "رخام كلكتا إيطالي", "مفصلات بلوم سوفت كلوز", "شاسيه كونتر أرو أوروبي"],
     imageUrl:
-      "https://lh3.googleusercontent.com/aida/ALJJyrB-cn6e3CTiwpiuMqoMYYXQln2zMesgMiJYxP8QQFnZdOu93Qda2U-DeOcB0U9xMlqcH5R98Q1xuYLRnxPlCN5c6Qa2H5zhu63TIIBRBd9uceFOGT-iJVbWZ7xrbZ1o-ljJuRgPAa3hc7jQxx_bnSoDxYOLnFGVa9VK3H3bLzxX8dh3ytD5ZAN9P_-8OBhki1qiUMR-e1HsH7pXRnU1eG41EMNeiJ_I3aIZLdP6e5bE",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBZPi3rNDLqy4PubhaFsY0GXjPOjvVzOgqKuRgPTQWqadFBkULDj0RBFBqXIDIgUbF8D98lS88Acqk_0UjzJMJ89X107_xdCZSbQt7Y9xZ-_Z94RmBAMU7JqCwk_iazTG1vytPQbdwDdwHzZJeVgGf5GftCquoevscR6RbVO4eRWZ-twqWF-u4rNjgONOmgQb2MgcEdHwjf6pZPoIu0eFea5Iaz8K_DZuz_Uo03or4",
     featured: true,
     warrantyYears: 15,
   },
@@ -88,7 +88,7 @@ export const productsData: Product[] = [
       "مزيج درامي فاخر بين الأسطح الفحمية المطفية وبانوهات خشب الجوز المفرغة رأسياً مع رخام شلالي ممتد للأرضية وإضاءة خطية LED مخفية.",
     specs: ["أسود كربوني فائق المط", "قشرة جوز أمريكي ماسيف", "رخام شلال Waterfall", "إضاءة Smart Warm LED"],
     imageUrl:
-      "https://lh3.googleusercontent.com/aida/ALJJyrAKyPyjTC9yvPtYYyuI9vlW9aXVLsLq_Y9aMAEslfXERVID594M9Hco0kpfJqCUiaCt3NpylseURj6qc56yqP6zZfBRV9ifemQJnyPLKnqisYrqPbdTx8MG5AvQpLGQNQjrxNWvKDh3h4YpM3E96H5rcwGR_3y4OX1YO4WlIge3Qntiy7Fa4yQ1zvOPxFhNJfs4VT_IJG8EKePY1gQK-5BvhzjneW3SX9Q4bp3juyCi",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDrl2yP2VykpkKgYshjhQR3-WMJ1OxkC7THuF66GdkzQ_WTifViLlIT1bYTXlS0ok5Dgwwo6y_KFYS5HwntgOGpxd_4bwIm--kXwgBS7BwSFmzN6kdbiSKguU0ItSmnOg7i5rUDGLiqOyqH6uAzne6DdVRccaGIVOwzP8C85pEnm8Og31MXnV1ImHOL-ONZkQLg1S5fX75BadtAB16XRABhzPyINbLmiKuDI1fL4rI",
     featured: true,
     warrantyYears: 15,
   },
