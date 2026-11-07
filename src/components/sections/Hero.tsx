@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { BadgeCheck, Sparkles, Eye, Compass } from "lucide-react";
+import { BadgeCheck, Eye, Compass } from "lucide-react";
 
 interface HeroProps {
   onOpenConsultation?: () => void;
@@ -53,9 +53,8 @@ export function Hero({ onOpenConsultation }: HeroProps) {
               <button
                 type="button"
                 onClick={onOpenConsultation}
-                className="inline-flex items-center gap-2.5 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 px-6 sm:px-7 rounded shadow-[0_8px_20px_rgba(31,94,75,0.35)] transition-all transform hover:-translate-y-0.5 cursor-pointer active:translate-y-0"
+                className="inline-flex items-center justify-center bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 px-6 sm:px-7 rounded shadow-[0_8px_20px_rgba(31,94,75,0.35)] transition-all transform hover:-translate-y-0.5 cursor-pointer active:translate-y-0"
               >
-                <Sparkles className="w-4 h-4 shrink-0 text-white" />
                 <span>صمم مطبخك الآن</span>
               </button>
 

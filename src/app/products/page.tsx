@@ -6,7 +6,8 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ConsultationDrawer } from "@/components/common/ConsultationDrawer";
-import { productsData } from "@/data/products";
+import { BranchSelectionModal } from "@/components/common/BranchSelectionModal";
+import { productsData, Product, BranchKey } from "@/data/products";
 import {
   Search,
   ChevronDown,
@@ -15,6 +16,7 @@ import {
   MessageCircle,
   Tag,
   SlidersHorizontal,
+  MapPin,
 } from "lucide-react";
 
 type CategoryFilter = "all" | "kitchens" | "dressing" | "furniture" | "cladding";
@@ -22,12 +24,15 @@ type StyleFilter = "all" | "modern" | "classic" | "neoclassic" | "ultramodern";
 type MaterialFilter = "all" | "polylac" | "hpl" | "natural_walnut" | "massive_oak" | "fume_glass";
 type SortOption = "default" | "price_asc" | "price_desc";
 type PriceRangeFilter = "all" | "under_80k" | "80k_to_120k" | "above_120k";
+type BranchFilter = "all" | BranchKey;
 
 export default function ProductsPage() {
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
+  const [branchModalProduct, setBranchModalProduct] = useState<Product | null>(null);
 
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("all");
+  const [selectedBranch, setSelectedBranch] = useState<BranchFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<StyleFilter>("all");
   const [selectedMaterial, setSelectedMaterial] = useState<MaterialFilter>("all");
@@ -37,6 +42,7 @@ export default function ProductsPage() {
   // Reset all filters
   const handleResetFilters = () => {
     setSelectedCategory("all");
+    setSelectedBranch("all");
     setSearchQuery("");
     setSelectedStyle("all");
     setSelectedMaterial("all");
@@ -47,6 +53,11 @@ export default function ProductsPage() {
   // Filtered & Sorted Products
   const filteredProducts = useMemo(() => {
     let result = [...productsData];
+
+    // Branch filter
+    if (selectedBranch !== "all") {
+      result = result.filter((p) => p.branches.includes(selectedBranch));
+    }
 
     // Category filter
     if (selectedCategory !== "all") {
@@ -93,7 +104,7 @@ export default function ProductsPage() {
     }
 
     return result;
-  }, [selectedCategory, selectedStyle, selectedMaterial, priceRange, searchQuery, sortBy]);
+  }, [selectedCategory, selectedBranch, selectedStyle, selectedMaterial, priceRange, searchQuery, sortBy]);
 
   return (
     <div className="flex flex-col min-h-screen bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">
@@ -224,49 +235,64 @@ export default function ProductsPage() {
               </button>
             </div>
 
-            {/* Advanced Filters: Search + Style + Material + Sorting */}
+            {/* Advanced Filters: Search + Branch + Style + Material + Sorting */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-2.5">
               {/* Search Input */}
-              <div className="lg:col-span-4 relative">
+              <div className="lg:col-span-3 relative">
                 <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="ابحث باسم الموديل، الكود (مثل SHW-204)، أو الخامة..."
+                  placeholder="ابحث بالاسم أو الكود..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-surface-container-low text-charcoal placeholder:text-charcoal/40 text-xs sm:text-sm pr-9 pl-3.5 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white transition-all"
                 />
               </div>
 
-              {/* Style Dropdown */}
+              {/* Branch Selector Dropdown */}
               <div className="lg:col-span-3 relative">
+                <select
+                  value={selectedBranch}
+                  onChange={(e) => setSelectedBranch(e.target.value as BranchFilter)}
+                  className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-8 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-semibold"
+                >
+                  <option value="all">📍 تواجد المنتج: كافة الفروع</option>
+                  <option value="mansoura">📍 فرع المنصورة</option>
+                  <option value="samanoud_mahalla">📍 فرع سمنود والمحلة</option>
+                </select>
+                <MapPin className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-[#1F5E4B] pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
+              </div>
+
+              {/* Style Dropdown */}
+              <div className="lg:col-span-2 relative">
                 <select
                   value={selectedStyle}
                   onChange={(e) => setSelectedStyle(e.target.value as StyleFilter)}
                   className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-3.5 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-medium"
                 >
-                  <option value="all">جميع الأنماط الهندسية</option>
-                  <option value="modern">مودرن حديث (Modern Minimalist)</option>
-                  <option value="classic">كلاسيك فاخر (Classic Royalty)</option>
-                  <option value="neoclassic">نيو كلاسيك (Neo-Classic Elegance)</option>
-                  <option value="ultramodern">ألترا مودرن بلمسات خشبية</option>
+                  <option value="all">كافة الأنماط</option>
+                  <option value="modern">مودرن حديث</option>
+                  <option value="classic">كلاسيك فاخر</option>
+                  <option value="neoclassic">نيو كلاسيك</option>
+                  <option value="ultramodern">ألترا مودرن</option>
                 </select>
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
               </div>
 
               {/* Material Dropdown */}
-              <div className="lg:col-span-3 relative">
+              <div className="lg:col-span-2 relative">
                 <select
                   value={selectedMaterial}
                   onChange={(e) => setSelectedMaterial(e.target.value as MaterialFilter)}
                   className="w-full appearance-none bg-surface-container-low text-charcoal text-xs sm:text-sm pr-3.5 pl-8 py-2 rounded-lg border border-charcoal/15 focus:outline-none focus:border-emerald-cta focus:bg-white cursor-pointer transition-all font-medium"
                 >
-                  <option value="all">جميع الخامات والأسطح</option>
-                  <option value="polylac">بولاك تركي (Polylac Mat)</option>
-                  <option value="hpl">HPL ألماني عالي المقاومة</option>
-                  <option value="natural_walnut">خشب جوز طبيعي أمريكي</option>
-                  <option value="massive_oak">خشب أرو ماسيف طبيعي</option>
-                  <option value="fume_glass">زجاج فاميه وبروفايل إيطالي</option>
+                  <option value="all">كافة الخامات</option>
+                  <option value="polylac">بولاك تركي</option>
+                  <option value="hpl">HPL ألماني</option>
+                  <option value="natural_walnut">جوز أمريكي</option>
+                  <option value="massive_oak">أرو ماسيف</option>
+                  <option value="fume_glass">زجاج فاميه</option>
                 </select>
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none" />
               </div>
@@ -382,106 +408,147 @@ export default function ProductsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                {filteredProducts.map((product) => (
-                  <article
-                    key={product.id}
-                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-charcoal/10"
-                  >
-                    <div>
-                      {/* Image Container with Badges */}
-                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-container">
-                        <Image
-                          src={product.imageUrl}
-                          alt={product.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute top-3 right-3 flex flex-wrap gap-1.5 z-10">
-                          <span className="px-2.5 py-1 rounded bg-primary/85 backdrop-blur-md text-on-primary text-[11px] font-semibold">
-                            {product.categoryLabel}
-                          </span>
-                          <span className="px-2.5 py-1 rounded bg-secondary-fixed/90 backdrop-blur-md text-on-secondary-fixed text-[11px] font-bold">
-                            ضمان {product.warrantyYears} سنة
-                          </span>
-                        </div>
-                        <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded bg-white/90 backdrop-blur-md text-primary text-[11px] font-bold font-mono border border-charcoal/10">
-                          كود: {product.code}
-                        </div>
-                      </div>
+                {filteredProducts.map((product) => {
+                  const isBothBranches = product.branches.length === 2;
+                  const isMansouraOnly =
+                    product.branches.length === 1 && product.branches[0] === "mansoura";
+                  const isSamanoudOnly =
+                    product.branches.length === 1 && product.branches[0] === "samanoud_mahalla";
 
-                      {/* Content Area */}
-                      <div className="p-5 sm:p-6 space-y-3.5">
-                        <div>
-                          <div className="flex items-center justify-between text-xs text-secondary font-bold mb-1">
-                            <span>{product.styleLabel}</span>
-                            <span>{product.materialLabel}</span>
-                          </div>
-                          <h2 className="text-base sm:text-lg font-bold text-primary group-hover:text-secondary transition-colors font-readex leading-snug">
-                            {product.name}
-                          </h2>
-                        </div>
-
-                        <p className="text-xs sm:text-sm text-on-surface-variant line-clamp-2 leading-relaxed">
-                          {product.description}
-                        </p>
-
-                        {/* Specs Chips */}
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {product.specs.map((spec, i) => (
-                            <span
-                              key={i}
-                              className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[11px] font-medium"
-                            >
-                              {spec}
+                  return (
+                    <article
+                      key={product.id}
+                      className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-charcoal/10"
+                    >
+                      <div>
+                        {/* Image Container with Badges */}
+                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-container">
+                          <Image
+                            src={product.imageUrl}
+                            alt={product.name}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          <div className="absolute top-3 right-3 flex flex-wrap gap-1.5 z-10">
+                            <span className="px-2.5 py-1 rounded bg-primary/85 backdrop-blur-md text-on-primary text-[11px] font-semibold">
+                              {product.categoryLabel}
                             </span>
-                          ))}
+                            <span className="px-2.5 py-1 rounded bg-secondary-fixed/90 backdrop-blur-md text-on-secondary-fixed text-[11px] font-bold">
+                              ضمان {product.warrantyYears} سنة
+                            </span>
+                          </div>
+                          <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded bg-white/90 backdrop-blur-md text-primary text-[11px] font-bold font-mono border border-charcoal/10">
+                            كود: {product.code}
+                          </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="p-5 sm:p-6 space-y-3">
+                          {/* Branch Availability Tag */}
+                          <div className="flex items-center gap-1.5">
+                            {isBothBranches && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#1F5E4B]/10 text-[#1F5E4B] text-[11px] font-bold">
+                                <MapPin className="w-3 h-3 text-[#1F5E4B]" />
+                                <span>متوفر بكلا الفرعين (المنصورة وسمنود)</span>
+                              </span>
+                            )}
+                            {isMansouraOnly && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-900 text-[11px] font-bold">
+                                <MapPin className="w-3 h-3 text-amber-700" />
+                                <span>متوفر بفرع المنصورة فقط</span>
+                              </span>
+                            )}
+                            {isSamanoudOnly && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-900 text-[11px] font-bold">
+                                <MapPin className="w-3 h-3 text-blue-700" />
+                                <span>متوفر بفرع سمنود والمحلة فقط</span>
+                              </span>
+                            )}
+                          </div>
+
+                          <div>
+                            <div className="flex items-center justify-between text-xs text-secondary font-bold mb-1">
+                              <span>{product.styleLabel}</span>
+                              <span>{product.materialLabel}</span>
+                            </div>
+                            <h2 className="text-base sm:text-lg font-bold text-primary group-hover:text-secondary transition-colors font-readex leading-snug">
+                              {product.name}
+                            </h2>
+                          </div>
+
+                          <p className="text-xs sm:text-sm text-on-surface-variant line-clamp-2 leading-relaxed">
+                            {product.description}
+                          </p>
+
+                          {/* Specs Chips */}
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {product.specs.map((spec, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[11px] font-medium"
+                              >
+                                {spec}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Card Price & Direct Branch Contact (NO Cart / NO Checkout) */}
-                    <div className="p-5 sm:p-6 pt-0 space-y-3 border-t border-surface-container mt-2">
-                      {/* Explicit Price Display Badge */}
-                      <div className="flex items-center justify-between pt-3">
-                        <div className="flex items-center gap-1.5 text-xs text-charcoal/60">
-                          <Tag className="w-3.5 h-3.5 text-secondary" />
-                          <span>{product.priceNote}:</span>
+                      {/* Card Price & Direct Branch Contact (NO Cart / NO Checkout) */}
+                      <div className="p-5 sm:p-6 pt-0 space-y-3 border-t border-surface-container mt-2">
+                        {/* Explicit Price Display Badge */}
+                        <div className="flex items-center justify-between pt-3">
+                          <div className="flex items-center gap-1.5 text-xs text-charcoal/60">
+                            <Tag className="w-3.5 h-3.5 text-secondary" />
+                            <span>{product.priceNote}:</span>
+                          </div>
+                          <div className="text-base sm:text-lg font-extrabold text-primary font-readex">
+                            {product.priceDisplay}
+                          </div>
                         </div>
-                        <div className="text-base sm:text-lg font-extrabold text-primary font-readex">
-                          {product.priceDisplay}
+
+                        {/* WhatsApp Action Button with Branch-Aware Logic */}
+                        <div>
+                          {isBothBranches ? (
+                            <button
+                              type="button"
+                              onClick={() => setBranchModalProduct(product)}
+                              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:translate-y-0.5"
+                            >
+                              <MessageCircle className="w-4 h-4 shrink-0 text-white" />
+                              <span>تواصل عبر واتساب (اختر الفرع الأقرب)</span>
+                            </button>
+                          ) : isMansouraOnly ? (
+                            <a
+                              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                              href={`https://wa.me/201005557109?text=${encodeURIComponent(
+                                `السلام عليكم مطابخ الشويمي (فرع المنصورة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <MessageCircle className="w-4 h-4 shrink-0 text-white" />
+                              <span>تواصل مع واتساب فرع المنصورة</span>
+                            </a>
+                          ) : (
+                            <a
+                              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                              href={`https://wa.me/201287153339?text=${encodeURIComponent(
+                                `السلام عليكم مطابخ الشويمي (فرع سمنود والمحلة)، أود الاستفسار عن كود [${product.code}] - ${product.name} (السعر: ${product.priceDisplay})`
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <MessageCircle className="w-4 h-4 shrink-0 text-white" />
+                              <span>تواصل مع واتساب فرع سمنود والمحلة</span>
+                            </a>
+                          )}
                         </div>
                       </div>
-
-                      {/* Direct WhatsApp Consultation Buttons for Both Branches */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <a
-                          className="inline-flex items-center justify-center gap-1.5 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs font-semibold py-2 px-2.5 rounded-xl transition-all duration-200"
-                          href={`https://wa.me/201005557109?text=${encodeURIComponent(
-                            `مرحباً فرع المنصورة، أود الاستفسار عن كود [${product.code}] - ${product.name} بسعر ${product.priceDisplay}`
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-                          <span>واتساب المنصورة</span>
-                        </a>
-
-                        <a
-                          className="inline-flex items-center justify-center gap-1.5 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs font-semibold py-2 px-2.5 rounded-xl transition-all duration-200"
-                          href={`https://wa.me/201287153339?text=${encodeURIComponent(
-                            `مرحباً فرع سمنود والمحلة، أود الاستفسار عن كود [${product.code}] - ${product.name} بسعر ${product.priceDisplay}`
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-                          <span>واتساب سمنود والمحلة</span>
-                        </a>
-                      </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -520,6 +587,13 @@ export default function ProductsPage() {
       <ConsultationDrawer
         isOpen={isConsultationOpen}
         onClose={() => setIsConsultationOpen(false)}
+      />
+
+      {/* Branch Selection Modal for items available in both branches */}
+      <BranchSelectionModal
+        isOpen={Boolean(branchModalProduct)}
+        product={branchModalProduct}
+        onClose={() => setBranchModalProduct(null)}
       />
 
       {/* Footer */}

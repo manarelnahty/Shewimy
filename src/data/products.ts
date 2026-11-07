@@ -1,3 +1,5 @@
+export type BranchKey = "mansoura" | "samanoud_mahalla";
+
 export interface Product {
   id: string;
   code: string;
@@ -8,6 +10,7 @@ export interface Product {
   styleLabel: string;
   material: "polylac" | "hpl" | "natural_walnut" | "massive_oak" | "fume_glass";
   materialLabel: string;
+  branches: BranchKey[];
   price: number;
   priceDisplay: string;
   priceNote: string;
@@ -17,6 +20,32 @@ export interface Product {
   featured: boolean;
   warrantyYears: number;
 }
+
+export const BRANCH_CONTACTS: Record<
+  BranchKey,
+  {
+    name: string;
+    shortName: string;
+    city: string;
+    phones: string[];
+    whatsapp: string;
+  }
+> = {
+  mansoura: {
+    name: "فرع المنصورة",
+    shortName: "المنصورة",
+    city: "المنصورة",
+    phones: ["01005557109", "01012623138"],
+    whatsapp: "201005557109",
+  },
+  samanoud_mahalla: {
+    name: "فرع سمنود والمحلة",
+    shortName: "سمنود والمحلة",
+    city: "سمنود والمحلة الكبرى",
+    phones: ["01287153339", "01098199288"],
+    whatsapp: "201287153339",
+  },
+};
 
 export const productsData: Product[] = [
   {
@@ -29,6 +58,7 @@ export const productsData: Product[] = [
     styleLabel: "مودرن حديث",
     material: "polylac",
     materialLabel: "بولاك تركي",
+    branches: ["mansoura", "samanoud_mahalla"], // متوفر بكلا الفرعين
     price: 95000,
     priceDisplay: "95,000 ج.م",
     priceNote: "يبدأ من لمساحة قياسية",
@@ -50,6 +80,7 @@ export const productsData: Product[] = [
     styleLabel: "ألترا مودرن",
     material: "natural_walnut",
     materialLabel: "خشب جوز طبيعي أمريكي",
+    branches: ["mansoura"], // متوفر بفرع المنصورة فقط
     price: 135000,
     priceDisplay: "135,000 ج.م",
     priceNote: "يبدأ من لمساحة فيلا كاملة",
@@ -71,6 +102,7 @@ export const productsData: Product[] = [
     styleLabel: "نيو كلاسيك",
     material: "massive_oak",
     materialLabel: "خشب أرو ماسيف طبيعي",
+    branches: ["samanoud_mahalla"], // متوفر بفرع سمنود والمحلة فقط
     price: 160000,
     priceDisplay: "160,000 ج.م",
     priceNote: "سعر النموذج المتكامل",
@@ -92,6 +124,7 @@ export const productsData: Product[] = [
     styleLabel: "مودرن حديث",
     material: "fume_glass",
     materialLabel: "زجاج فاميه وبروفايل إيطالي",
+    branches: ["mansoura", "samanoud_mahalla"], // متوفر بكلا الفرعين
     price: 88000,
     priceDisplay: "88,000 ج.م",
     priceNote: "سعر الجدارية التخزينية المدمجة",
@@ -113,6 +146,7 @@ export const productsData: Product[] = [
     styleLabel: "مودرن حديث",
     material: "natural_walnut",
     materialLabel: "خشب جوز طبيعي أمريكي",
+    branches: ["mansoura"], // متوفر بفرع المنصورة فقط
     price: 72000,
     priceDisplay: "72,000 ج.م",
     priceNote: "سعر الوحدة والتجليد بالكامل",
@@ -134,6 +168,7 @@ export const productsData: Product[] = [
     styleLabel: "مودرن حديث",
     material: "hpl",
     materialLabel: "HPL ألماني",
+    branches: ["samanoud_mahalla"], // متوفر بفرع سمنود والمحلة فقط
     price: 110000,
     priceDisplay: "110,000 ج.م",
     priceNote: "يبدأ من لمساحات المطابخ المفتوحة",
@@ -155,6 +190,7 @@ export const productsData: Product[] = [
     styleLabel: "مودرن حديث",
     material: "massive_oak",
     materialLabel: "خشب أرو ماسيف طبيعي",
+    branches: ["mansoura", "samanoud_mahalla"], // متوفر بكلا الفرعين
     price: 68000,
     priceDisplay: "68,000 ج.م",
     priceNote: "سعر الطاولة لـ 8 مقاعد",
@@ -176,6 +212,7 @@ export const productsData: Product[] = [
     styleLabel: "مودرن حديث",
     material: "polylac",
     materialLabel: "بولاك تركي",
+    branches: ["mansoura", "samanoud_mahalla"], // متوفر بكلا الفرعين
     price: 76000,
     priceDisplay: "76,000 ج.م",
     priceNote: "سعر الموديل 4 أمتار طولية",
