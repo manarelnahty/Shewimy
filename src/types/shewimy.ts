@@ -173,7 +173,7 @@ export interface InspectionRequest {
   clientName: string;
   phoneNumber: string;
   selectedBranch: BranchId;
-  requestedService: "kitchen_3d" | "dressing_inspection" | "full_home_decor";
+  requestedService: "kitchen_3d" | "dressing_inspection" | "full_home_decor" | "other" | string;
   customerNotes?: string;
   status: "new" | "contacted" | "visit_scheduled" | "deal_closed";
   createdAt: any;
@@ -186,20 +186,79 @@ export interface SiteSettings {
   phonePrimary: string;
   emailPrimary: string;
   defaultWarrantyYears: number;
+
+  // 1. Hero Section & Architectural Decoration
   heroHeadline: string;
-  heroHighlight: string;
+  heroHighlight?: string;
   heroSubheadline: string;
+  heroBadgeText: string;
   heroExperienceYears: number;
+  heroBgImage: string;
+  heroShowcaseImage: string;
+  heroShowcaseTag: string;
+  heroShowcaseTitle: string;
+  heroShowcaseFeature: string;
+  heroShowcaseWarranty: string;
+  heroCtaPrimaryText: string;
+  heroCtaSecondaryText: string;
+  heroStats: {
+    stat1Value: string;
+    stat1Label: string;
+    stat2Value: string;
+    stat2Label: string;
+    stat3Value: string;
+    stat3Label: string;
+  };
+
+  // 2. Trust Bar
   trustBarItems: {
     title: string;
     desc: string;
   }[];
+
+  // 3. Portfolio Section
+  portfolioBadge: string;
+  portfolioHeadline: string;
+  portfolioSubheadline: string;
+  portfolioCtaText: string;
+
+  // 4. Process Journey
+  processBadge: string;
+  processHeadline: string;
+  processSubheadline: string;
+  processSteps: {
+    step: string;
+    title: string;
+    desc: string;
+  }[];
+
+  // 5. Consultation & Booking CTA
+  ctaBadge: string;
+  ctaHeadline: string;
+  ctaSubheadline: string;
+  ctaPrimaryBtnText: string;
+  ctaWhatsappBtnText: string;
+  ctaBgImage?: string;
+
+  // 6. Social Links
   socialLinks?: {
     facebook?: string;
     instagram?: string;
     tiktok?: string;
     youtube?: string;
   };
+
+  // 7. Security & Super Admin Authentication (DRD Section 8)
+  adminEmail?: string;
+}
+
+export interface AdminAccount {
+  uid: string;
+  email: string;
+  displayName: string;
+  role: "super_admin" | "admin" | "editor";
+  updatedAt: string;
+  passwordUpdatedAt?: string;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -207,10 +266,31 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   phonePrimary: "01005557109",
   emailPrimary: "info@shewimy.com",
   defaultWarrantyYears: 15,
-  heroHeadline: "فخامة معمارية تُصنع بحرفية",
+
+  // 1. Hero Section & Architectural Decoration
+  heroHeadline: "فخامة معمارية تُصنع بحرفية استثنائية لمنزلك",
   heroHighlight: "إتقان هندسي وضمان ١٥ سنة حقيقي",
   heroSubheadline: "نحوّل المساحات إلى لوحات فنية حية عبر خامات أوروبية معتمدة 100%، وتقنيات PUR الألمانية المقاومة للمياه والحرارة، وتصميمات 3D تفاعلية قبل خط الإنتاج.",
+  heroBadgeText: "خبرة 24 عاماً • ضمان 15 سنة حقيقي",
   heroExperienceYears: 24,
+  heroBgImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80",
+  heroShowcaseImage: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1600&q=85",
+  heroShowcaseTag: "تصميم حصري 2026",
+  heroShowcaseTitle: "طراز بولاك ألترا مودرن مع ماكينات تشطيب PUR",
+  heroShowcaseFeature: "ميكانزم بلوم نمساوي أصلي",
+  heroShowcaseWarranty: "ضمان 15 سنة",
+  heroCtaPrimaryText: "صمم مطبخك الآن",
+  heroCtaSecondaryText: "تصفح أعمالنا",
+  heroStats: {
+    stat1Value: "+3,500",
+    stat1Label: "مطبخ منفّذ",
+    stat2Value: "3 فروع",
+    stat2Label: "بمنطقة الدلتا",
+    stat3Value: "100%",
+    stat3Label: "خامات أوروبية",
+  },
+
+  // 2. Trust Bar
   trustBarItems: [
     {
       title: "ضمان 15 سنة",
@@ -229,9 +309,54 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
       desc: "معاينة واقعية لمطبخك وتوزيع مثلث الحركة الذكي قبل بدء خط التصنيع الفعلي.",
     },
   ],
+
+  // 3. Portfolio Section
+  portfolioBadge: "أعمالنا الاستثنائية (محدثة مباشرة من قاعدة البيانات)",
+  portfolioHeadline: "أحدث إبداعاتنا المنفذة بمصانع الشويمي",
+  portfolioSubheadline: "استكشف تشكيلات المطابخ والدريسينج روم والأثاث الراقي التي نفذناها بدقة وإتقان في فلل وقصور عملاء الشويمي.",
+  portfolioCtaText: "استعراض كتالوج المنتجات والأسعار كاملة",
+
+  // 4. Process Journey
+  processBadge: "منهجية العمل المتكاملة",
+  processHeadline: "رحلة تصنيع مطبخك من الفكرة إلى الواقع",
+  processSubheadline: "نتبع بروتوكولاً هندسياً صارماً في كافة المراحل لضمان دقة التنفيذ وخلو المنتج النهائي من أي عيوب صناعية.",
+  processSteps: [
+    {
+      step: "01",
+      title: "تصميم هندسي 3D",
+      desc: "رفع المقاسات بدقة ليزر وإعداد مخطط ثلاثي الأبعاد واقعي وتوزيع عملي لمثلث الحركة يناسب مساحتك بدقة.",
+    },
+    {
+      step: "02",
+      title: "تصنيع بماكينات إيطالية",
+      desc: "تقطيع ولصق بحواف PUR الألمانية بمصانعنا، ودهانات متطورة مقاومة للخدش والرطوبة وحرارة الاستخدام اليومي.",
+    },
+    {
+      step: "03",
+      title: "التوريد والتركيب المحترف",
+      desc: "فريق فني متخصص لتثبيت المطبخ بدقة متناهية، ومراجعة موازين الليزر ونظافة تامة للمكان عقب الانتهاء.",
+    },
+    {
+      step: "04",
+      title: "شهادة ضمان 15 سنة",
+      desc: "تسليم وثيقة الضمان المعتمدة مع خدمة ما بعد البيع ومتابعة صيانة دورية مجانية للمفصلات والأسطح.",
+    },
+  ],
+
+  // 5. Consultation & Booking CTA
+  ctaBadge: "استشارة معمارية مجانية",
+  ctaHeadline: "جاهز لتصميم مطبخ أحلامك؟",
+  ctaSubheadline: "احصل على استشارة هندسية ومعاينة ثلاثية الأبعاد 3D مجاناً لمساحتك بمساعدة نخبة مهندسي التصميم المعماري في مطابخ الشويمي.",
+  ctaPrimaryBtnText: "احجز معاينتك المجانية الآن",
+  ctaWhatsappBtnText: "محادثة واتساب مباشرة",
+  ctaBgImage: "",
+
+  // 6. Social Links
   socialLinks: {
     facebook: "https://facebook.com/shewimy",
     instagram: "https://instagram.com/shewimy",
   },
-};
 
+  // 7. Security & Admin Authentication
+  adminEmail: "admin@shewimy.com",
+};

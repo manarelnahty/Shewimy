@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { Product, productsData } from "@/data/products";
 import { BRANCHES_LIST, BranchExtended } from "@/data/branches";
+import siteSettingsData from "@/data/siteSettings.json";
+import { SiteSettingsContext } from "@/lib/SiteSettingsContext";
 import {
   MainSection,
   SiteSettings,
@@ -19,7 +21,13 @@ import {
   getDb,
 } from "./firestore";
 import { isFirebaseConfigured } from "./config";
-import { subscribeToAuth, signInAdmin, signOutAdmin } from "./auth";
+import {
+  subscribeToAuth,
+  signInAdmin,
+  signOutAdmin,
+  changeAdminEmail,
+  changeAdminPassword,
+} from "./auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 
 interface UseProductsOptions {
@@ -66,9 +74,26 @@ export function useProducts(options?: UseProductsOptions) {
   useEffect(() => {
     loadData();
 
+    // Listen to local custom event (same tab) and storage event (cross-tab)
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("shewimy_products_updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+
     // Listen to real-time Firestore updates if configured
     const db = getDb();
-    if (!db || !isFirebaseConfigured()) return;
+    if (!db || !isFirebaseConfigured()) {
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_products_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
+    }
 
     try {
       const itemsRef = collection(db, "items");
@@ -92,9 +117,20 @@ export function useProducts(options?: UseProductsOptions) {
         }
       );
 
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_products_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     } catch (e) {
-      // non-blocking
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_products_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     }
   }, [loadData, options?.section, options?.featuredOnly]);
 
@@ -105,7 +141,22 @@ export function useProducts(options?: UseProductsOptions) {
  * React hook to dynamically fetch branches from Firestore `branches` collection.
  */
 export function useBranches() {
-  const [branches, setBranches] = useState<BranchExtended[]>(BRANCHES_LIST);
+  const [branches, setBranches] = useState<BranchExtended[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const local = localStorage.getItem("shewimy_branches");
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return BRANCHES_LIST;
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -124,8 +175,29 @@ export function useBranches() {
   useEffect(() => {
     loadBranches();
 
+    // Listen to local custom event (same tab) and storage event (cross-tab)
+    const handleUpdate = (e: any) => {
+      if (e?.detail?.branches) {
+        setBranches(e.detail.branches);
+      } else {
+        loadBranches();
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("shewimy_branches_updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+
     const db = getDb();
-    if (!db || !isFirebaseConfigured()) return;
+    if (!db || !isFirebaseConfigured()) {
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_branches_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
+    }
 
     try {
       const branchesRef = collection(db, "branches");
@@ -139,9 +211,20 @@ export function useBranches() {
         }
       );
 
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_branches_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     } catch (e) {
-      // non-blocking
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_branches_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     }
   }, [loadBranches]);
 
@@ -151,9 +234,32 @@ export function useBranches() {
 /**
  * React hook for dynamic Site Settings (trust bar, contact numbers, headline).
  */
-export function useSiteSettings() {
-  const [settings, setSettings] = useState(DEFAULT_SITE_SETTINGS);
-  const [loading, setLoading] = useState(true);
+export function useSiteSettings(initialSettings?: SiteSettings) {
+  const context = useContext(SiteSettingsContext);
+  if (context) {
+    return context;
+  }
+
+  const [settings, setSettings] = useState<SiteSettings>(() => {
+    if (initialSettings) {
+      return initialSettings;
+    }
+    if (typeof window !== "undefined") {
+      try {
+        const local = localStorage.getItem("shewimy_site_settings");
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (parsed && typeof parsed === "object") {
+            return { ...(siteSettingsData as unknown as SiteSettings), ...parsed };
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return siteSettingsData as unknown as SiteSettings;
+  });
+  const [loading, setLoading] = useState(false);
 
   const loadSettings = useCallback(async () => {
     try {
@@ -169,17 +275,49 @@ export function useSiteSettings() {
   useEffect(() => {
     loadSettings();
 
+    // Listen to local custom event (same tab) and storage event (cross-tab)
+    const handleUpdate = (e: any) => {
+      if (e?.detail) {
+        setSettings((prev) => ({ ...prev, ...e.detail }));
+      } else {
+        loadSettings();
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("shewimy_settings_updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+
     const db = getDb();
-    if (!db || !isFirebaseConfigured()) return;
+    if (!db || !isFirebaseConfigured()) {
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_settings_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
+    }
 
     try {
       const docRef = collection(db, "site_settings");
       const unsubscribe = onSnapshot(docRef, () => {
         loadSettings();
       });
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_settings_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     } catch {
-      // non-blocking
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_settings_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     }
   }, [loadSettings]);
 
@@ -205,8 +343,23 @@ export function useAdminAuth() {
           // ignore
         }
       }
-    }
 
+      const handleAdminUpdated = (e: any) => {
+        if (e.detail) {
+          setUser(e.detail);
+        } else {
+          setUser(null);
+        }
+      };
+
+      window.addEventListener("shewimy_admin_updated", handleAdminUpdated);
+      return () => {
+        window.removeEventListener("shewimy_admin_updated", handleAdminUpdated);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
     const unsub = subscribeToAuth((currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -256,6 +409,14 @@ export function useAdminAuth() {
     }
   };
 
+  const changeEmail = async (newEmail: string, currentPass: string) => {
+    return await changeAdminEmail(newEmail, currentPass);
+  };
+
+  const changePassword = async (currentPass: string, newPass: string) => {
+    return await changeAdminPassword(currentPass, newPass);
+  };
+
   return {
     user,
     loading,
@@ -263,6 +424,8 @@ export function useAdminAuth() {
     login,
     loginDemo,
     logout,
+    changeEmail,
+    changePassword,
   };
 }
 
@@ -290,17 +453,44 @@ export function useAdminProducts() {
   useEffect(() => {
     loadData();
 
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("shewimy_products_updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+
     const db = getDb();
-    if (!db || !isFirebaseConfigured()) return;
+    if (!db || !isFirebaseConfigured()) {
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_products_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
+    }
 
     try {
       const itemsRef = collection(db, "items");
       const unsubscribe = onSnapshot(itemsRef, () => {
         loadData();
       });
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_products_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     } catch {
-      // non-blocking
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_products_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     }
   }, [loadData]);
 
@@ -330,17 +520,44 @@ export function useAdminRequests() {
   useEffect(() => {
     loadRequests();
 
+    const handleUpdate = () => {
+      loadRequests();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("shewimy_requests_updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+
     const db = getDb();
-    if (!db || !isFirebaseConfigured()) return;
+    if (!db || !isFirebaseConfigured()) {
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_requests_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
+    }
 
     try {
       const colRef = collection(db, "inspection_requests");
       const unsubscribe = onSnapshot(colRef, () => {
         loadRequests();
       });
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_requests_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     } catch {
-      // non-blocking
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("shewimy_requests_updated", handleUpdate);
+          window.removeEventListener("storage", handleUpdate);
+        }
+      };
     }
   }, [loadRequests]);
 

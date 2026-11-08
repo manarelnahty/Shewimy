@@ -1,0 +1,9 @@
+{
+  "uid": "admin-master",
+  "email": "admin@shewimy.com",
+  "password": "Shewimy@2026",
+  "displayName": "مدير النظام (الشويمي)",
+  "role": "super_admin",
+  "updatedAt": "2026-11-08T22:58:21.216Z",
+  "passwordUpdatedAt": "2026-11-09T00:00:00.000Z"
+}

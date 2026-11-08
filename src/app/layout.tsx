@@ -37,6 +37,18 @@ export const metadata: Metadata = {
     "سمنود",
   ],
   authors: [{ name: "Al Shewimy Kitchens" }],
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png?v=4", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png?v=4", sizes: "48x48", type: "image/png" },
+      { url: "/images/logo.png?v=4", type: "image/png" },
+      { url: "/favicon.ico?v=4", sizes: "32x32" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png?v=4", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon-32x32.png?v=4",
+  },
   openGraph: {
     title: "مطابخ الشويمي | Al Shewimy Kitchens",
     description: "مطابخ فاخرة تُصنع بحرفية استثنائية لمنزلك العصري.",
@@ -57,6 +69,12 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${cairo.variable} ${readexPro.variable} scroll-smooth`}
     >
+      <head>
+        <link rel="icon" href="/favicon-32x32.png?v=4" sizes="32x32" type="image/png" />
+        <link rel="icon" href="/favicon-48x48.png?v=4" sizes="48x48" type="image/png" />
+        <link rel="icon" href="/images/logo.png?v=4" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
+      </head>
       <body className="min-h-screen flex flex-col font-cairo bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">
         {children}
       </body>

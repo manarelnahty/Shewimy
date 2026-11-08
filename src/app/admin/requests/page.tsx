@@ -89,6 +89,8 @@ export default function AdminRequestsPage() {
         return "معاينة دريسنج روم وغرف ملابس";
       case "full_home_decor":
         return "ديكورات وتجاليد حوائط وأثاث متكامل";
+      case "other":
+        return "أخرى (استفسار / خدمة مخصصة)";
       default:
         return srv;
     }

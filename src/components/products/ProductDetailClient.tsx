@@ -22,6 +22,10 @@ import { BRANCHES_LIST, SHOWROOM_BRANCHES } from "@/data/branches";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { ConsultationDrawer } from "@/components/common/ConsultationDrawer";
 import { BranchSelectionModal } from "@/components/common/BranchSelectionModal";
+import { useBranches } from "@/lib/firebase";
+import { isValidImageUrl } from "@/lib/image";
+
+const FALLBACK_DETAIL_IMG = "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80";
 
 function WhatsAppIcon({ className = "w-4 h-4 shrink-0" }: { className?: string }) {
   return (
@@ -46,19 +50,25 @@ export function ProductDetailClient({
   relatedProducts,
 }: ProductDetailClientProps) {
   const galleryImages = useMemo(() => {
-    if (product.gallery && product.gallery.length > 0) {
-      return product.gallery;
+    const raw = [
+      product.coverImage || product.imageUrl,
+      ...(product.galleryImages || product.gallery || []),
+    ].filter((u): u is string => Boolean(u && isValidImageUrl(u)));
+    if (raw.length > 0) {
+      return Array.from(new Set(raw));
     }
-    return [product.imageUrl];
-  }, [product.gallery, product.imageUrl]);
+    return [FALLBACK_DETAIL_IMG];
+  }, [product.gallery, product.galleryImages, product.imageUrl, product.coverImage]);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
 
+  const { branches } = useBranches();
+
   const availableBranches = useMemo(() => {
-    return BRANCHES_LIST.filter((b) => product.branches.includes(b.id));
-  }, [product.branches]);
+    return branches.filter((b) => product.branches?.includes(b.id as any));
+  }, [branches, product.branches]);
 
   const handlePrevImage = () => {
     setActiveImageIndex((prev) =>
@@ -435,37 +445,42 @@ export function ProductDetailClient({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedProducts.slice(0, 3).map((rel) => (
-              <Link
-                key={rel.id}
-                href={`/products/${rel.id}`}
-                className="group bg-white rounded-2xl overflow-hidden border border-charcoal/10 shadow-2xs hover:shadow-lg transition-all duration-300 block"
-              >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#ECE8E1]">
-                  <Image
-                    src={rel.imageUrl}
-                    alt={rel.name}
-                    fill
-                    sizes="350px"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-white/95 text-primary text-[10px] font-bold font-mono">
-                    كود: {rel.code}
+            {relatedProducts.slice(0, 3).map((rel) => {
+              const relImg = isValidImageUrl(rel.coverImage || rel.imageUrl)
+                ? (rel.coverImage || rel.imageUrl)
+                : FALLBACK_DETAIL_IMG;
+              return (
+                <Link
+                  key={rel.id}
+                  href={`/products/${rel.id}`}
+                  className="group bg-white rounded-2xl overflow-hidden border border-charcoal/10 shadow-2xs hover:shadow-lg transition-all duration-300 block"
+                >
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#ECE8E1]">
+                    <Image
+                      src={relImg}
+                      alt={rel.name}
+                      fill
+                      sizes="350px"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-white/95 text-primary text-[10px] font-bold font-mono">
+                      كود: {rel.code}
+                    </div>
                   </div>
-                </div>
-                <div className="p-4 space-y-1.5 text-right">
-                  <span className="text-[11px] text-secondary font-bold block">
-                    {rel.subtitle}
-                  </span>
-                  <h3 className="text-sm font-bold text-primary group-hover:text-secondary transition-colors font-readex line-clamp-1">
-                    {rel.name}
-                  </h3>
-                  <p className="text-xs text-charcoal/60 line-clamp-1">
-                    {rel.description}
-                  </p>
-                </div>
-              </Link>
-            ))}
+                  <div className="p-4 space-y-1.5 text-right">
+                    <span className="text-[11px] text-secondary font-bold block">
+                      {rel.subtitle}
+                    </span>
+                    <h3 className="text-sm font-bold text-primary group-hover:text-secondary transition-colors font-readex line-clamp-1">
+                      {rel.name}
+                    </h3>
+                    <p className="text-xs text-charcoal/60 line-clamp-1">
+                      {rel.description}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}

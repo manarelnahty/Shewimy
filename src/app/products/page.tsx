@@ -11,6 +11,7 @@ import { productsData, Product, BranchKey } from "@/data/products";
 import { BRANCHES_LIST } from "@/data/branches";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { useProducts, useBranches } from "@/lib/firebase";
+import { ProductCard, ProductCardSkeleton } from "@/components/products/ProductCard";
 import {
   Search,
   ChevronDown,
@@ -410,7 +411,13 @@ export default function ProductsPage() {
         {/* PRODUCT CATALOG GRID */}
         <section className="py-10 lg:py-16">
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
-            {filteredProducts.length === 0 ? (
+            {loading && filteredProducts.length === 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="py-20 text-center space-y-4 max-w-md mx-auto">
                 <div className="w-16 h-16 rounded-full bg-[#f0eae1] flex items-center justify-center mx-auto text-charcoal/40">
                   <Search className="w-8 h-8" />
@@ -434,125 +441,14 @@ export default function ProductsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                {filteredProducts.map((product) => {
-                  const availableBranchObjects = branches.filter((b) =>
-                    product.branches.includes(b.id)
-                  );
-
-                  return (
-                    <article
-                      key={product.id}
-                      className="group bg-white rounded-2xl overflow-hidden border border-charcoal/10 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-                    >
-                      {/* Image & Top Badges */}
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#ECE8E1]">
-                        <Image
-                          src={product.imageUrl}
-                          alt={product.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                        {/* Top Badges */}
-                        <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                          <span className="px-2.5 py-1 rounded-md bg-[#1E2225]/85 backdrop-blur-md text-white text-[11px] font-semibold">
-                            {product.badgePrimary}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-md bg-white/95 backdrop-blur-md text-[#1F5E4B] text-[11px] font-bold">
-                            ضمان 15 سنة
-                          </span>
-                        </div>
-
-                        {/* Product Code Badge */}
-                        <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-white font-mono text-[10px] font-semibold">
-                          كود: {product.code}
-                        </div>
-                      </div>
-
-                      {/* Content Area */}
-                      <div className="p-4 sm:p-5 space-y-3 flex-1 flex flex-col justify-between">
-                        <div className="space-y-2">
-                          {/* Subcategory & Branch tags */}
-                          <div className="flex items-center justify-between gap-2 text-xs">
-                            <span className="text-[11px] text-secondary font-bold font-readex">
-                              {product.subCategory}
-                            </span>
-                            <span className="text-[11px] text-[#1F5E4B] font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
-                              {availableBranchObjects.length === 3
-                                ? "متوفر بـ 3 فروع"
-                                : availableBranchObjects.map((b) => b.id === "mansoura" ? "المنصورة" : b.id === "mahalla" ? "المحلة" : "سمنود").join(" • ")}
-                            </span>
-                          </div>
-
-                          {/* Title */}
-                          <Link href={`/products/${product.id}`} className="block">
-                            <h2 className="text-base sm:text-lg font-bold text-primary hover:text-secondary transition-colors font-readex leading-snug line-clamp-1">
-                              {product.name}
-                            </h2>
-                          </Link>
-
-                          {/* Description */}
-                          <p className="text-xs text-charcoal/70 line-clamp-2 leading-relaxed">
-                            {product.description}
-                          </p>
-
-                          {/* Materials Badges (DRD Section 3) */}
-                          <div className="flex flex-wrap items-center justify-start gap-1 pt-1">
-                            {product.materials.slice(0, 3).map((mat, i) => (
-                              <span
-                                key={i}
-                                className="px-2 py-0.5 rounded bg-surface-container-low border border-charcoal/10 text-charcoal/80 text-[10px] font-medium"
-                              >
-                                ✓ {mat}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Price */}
-                        <div className="pt-2 border-t border-charcoal/10 flex items-center justify-between">
-                          <div>
-                            <span className="text-[10px] text-charcoal/50 block">
-                              {product.pricingMode === "per_meter"
-                                ? "تسعير بالمتر المربع"
-                                : "استفسار وتسعير بالواتساب"}
-                            </span>
-                            <span className="text-sm sm:text-base font-extrabold text-primary font-mono">
-                              {product.priceDisplay}
-                            </span>
-                          </div>
-                          <span className="text-[10px] text-charcoal/60 bg-surface-container-low px-2 py-1 rounded">
-                            {product.pricingMode === "whatsapp_quote" ? "عرض سعر فوري" : "حسب المقاس"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="p-4 sm:p-5 pt-0 space-y-2">
-                        {/* WhatsApp CTA Button */}
-                        <button
-                          type="button"
-                          onClick={() => setBranchModalProduct(product)}
-                          className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 cursor-pointer border border-[#1F5E4B]/15"
-                        >
-                          <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
-                          <span>استفسر وتواصل مع واتساب الفرع</span>
-                        </button>
-
-                        {/* Details Page Link */}
-                        <Link
-                          href={`/products/${product.id}`}
-                          className="w-full inline-flex items-center justify-center gap-2 bg-[#F5F4F0] hover:bg-[#EAE8E2] text-charcoal text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-charcoal/5"
-                        >
-                          <span>المواصفات الفنية والمقاسات</span>
-                          <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
-                        </Link>
-                      </div>
-                    </article>
-                  );
-                })}
+                {filteredProducts.map((product, idx) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onWhatsAppClick={(prod) => setBranchModalProduct(prod)}
+                    priority={idx < 2}
+                  />
+                ))}
               </div>
             )}
           </div>

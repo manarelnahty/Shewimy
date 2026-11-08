@@ -12,7 +12,11 @@ interface ConsultationDrawerProps {
   defaultBranch?: BranchId;
 }
 
-const SERVICE_OPTIONS: { id: "kitchen_3d" | "dressing_inspection" | "full_home_decor"; label: string; desc: string }[] = [
+const SERVICE_OPTIONS: {
+  id: "kitchen_3d" | "dressing_inspection" | "full_home_decor" | "other";
+  label: string;
+  desc: string;
+}[] = [
   {
     id: "kitchen_3d",
     label: "رفع مقاسات وتصميم 3D لمطبخ حديث",
@@ -28,6 +32,11 @@ const SERVICE_OPTIONS: { id: "kitchen_3d" | "dressing_inspection" | "full_home_d
     label: "ديكور وتأثيث منزلي متكامل (أثاث، تجاليد، شبابيك UPVC)",
     desc: "باقة متكاملة للمنازل والفيلات الراقية",
   },
+  {
+    id: "other",
+    label: "أخرى (استفسار أو خدمة مخصصة)",
+    desc: "طلب مقايسة خاصة، تجديد، أو استفسار عن خدمات وديكورات أخرى",
+  },
 ];
 
 export function ConsultationDrawer({
@@ -42,7 +51,11 @@ export function ConsultationDrawer({
     fullName: "",
     phone: "",
     branch: defaultBranch,
-    requestedService: "kitchen_3d" as "kitchen_3d" | "dressing_inspection" | "full_home_decor",
+    requestedService: "kitchen_3d" as
+      | "kitchen_3d"
+      | "dressing_inspection"
+      | "full_home_decor"
+      | "other",
     customerNotes: "",
   });
 
@@ -272,12 +285,18 @@ export function ConsultationDrawer({
                 htmlFor="consultation-notes"
                 className="block text-xs font-bold text-charcoal/80 mb-1.5"
               >
-                ملاحظات حول المكان أو موعد الزيارة المفضل (اختياري)
+                {formData.requestedService === "other"
+                  ? "تفاصيل الاستفسار أو الخدمة المطلوبة *"
+                  : "ملاحظات حول المكان أو موعد الزيارة المفضل (اختياري)"}
               </label>
               <textarea
                 id="consultation-notes"
                 rows={2}
-                placeholder="مثلاً: المساحة التقريبية للمطبخ، المدينة أو الحي، تفضيل الزيارة مساءً..."
+                placeholder={
+                  formData.requestedService === "other"
+                    ? "اكتب تفاصيل طلبك أو استفسارك هنا، وسيتواصل معك مهندس الشويمي مباشرة..."
+                    : "مثلاً: المساحة التقريبية للمطبخ، المدينة أو الحي، تفضيل الزيارة مساءً..."
+                }
                 value={formData.customerNotes}
                 onChange={(e) =>
                   setFormData({ ...formData, customerNotes: e.target.value })

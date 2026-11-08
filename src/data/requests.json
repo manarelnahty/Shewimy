@@ -1,0 +1,23 @@
+[
+  {
+    "id": "req-1794177615951",
+    "clientName": "منار",
+    "phoneNumber": "01000000000",
+    "selectedBranch": "mansoura",
+    "requestedService": "other",
+    "customerNotes": "",
+    "status": "deal_closed",
+    "createdAt": "2026-11-08T22:40:15.951Z",
+    "updatedAt": "2026-11-08T22:40:38.753Z"
+  },
+  {
+    "id": "req-1794177489222",
+    "clientName": "أحمد محمود",
+    "phoneNumber": "01012345678",
+    "selectedBranch": "mansoura",
+    "requestedService": "other",
+    "customerNotes": "استفسار عن تجليد جداري رخام وبديل خشب لفيلا بالمنصورة",
+    "status": "new",
+    "createdAt": "2026-11-08T22:38:09.223Z"
+  }
+]

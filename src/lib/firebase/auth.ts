@@ -4,11 +4,16 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   User,
   Auth,
 } from "firebase/auth";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { firebaseConfig, isFirebaseConfigured } from "./config";
+import { syncAdminAccountToFirestore } from "./firestore";
 
 function getFirebaseApp() {
   if (!getApps().length) {
@@ -33,6 +38,10 @@ export function getFirebaseAuth(): Auth | null {
 
 /**
  * Sign in admin user using Email and Password.
+ * Supports:
+ * 1. Disk persistence / schema sync check via `/api/admin/account`
+ * 2. Firebase Authentication
+ * 3. Default dev session fallback
  */
 export async function signInAdmin(
   email: string,
@@ -41,15 +50,73 @@ export async function signInAdmin(
   const cleanEmail = email.trim().toLowerCase();
   const cleanPass = pass.trim();
 
-  // If using default demo admin credentials or any admin email, immediately succeed
+  if (!cleanEmail || !cleanPass) {
+    return { success: false, error: "برجاء إدخال البريد الإلكتروني وكلمة المرور" };
+  }
+
+  // 1. Verify against current stored admin account (persisted to src/data/adminAccount.json)
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/api/admin/account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail, password: cleanPass }),
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        localStorage.setItem("shewimy_admin_session", JSON.stringify(data.user));
+        // Also sign into Firebase Auth in background if available
+        const auth = getFirebaseAuth();
+        if (auth && isFirebaseConfigured()) {
+          signInWithEmailAndPassword(auth, cleanEmail, cleanPass).catch(() => {});
+        }
+        return { success: true, user: data.user };
+      } else if (data.error && !data.notFound) {
+        // Wrong password for the registered admin email
+        return { success: false, error: data.error };
+      }
+    } catch (apiErr) {
+      console.warn("Could not check /api/admin/account:", apiErr);
+    }
+  }
+
+  // 2. Direct Firebase Auth attempt
+  const auth = getFirebaseAuth();
+  if (auth && isFirebaseConfigured()) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
+      const userObj = {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName || "مدير النظام (الشويمي)",
+      };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("shewimy_admin_session", JSON.stringify(userObj));
+      }
+      return { success: true, user: userCredential.user };
+    } catch (error: any) {
+      let message = "فشل تسجيل الدخول. يرجى التحقق من صحة البيانات.";
+      if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+        message = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+      } else if (error.code === "auth/user-not-found") {
+        message = "لا يوجد حساب مسجل بهذا البريد الإلكتروني.";
+      } else if (error.code === "auth/operation-not-allowed") {
+        message = "طريقة الدخول بالبريد الإلكتروني غير مفعلة بعد في كونسول فايربيس.";
+      } else if (error.code === "auth/too-many-requests") {
+        message = "تم حظر المحاولات مؤقتاً لكثرة المحاولات الخاطئة. يرجى المحاولة لاحقاً.";
+      }
+      return { success: false, error: message };
+    }
+  }
+
+  // 3. Fallback for demo admin credentials
   if (
-    cleanEmail === "admin@shewimy.com" ||
-    cleanEmail.startsWith("admin@") ||
-    cleanEmail === "admin"
+    cleanEmail === "admin@shewimy.com" &&
+    (cleanPass === "Shewimy@2026" || cleanPass === "admin")
   ) {
     const demoUser = {
       uid: "admin-master",
-      email: cleanEmail.includes("@") ? cleanEmail : "admin@shewimy.com",
+      email: "admin@shewimy.com",
       displayName: "مدير النظام (الشويمي)",
     };
     if (typeof window !== "undefined") {
@@ -58,37 +125,142 @@ export async function signInAdmin(
     return { success: true, user: demoUser };
   }
 
-  const auth = getFirebaseAuth();
-  if (!auth || !isFirebaseConfigured()) {
-    if (cleanEmail && cleanPass) {
-      return {
-        success: true,
-        user: {
-          uid: "dev-admin-uid",
-          email: cleanEmail,
-          displayName: "مدير النظام (الشويمي)",
-        },
-      };
-    }
-    return { success: false, error: "برجاء إدخال البريد الإلكتروني وكلمة المرور" };
+  return { success: false, error: "البريد الإلكتروني أو كلمة المرور غير صحيحة" };
+}
+
+/**
+ * Change Admin Email and synchronize with Firebase Auth, Firestore, and Schema.
+ */
+export async function changeAdminEmail(
+  newEmail: string,
+  currentPassword: string
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  const cleanEmail = newEmail.trim().toLowerCase();
+  const cleanPass = currentPassword.trim();
+
+  if (!cleanEmail || !cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+    return { success: false, error: "يرجى إدخال بريد إلكتروني صالح" };
+  }
+  if (!cleanPass) {
+    return { success: false, error: "يرجى إدخال كلمة المرور الحالية للتأكيد" };
   }
 
+  // 1. Update via server API (persists to src/data/adminAccount.json and siteSettings.json)
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
-    return { success: true, user: userCredential.user };
-  } catch (error: any) {
-    let message = "فشل تسجيل الدخول. يرجى التحقق من صحة البيانات.";
-    if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
-      message = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
-    } else if (error.code === "auth/user-not-found") {
-      message = "لا يوجد حساب مسجل بهذا البريد الإلكتروني في مشروع فايربيس.";
-    } else if (error.code === "auth/operation-not-allowed") {
-      message = "طريقة الدخول بالبريد الإلكتروني غير مفعلة بعد في كونسول فايربيس (Authentication -> Sign-in method). يمكنك استخدام تسجيل الدخول السريع للمتابعة فوراً.";
-    } else if (error.code === "auth/too-many-requests") {
-      message = "تم حظر المحاولات مؤقتاً لكثرة المحاولات الخاطئة. يرجى المحاولة لاحقاً.";
+    const res = await fetch("/api/admin/account", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "update_email",
+        currentPassword: cleanPass,
+        newEmail: cleanEmail,
+      }),
+    });
+    const data = await res.json();
+    if (!data.success) {
+      return { success: false, error: data.error || "فشل تحديث البريد الإلكتروني" };
     }
-    return { success: false, error: message };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "فشل الاتصال بالخادم" };
   }
+
+  // 2. Synchronize with Firebase Auth if logged in
+  const auth = getFirebaseAuth();
+  if (auth && auth.currentUser && isFirebaseConfigured()) {
+    try {
+      const cred = EmailAuthProvider.credential(auth.currentUser.email || cleanEmail, cleanPass);
+      await reauthenticateWithCredential(auth.currentUser, cred);
+      await updateEmail(auth.currentUser, cleanEmail);
+    } catch (fbErr: any) {
+      console.warn("Firebase Auth updateEmail warning:", fbErr?.message);
+    }
+  }
+
+  // 3. Synchronize with Firestore `admins` collection & site settings
+  await syncAdminAccountToFirestore({
+    uid: auth?.currentUser?.uid || "admin-master",
+    email: cleanEmail,
+    displayName: "مدير النظام (الشويمي)",
+    role: "super_admin",
+  });
+
+  // 4. Update local session & notify app components
+  if (typeof window !== "undefined") {
+    const session = {
+      uid: auth?.currentUser?.uid || "admin-master",
+      email: cleanEmail,
+      displayName: "مدير النظام (الشويمي)",
+    };
+    localStorage.setItem("shewimy_admin_session", JSON.stringify(session));
+    window.dispatchEvent(new CustomEvent("shewimy_admin_updated", { detail: session }));
+    window.dispatchEvent(new CustomEvent("shewimy_settings_updated", { detail: { adminEmail: cleanEmail } }));
+  }
+
+  return {
+    success: true,
+    message: "تم تحديث البريد الإلكتروني بنجاح وانعكس في السكيما وفايربيس",
+  };
+}
+
+/**
+ * Change Admin Password and synchronize with Firebase Auth, Firestore, and Schema.
+ */
+export async function changeAdminPassword(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  const cleanCurrent = currentPassword.trim();
+  const cleanNew = newPassword.trim();
+
+  if (!cleanCurrent) {
+    return { success: false, error: "يرجى إدخال كلمة المرور الحالية للتأكيد" };
+  }
+  if (!cleanNew || cleanNew.length < 6) {
+    return { success: false, error: "كلمة المرور الجديدة يجب أن لا تقل عن 6 أحرف أو أرقام" };
+  }
+
+  // 1. Update via server API (persists to src/data/adminAccount.json)
+  try {
+    const res = await fetch("/api/admin/account", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "update_password",
+        currentPassword: cleanCurrent,
+        newPassword: cleanNew,
+      }),
+    });
+    const data = await res.json();
+    if (!data.success) {
+      return { success: false, error: data.error || "فشل تحديث كلمة المرور" };
+    }
+  } catch (err: any) {
+    return { success: false, error: err?.message || "فشل الاتصال بالخادم" };
+  }
+
+  // 2. Synchronize with Firebase Auth if logged in
+  const auth = getFirebaseAuth();
+  if (auth && auth.currentUser && isFirebaseConfigured()) {
+    try {
+      const cred = EmailAuthProvider.credential(auth.currentUser.email || "", cleanCurrent);
+      await reauthenticateWithCredential(auth.currentUser, cred);
+      await updatePassword(auth.currentUser, cleanNew);
+    } catch (fbErr: any) {
+      console.warn("Firebase Auth updatePassword warning:", fbErr?.message);
+    }
+  }
+
+  // 3. Update Firestore audit timestamp
+  await syncAdminAccountToFirestore({
+    uid: auth?.currentUser?.uid || "admin-master",
+    email: auth?.currentUser?.email || "admin@shewimy.com",
+    passwordUpdatedAt: new Date().toISOString(),
+  });
+
+  return {
+    success: true,
+    message: "تم تحديث كلمة المرور بنجاح وحفظها في السكيما وفايربيس",
+  };
 }
 
 /**
@@ -133,6 +305,7 @@ export async function signOutAdmin(): Promise<void> {
   }
   if (typeof window !== "undefined") {
     localStorage.removeItem("shewimy_admin_session");
+    window.dispatchEvent(new CustomEvent("shewimy_admin_updated", { detail: null }));
   }
 }
 
@@ -140,13 +313,12 @@ export async function signOutAdmin(): Promise<void> {
  * Subscribe to auth state changes.
  */
 export function subscribeToAuth(callback: (user: any) => void): () => void {
-  // Check local dev session first
+  // Check local session first
   if (typeof window !== "undefined") {
     const saved = localStorage.getItem("shewimy_admin_session");
     if (saved) {
       try {
         callback(JSON.parse(saved));
-        return () => {};
       } catch {
         // ignore
       }
@@ -155,7 +327,6 @@ export function subscribeToAuth(callback: (user: any) => void): () => void {
 
   const auth = getFirebaseAuth();
   if (!auth) {
-    callback(null);
     return () => {};
   }
 

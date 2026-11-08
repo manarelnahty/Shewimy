@@ -26,6 +26,7 @@ import {
   SiteSettings,
   DEFAULT_SITE_SETTINGS,
 } from "@/types/shewimy";
+import siteSettingsData from "@/data/siteSettings.json";
 import { productsData, Product } from "@/data/products";
 import { SHOWROOM_BRANCHES, BRANCHES_LIST, BranchExtended } from "@/data/branches";
 
@@ -118,8 +119,31 @@ export async function fetchProducts(filters?: {
   branch?: string;
   featuredOnly?: boolean;
 }): Promise<Product[]> {
-  const db = getDb();
+  // 1. Fetch from /api/products first (persisted to disk at src/data/products.json)
+  if (typeof window !== "undefined") {
+    try {
+      const params = new URLSearchParams();
+      if (filters?.section) params.set("section", filters.section);
+      if (filters?.branch) params.set("branch", filters.branch);
+      if (filters?.featuredOnly) params.set("featuredOnly", "true");
+      params.set("_t", Date.now().toString());
 
+      const res = await fetch(`/api/products?${params.toString()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.products)) {
+          return data.products;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/products:", apiErr);
+    }
+  }
+
+  // 2. Check Firestore if configured
+  const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
       const itemsRef = collection(db, "items");
@@ -247,18 +271,39 @@ export async function fetchProductById(id: string): Promise<Product | null> {
 }
 
 /**
- * Fetch branches dynamically from Firestore `branches` collection (DRD Section 4).
+ * Fetch branches dynamically:
+ * 1. Reads from /api/branches (persisted to disk at src/data/branches.json).
+ * 2. Checks Firestore if configured.
+ * 3. Fallback to localStorage or BRANCHES_LIST.
  */
 export async function fetchBranches(): Promise<BranchExtended[]> {
-  const db = getDb();
+  // 1. Fetch fresh authoritative branches from /api/branches first
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/branches?_t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
+          localStorage.setItem("shewimy_branches", JSON.stringify(data.branches));
+          return data.branches;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/branches:", apiErr);
+    }
+  }
 
+  // 2. Check Firestore if configured
+  const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
       const branchesRef = collection(db, "branches");
       const snapshot = await getDocs(branchesRef);
 
       if (!snapshot.empty) {
-        return snapshot.docs.map((docSnap) => {
+        const liveBranches = snapshot.docs.map((docSnap) => {
           const data = docSnap.data();
           const branchId = docSnap.id as BranchId;
           const fallbackBranch = SHOWROOM_BRANCHES[branchId] || SHOWROOM_BRANCHES.mansoura;
@@ -275,9 +320,28 @@ export async function fetchBranches(): Promise<BranchExtended[]> {
             regionServed: data.regionServed || fallbackBranch.regionServed,
           };
         });
+        if (typeof window !== "undefined") {
+          localStorage.setItem("shewimy_branches", JSON.stringify(liveBranches));
+        }
+        return liveBranches;
       }
     } catch (err) {
       console.warn("Firestore fetchBranches error, using fallback:", err);
+    }
+  }
+
+  // 3. Fallback to localStorage if offline
+  if (typeof window !== "undefined") {
+    try {
+      const local = localStorage.getItem("shewimy_branches");
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {
+      // ignore
     }
   }
 
@@ -285,28 +349,57 @@ export async function fetchBranches(): Promise<BranchExtended[]> {
 }
 
 /**
- * Creates a new inspection request in Firestore collection `inspection_requests` (DRD Section 6).
+ * Creates a new inspection request:
+ * 1. Persists to /api/requests (saved to src/data/requests.json on disk).
+ * 2. Broadcasts 'shewimy_requests_updated' event for instant multi-tab sync.
+ * 3. Persists to Firestore if configured.
  */
 export async function createInspectionRequest(
   data: Omit<InspectionRequest, "id" | "createdAt" | "status">
 ): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const db = getDb();
-    if (!db || !isFirebaseConfigured()) {
-      return { success: true, id: `local-${Date.now()}` };
+    let createdId = `req-${Date.now()}`;
+
+    // 1. Persist to /api/requests
+    if (typeof window !== "undefined") {
+      try {
+        const res = await fetch("/api/requests", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.request?.id) {
+            createdId = resData.request.id;
+          }
+        }
+        window.dispatchEvent(new CustomEvent("shewimy_requests_updated"));
+      } catch (apiErr) {
+        console.warn("Could not save to /api/requests:", apiErr);
+      }
     }
 
-    const docRef = await addDoc(collection(db, "inspection_requests"), {
-      clientName: data.clientName.trim(),
-      phoneNumber: data.phoneNumber.trim(),
-      selectedBranch: data.selectedBranch,
-      requestedService: data.requestedService,
-      customerNotes: data.customerNotes?.trim() || "",
-      status: "new",
-      createdAt: serverTimestamp(),
-    });
+    // 2. Persist to Firestore if configured
+    const db = getDb();
+    if (db && isFirebaseConfigured()) {
+      try {
+        const docRef = await addDoc(collection(db, "inspection_requests"), {
+          clientName: data.clientName.trim(),
+          phoneNumber: data.phoneNumber.trim(),
+          selectedBranch: data.selectedBranch,
+          requestedService: data.requestedService,
+          customerNotes: data.customerNotes?.trim() || "",
+          status: "new",
+          createdAt: serverTimestamp(),
+        });
+        createdId = docRef.id;
+      } catch (fsErr) {
+        console.warn("Firestore inspection request warning:", fsErr);
+      }
+    }
 
-    return { success: true, id: docRef.id };
+    return { success: true, id: createdId };
   } catch (error) {
     console.error("Error creating inspection request:", error);
     return {
@@ -418,6 +511,23 @@ export async function seedFirestore(): Promise<{
  * Fetch all products for Admin panel (including drafts and archived items).
  */
 export async function fetchAllProductsAdmin(): Promise<Product[]> {
+  // 1. Fetch from /api/products first
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/products?_t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.products)) {
+          return data.products;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/products for admin:", apiErr);
+    }
+  }
+
   const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
@@ -436,17 +546,15 @@ export async function fetchAllProductsAdmin(): Promise<Product[]> {
 }
 
 /**
- * Create or add a new product in Firestore.
+ * Create or add a new product.
+ * 1. Persists to /api/products (saved to disk at src/data/products.json).
+ * 2. Broadcasts 'shewimy_products_updated' event.
+ * 3. Persists to Firestore if configured.
  */
 export async function createProduct(
   data: Partial<Product>
 ): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const db = getDb();
-    if (!db) {
-      return { success: false, error: "قاعدة البيانات غير متصلة" };
-    }
-
     const docId = data.id || `prod-${Date.now()}`;
     const slug =
       data.slug ||
@@ -456,42 +564,38 @@ export async function createProduct(
         .replace(/^-+|-+$/g, "") ||
       docId;
 
-    const itemRef = doc(db, "items", docId);
-    const payload = {
-      id: docId,
-      code: data.code || `SHW-${docId.slice(-3).toUpperCase()}`,
-      title: data.name || data.title || "موديل جديد",
-      slug: slug,
-      mainSection: data.mainSection || data.category || "kitchens",
-      category: data.mainSection || data.category || "kitchens",
-      subCategory: data.subCategory || "تصميم مخصص",
-      materials: Array.isArray(data.materials) ? data.materials : ["شاسيه كونتر أوروبي", "لزق ألماني PUR"],
-      features: Array.isArray(data.features) ? data.features : [],
-      coverImage: data.imageUrl || data.coverImage || "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
-      imageUrl: data.imageUrl || data.coverImage || "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
-      galleryImages: Array.isArray(data.gallery) && data.gallery.length > 0 ? data.gallery : [data.imageUrl || ""],
-      gallery: Array.isArray(data.gallery) && data.gallery.length > 0 ? data.gallery : [data.imageUrl || ""],
-      warrantyYears: data.warrantyYears ?? 15,
-      isFeatured: Boolean(data.isFeatured ?? data.featured),
-      featured: Boolean(data.isFeatured ?? data.featured),
-      status: data.status || "published",
-      pricingMode: data.pricingMode || "whatsapp_quote",
-      basePrice: data.basePrice ?? data.price ?? null,
-      price: data.price ?? data.basePrice ?? 95000,
-      priceDisplay: data.priceDisplay || (data.basePrice ? `${data.basePrice.toLocaleString()} ج.م` : "طلب مقايسة وتسعير"),
-      priceNote: data.priceNote || "السعر يشمل الرفع الهندسي، التصنيع، والتركيب الفندقي",
-      description: data.description || "أعمال خشبية ومطابخ حديثة مخصصة وفق أحدث معايير الجودة.",
-      dimensions: data.dimensions || "تفصيل حسب أبعاد مساحة العميل بدقة هندسية",
-      hardware: data.hardware || "مفصلات ومجاري هيدروليك بلوم نمساوية",
-      finish: data.finish || "دهانات وتشطيبات أوروبية معالجة",
-      chassis: data.chassis || "كونتر أوروبي مكبوس ألماني",
-      leadTime: data.leadTime || "من 25 إلى 35 يوم عمل",
-      branches: Array.isArray(data.branches) && data.branches.length > 0 ? data.branches : ["mansoura", "mahalla", "samanoud"],
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    };
+    // 1. Persist to /api/products
+    if (typeof window !== "undefined") {
+      try {
+        await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, id: docId, slug }),
+        });
+        window.dispatchEvent(new CustomEvent("shewimy_products_updated"));
+      } catch (apiErr) {
+        console.warn("Could not save to /api/products:", apiErr);
+      }
+    }
 
-    await setDoc(itemRef, payload, { merge: true });
+    // 2. Persist to Firestore if available
+    const db = getDb();
+    if (db && isFirebaseConfigured()) {
+      try {
+        const itemRef = doc(db, "items", docId);
+        const payload = {
+          ...data,
+          id: docId,
+          slug,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
+        await setDoc(itemRef, payload, { merge: true });
+      } catch (fsErr) {
+        console.warn("Firestore setDoc product warning:", fsErr);
+      }
+    }
+
     return { success: true, id: docId };
   } catch (error: any) {
     console.error("Error creating product:", error);
@@ -500,68 +604,50 @@ export async function createProduct(
 }
 
 /**
- * Update existing product in Firestore.
+ * Update existing product.
+ * 1. Persists to /api/products (saved to disk at src/data/products.json).
+ * 2. Broadcasts 'shewimy_products_updated' event.
+ * 3. Persists to Firestore if configured.
  */
 export async function updateProduct(
   id: string,
   updates: Partial<Product>
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // 1. Persist to /api/products
+    if (typeof window !== "undefined") {
+      try {
+        await fetch("/api/products", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, ...updates }),
+        });
+        window.dispatchEvent(new CustomEvent("shewimy_products_updated"));
+      } catch (apiErr) {
+        console.warn("Could not update /api/products:", apiErr);
+      }
+    }
+
+    // 2. Persist to Firestore if available
     const db = getDb();
-    if (!db) {
-      return { success: false, error: "قاعدة البيانات غير متصلة" };
+    if (db && isFirebaseConfigured()) {
+      try {
+        const itemRef = doc(db, "items", id);
+        const payload: Record<string, any> = {
+          ...updates,
+          updatedAt: serverTimestamp(),
+        };
+        if (updates.name !== undefined) payload.title = updates.name;
+        if (updates.title !== undefined) payload.title = updates.title;
+        if (updates.coverImage !== undefined) payload.imageUrl = updates.coverImage;
+        if (updates.galleryImages !== undefined) payload.gallery = updates.galleryImages;
+
+        await updateDoc(itemRef, payload);
+      } catch (fsErr) {
+        console.warn("Firestore updateDoc product warning:", fsErr);
+      }
     }
 
-    const itemRef = doc(db, "items", id);
-    const payload: Record<string, any> = {
-      updatedAt: serverTimestamp(),
-    };
-
-    if (updates.name !== undefined) {
-      payload.title = updates.name;
-    }
-    if (updates.title !== undefined) payload.title = updates.title;
-    if (updates.slug !== undefined) payload.slug = updates.slug;
-    if (updates.mainSection !== undefined) {
-      payload.mainSection = updates.mainSection;
-      payload.category = updates.mainSection;
-    }
-    if (updates.subCategory !== undefined) payload.subCategory = updates.subCategory;
-    if (updates.materials !== undefined) payload.materials = updates.materials;
-    if (updates.features !== undefined) payload.features = updates.features;
-    if (updates.imageUrl !== undefined) {
-      payload.imageUrl = updates.imageUrl;
-      payload.coverImage = updates.imageUrl;
-    }
-    if (updates.coverImage !== undefined) {
-      payload.coverImage = updates.coverImage;
-      payload.imageUrl = updates.coverImage;
-    }
-    if (updates.gallery !== undefined) {
-      payload.gallery = updates.gallery;
-      payload.galleryImages = updates.gallery;
-    }
-    if (updates.warrantyYears !== undefined) payload.warrantyYears = updates.warrantyYears;
-    if (updates.isFeatured !== undefined) {
-      payload.isFeatured = updates.isFeatured;
-      payload.featured = updates.isFeatured;
-    }
-    if (updates.featured !== undefined) {
-      payload.isFeatured = updates.featured;
-      payload.featured = updates.featured;
-    }
-    if (updates.status !== undefined) payload.status = updates.status;
-    if (updates.pricingMode !== undefined) payload.pricingMode = updates.pricingMode;
-    if (updates.basePrice !== undefined) payload.basePrice = updates.basePrice;
-    if (updates.price !== undefined) payload.price = updates.price;
-    if (updates.priceDisplay !== undefined) payload.priceDisplay = updates.priceDisplay;
-    if (updates.priceNote !== undefined) payload.priceNote = updates.priceNote;
-    if (updates.description !== undefined) payload.description = updates.description;
-    if (updates.hardware !== undefined) payload.hardware = updates.hardware;
-    if (updates.leadTime !== undefined) payload.leadTime = updates.leadTime;
-    if (updates.branches !== undefined) payload.branches = updates.branches;
-
-    await updateDoc(itemRef, payload);
     return { success: true };
   } catch (error: any) {
     console.error("Error updating product:", error);
@@ -570,18 +656,38 @@ export async function updateProduct(
 }
 
 /**
- * Delete product from Firestore.
+ * Delete product.
+ * 1. Persists deletion to /api/products.
+ * 2. Broadcasts 'shewimy_products_updated' event.
+ * 3. Persists to Firestore if configured.
  */
 export async function deleteProduct(
   id: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const db = getDb();
-    if (!db) {
-      return { success: false, error: "قاعدة البيانات غير متصلة" };
+    // 1. Delete from /api/products
+    if (typeof window !== "undefined") {
+      try {
+        await fetch(`/api/products?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+        window.dispatchEvent(new CustomEvent("shewimy_products_updated"));
+      } catch (apiErr) {
+        console.warn("Could not delete from /api/products:", apiErr);
+      }
     }
-    const itemRef = doc(db, "items", id);
-    await deleteDoc(itemRef);
+
+    // 2. Delete from Firestore if available
+    const db = getDb();
+    if (db && isFirebaseConfigured()) {
+      try {
+        const itemRef = doc(db, "items", id);
+        await deleteDoc(itemRef);
+      } catch (fsErr) {
+        console.warn("Firestore deleteDoc product warning:", fsErr);
+      }
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("Error deleting product:", error);
@@ -590,9 +696,29 @@ export async function deleteProduct(
 }
 
 /**
- * Fetch all inspection requests for Admin.
+ * Fetch all inspection requests for Admin:
+ * 1. Reads from /api/requests (persisted to src/data/requests.json on disk).
+ * 2. Checks Firestore if configured.
  */
 export async function fetchInspectionRequests(): Promise<InspectionRequest[]> {
+  // 1. Fetch from /api/requests first
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/requests?_t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.requests)) {
+          return data.requests;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/requests:", apiErr);
+    }
+  }
+
+  // 2. Check Firestore if configured
   const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
@@ -607,7 +733,6 @@ export async function fetchInspectionRequests(): Promise<InspectionRequest[]> {
       }
     } catch (err) {
       console.warn("Error fetching inspection requests:", err);
-      // Fallback query without orderBy in case indexing is pending
       try {
         const colRef = collection(db, "inspection_requests");
         const snapshot = await getDocs(colRef);
@@ -631,13 +756,34 @@ export async function updateInspectionRequestStatus(
   status: InspectionRequest["status"]
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // 1. Persist to /api/requests
+    if (typeof window !== "undefined") {
+      try {
+        await fetch("/api/requests", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status }),
+        });
+        window.dispatchEvent(new CustomEvent("shewimy_requests_updated"));
+      } catch (apiErr) {
+        console.warn("Could not update /api/requests:", apiErr);
+      }
+    }
+
+    // 2. Persist to Firestore if configured
     const db = getDb();
-    if (!db) return { success: false, error: "قاعدة البيانات غير متصلة" };
-    const docRef = doc(db, "inspection_requests", id);
-    await updateDoc(docRef, {
-      status,
-      updatedAt: serverTimestamp(),
-    });
+    if (db && isFirebaseConfigured()) {
+      try {
+        const docRef = doc(db, "inspection_requests", id);
+        await updateDoc(docRef, {
+          status,
+          updatedAt: serverTimestamp(),
+        });
+      } catch (fsErr) {
+        console.warn("Firestore updateDoc request warning:", fsErr);
+      }
+    }
+
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error?.message || "فشل تحديث حالة الطلب" };
@@ -651,35 +797,93 @@ export async function deleteInspectionRequest(
   id: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // 1. Delete from /api/requests
+    if (typeof window !== "undefined") {
+      try {
+        await fetch(`/api/requests?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+        window.dispatchEvent(new CustomEvent("shewimy_requests_updated"));
+      } catch (apiErr) {
+        console.warn("Could not delete from /api/requests:", apiErr);
+      }
+    }
+
+    // 2. Delete from Firestore if configured
     const db = getDb();
-    if (!db) return { success: false, error: "قاعدة البيانات غير متصلة" };
-    const docRef = doc(db, "inspection_requests", id);
-    await deleteDoc(docRef);
+    if (db && isFirebaseConfigured()) {
+      try {
+        const docRef = doc(db, "inspection_requests", id);
+        await deleteDoc(docRef);
+      } catch (fsErr) {
+        console.warn("Firestore deleteDoc request warning:", fsErr);
+      }
+    }
+
     return { success: true };
   } catch (error: any) {
+    console.error("Error deleting request:", error);
     return { success: false, error: error?.message || "فشل حذف الطلب" };
   }
 }
 
 /**
- * Update branch details in Firestore.
+ * Update branch details:
+ * 1. Persists to /api/branches (saved to src/data/branches.json on disk).
+ * 2. Updates browser localStorage and broadcasts 'shewimy_branches_updated' custom event.
+ * 3. Persists to Firestore if db is available.
  */
 export async function updateBranch(
   branchId: BranchId,
   data: Partial<ShowroomBranch>
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // 1. In browser, save to localStorage and broadcast event for instant multi-tab sync
+    if (typeof window !== "undefined") {
+      try {
+        const existing = localStorage.getItem("shewimy_branches");
+        const prev: BranchExtended[] = existing ? JSON.parse(existing) : BRANCHES_LIST;
+        const updated = prev.map((b) => (b.id === branchId ? { ...b, ...data } : b));
+        localStorage.setItem("shewimy_branches", JSON.stringify(updated));
+        window.dispatchEvent(
+          new CustomEvent("shewimy_branches_updated", {
+            detail: { branchId, data, branches: updated },
+          })
+        );
+      } catch (storageErr) {
+        console.warn("localStorage branch save error:", storageErr);
+      }
+
+      // 2. Persist to server /api/branches
+      try {
+        await fetch("/api/branches", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ branchId, ...data }),
+        });
+      } catch (apiErr) {
+        console.warn("Could not save to /api/branches:", apiErr);
+      }
+    }
+
+    // 3. Persist to Firestore if available
     const db = getDb();
-    if (!db) return { success: false, error: "قاعدة البيانات غير متصلة" };
-    const docRef = doc(db, "branches", branchId);
-    await setDoc(
-      docRef,
-      {
-        ...data,
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
+    if (db && isFirebaseConfigured()) {
+      try {
+        const docRef = doc(db, "branches", branchId);
+        await setDoc(
+          docRef,
+          {
+            ...data,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      } catch (fsErr) {
+        console.warn("Firestore setDoc branch warning:", fsErr);
+      }
+    }
+
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error?.message || "فشل تحديث بيانات الفرع" };
@@ -689,47 +893,213 @@ export async function updateBranch(
 /**
  * Fetch dynamic site settings from Firestore (site_settings/general).
  */
+/**
+ * Fetch dynamic site settings:
+ * 1. Reads from /api/settings (which persists to src/data/siteSettings.json).
+ * 2. In browser, checks localStorage for instant zero-latency cache.
+ * 3. Checks Firestore if configured.
+ * 4. Gracefully defaults to DEFAULT_SITE_SETTINGS.
+ */
 export async function fetchSiteSettings(): Promise<SiteSettings> {
+  // 1. Fetch fresh authoritative settings from /api/settings first
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/settings?_t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.settings) {
+          localStorage.setItem("shewimy_site_settings", JSON.stringify(data.settings));
+          return data.settings;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/settings:", apiErr);
+    }
+  }
+
+  // 2. If Firestore is available, attempt read
   const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
       const docRef = doc(db, "site_settings", "general");
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        return {
+        const data = docSnap.data() as Partial<SiteSettings>;
+        const merged: SiteSettings = {
           ...DEFAULT_SITE_SETTINGS,
-          ...(docSnap.data() as Partial<SiteSettings>),
+          ...data,
+          heroStats: {
+            ...DEFAULT_SITE_SETTINGS.heroStats,
+            ...(data.heroStats || {}),
+          },
+          trustBarItems:
+            data.trustBarItems && data.trustBarItems.length > 0
+              ? data.trustBarItems
+              : DEFAULT_SITE_SETTINGS.trustBarItems,
+          processSteps:
+            data.processSteps && data.processSteps.length > 0
+              ? data.processSteps
+              : DEFAULT_SITE_SETTINGS.processSteps,
           id: docSnap.id,
         };
+        if (typeof window !== "undefined") {
+          localStorage.setItem("shewimy_site_settings", JSON.stringify(merged));
+        }
+        return merged;
       }
     } catch (err) {
-      console.warn("fetchSiteSettings error, using defaults:", err);
+      console.warn("fetchSiteSettings Firestore error:", err);
     }
   }
-  return DEFAULT_SITE_SETTINGS;
+
+  // 3. Fallback to localStorage if network/API failed
+  if (typeof window !== "undefined") {
+    try {
+      const local = localStorage.getItem("shewimy_site_settings");
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (parsed && typeof parsed === "object") {
+          return {
+            ...DEFAULT_SITE_SETTINGS,
+            ...parsed,
+            heroStats: {
+              ...DEFAULT_SITE_SETTINGS.heroStats,
+              ...(parsed.heroStats || {}),
+            },
+            trustBarItems:
+              parsed.trustBarItems && parsed.trustBarItems.length > 0
+                ? parsed.trustBarItems
+                : DEFAULT_SITE_SETTINGS.trustBarItems,
+            processSteps:
+              parsed.processSteps && parsed.processSteps.length > 0
+                ? parsed.processSteps
+                : DEFAULT_SITE_SETTINGS.processSteps,
+          };
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return (siteSettingsData as unknown as SiteSettings) || DEFAULT_SITE_SETTINGS;
 }
 
 /**
- * Update dynamic site settings in Firestore.
+ * Update dynamic site settings:
+ * 1. Persists to /api/settings (saved to src/data/siteSettings.json).
+ * 2. Updates browser localStorage and broadcasts 'shewimy_settings_updated' custom event.
+ * 3. Persists to Firestore if db is available.
  */
 export async function updateSiteSettings(
   settings: Partial<SiteSettings>
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    const sanitized: Record<string, any> = { ...settings };
+
+    // Deep check for oversized string payloads (like raw base64 data URLs > 1MB)
+    for (const [key, val] of Object.entries(sanitized)) {
+      if (typeof val === "string" && val.length > 500000) {
+        return {
+          success: false,
+          error: `حجم الصورة في (${key}) كبير جداً كـ Base64، يرجى إعادة رفعها عبر زر الرفع لتتحول لمسار ملف.`,
+        };
+      }
+    }
+
+    // 1. In browser, save to localStorage and broadcast event for instant multi-tab sync
+    if (typeof window !== "undefined") {
+      try {
+        const existing = localStorage.getItem("shewimy_site_settings");
+        const prev = existing ? JSON.parse(existing) : DEFAULT_SITE_SETTINGS;
+        const merged = { ...prev, ...sanitized };
+        localStorage.setItem("shewimy_site_settings", JSON.stringify(merged));
+        window.dispatchEvent(
+          new CustomEvent("shewimy_settings_updated", { detail: merged })
+        );
+      } catch (storageErr) {
+        console.warn("localStorage save error:", storageErr);
+      }
+
+      // 2. Persist to server /api/settings
+      try {
+        await fetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sanitized),
+        });
+      } catch (apiErr) {
+        console.warn("Could not save to /api/settings:", apiErr);
+      }
+    }
+
+    // 3. Persist to Firestore if available
     const db = getDb();
-    if (!db) return { success: false, error: "قاعدة البيانات غير متصلة" };
-    const docRef = doc(db, "site_settings", "general");
-    await setDoc(
-      docRef,
-      {
-        ...settings,
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
+    if (db) {
+      try {
+        const docRef = doc(db, "site_settings", "general");
+        await setDoc(
+          docRef,
+          {
+            ...sanitized,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      } catch (fsErr) {
+        console.warn("Firestore setDoc warning:", fsErr);
+      }
+    }
+
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error?.message || "فشل تحديث إعدادات الموقع" };
+  }
+}
+
+/**
+ * Sync Admin Account to Firestore `admins` collection & `settings/site`
+ */
+export async function syncAdminAccountToFirestore(account: {
+  uid?: string;
+  email: string;
+  displayName?: string;
+  role?: string;
+  passwordUpdatedAt?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const db = getDb();
+  if (!db) {
+    return { success: true };
+  }
+  try {
+    const adminRef = doc(db, "admins", account.uid || "admin-master");
+    await setDoc(
+      adminRef,
+      {
+        uid: account.uid || "admin-master",
+        email: account.email,
+        displayName: account.displayName || "مدير النظام (الشويمي)",
+        role: account.role || "super_admin",
+        updatedAt: serverTimestamp(),
+        ...(account.passwordUpdatedAt ? { passwordUpdatedAt: account.passwordUpdatedAt } : {}),
+      },
+      { merge: true }
+    );
+
+    // Also sync adminEmail into settings collection
+    try {
+      const settingsRef = doc(db, "site_settings", "general");
+      await setDoc(settingsRef, { adminEmail: account.email, updatedAt: serverTimestamp() }, { merge: true });
+    } catch {
+      // ignore
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.warn("Firestore syncAdminAccount error:", err);
+    return { success: false, error: err?.message };
   }
 }
 

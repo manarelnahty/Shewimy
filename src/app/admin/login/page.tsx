@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Lock, Mail, ArrowRight, Loader2, Sparkles, AlertCircle } from "lucide-react";
@@ -13,6 +13,17 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("Shewimy@2026");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/account?_t=" + Date.now())
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.account?.email) {
+          setEmail(data.account.email);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

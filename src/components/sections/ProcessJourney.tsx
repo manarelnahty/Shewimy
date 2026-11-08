@@ -1,28 +1,18 @@
+"use client";
+
 import React from "react";
+import { useSiteSettings } from "@/lib/firebase";
+import { DEFAULT_SITE_SETTINGS } from "@/types/shewimy";
 
 export function ProcessJourney() {
-  const steps = [
-    {
-      step: "01",
-      title: "تصميم هندسي 3D",
-      desc: "رفع المقاسات بدقة ليزر وإعداد مخطط ثلاثي الأبعاد واقعي وتوزيع عملي لمثلث الحركة يناسب مساحتك بدقة.",
-    },
-    {
-      step: "02",
-      title: "تصنيع بماكينات إيطالية",
-      desc: "تقطيع ولصق بحواف PUR الألمانية بمصانعنا، ودهانات متطورة مقاومة للخدش والرطوبة وحرارة الاستخدام اليومي.",
-    },
-    {
-      step: "03",
-      title: "التوريد والتركيب المحترف",
-      desc: "فريق فني متخصص لتثبيت المطبخ بدقة متناهية، ومراجعة موازين الليزر ونظافة تامة للمكان عقب الانتهاء.",
-    },
-    {
-      step: "04",
-      title: "شهادة ضمان 15 سنة",
-      desc: "تسليم وثيقة الضمان المعتمدة مع خدمة ما بعد البيع ومتابعة صيانة دورية مجانية للمفصلات والأسطح.",
-    },
-  ];
+  const { settings } = useSiteSettings();
+
+  const badge = settings.processBadge || DEFAULT_SITE_SETTINGS.processBadge;
+  const headline = settings.processHeadline || DEFAULT_SITE_SETTINGS.processHeadline;
+  const subheadline = settings.processSubheadline || DEFAULT_SITE_SETTINGS.processSubheadline;
+  const steps = settings.processSteps && settings.processSteps.length > 0
+    ? settings.processSteps
+    : DEFAULT_SITE_SETTINGS.processSteps;
 
   return (
     <section
@@ -33,13 +23,13 @@ export function ProcessJourney() {
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-2.5">
           <span className="text-xs sm:text-sm text-secondary font-semibold uppercase tracking-wider">
-            منهجية العمل المتكاملة
+            {badge}
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold text-primary font-readex">
-            رحلة تصنيع مطبخك من الفكرة إلى الواقع
+            {headline}
           </h2>
           <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-            نتبع بروتوكولاً هندسياً صارماً في كافة المراحل لضمان دقة التنفيذ وخلو المنتج النهائي من أي عيوب صناعية.
+            {subheadline}
           </p>
         </div>
 

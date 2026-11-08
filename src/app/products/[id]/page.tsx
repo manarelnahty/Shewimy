@@ -1,26 +1,25 @@
 import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { fetchProductById, fetchProducts } from "@/lib/firebase";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { ProductDetailSkeleton } from "@/components/products/ProductDetailSkeleton";
-import { productsData } from "@/data/products";
+import { getServerProductById, getServerProducts } from "@/lib/serverData";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export function generateStaticParams() {
-  return productsData.map((product) => ({
+  return getServerProducts().map((product) => ({
     id: product.id,
   }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const product = await fetchProductById(id);
+  const product = getServerProductById(id);
 
   if (!product) {
     return {
@@ -36,13 +35,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 async function ProductDetailContent({ params }: PageProps) {
   const { id } = await params;
-  const product = await fetchProductById(id);
+  const product = getServerProductById(id);
 
   if (!product) {
     notFound();
   }
 
-  const allProducts = await fetchProducts({ section: product.mainSection });
+  const allProducts = getServerProducts({ section: product.mainSection });
   const relatedProducts = allProducts.filter((p) => p.id !== product.id);
 
   return (

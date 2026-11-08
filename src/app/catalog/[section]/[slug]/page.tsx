@@ -1,12 +1,11 @@
 import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { fetchProductBySlug, fetchProducts } from "@/lib/firebase";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { ProductDetailSkeleton } from "@/components/products/ProductDetailSkeleton";
-import { productsData } from "@/data/products";
+import { getServerProductBySlug, getServerProducts } from "@/lib/serverData";
 import { MainSection } from "@/types/shewimy";
 
 interface CatalogPageProps {
@@ -14,7 +13,7 @@ interface CatalogPageProps {
 }
 
 export function generateStaticParams() {
-  return productsData.map((product) => ({
+  return getServerProducts().map((product) => ({
     section: product.mainSection,
     slug: product.slug,
   }));
@@ -22,7 +21,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: CatalogPageProps): Promise<Metadata> {
   const { section, slug } = await params;
-  const product = await fetchProductBySlug(section, slug);
+  const product = getServerProductBySlug(section, slug);
 
   if (!product) {
     return {
@@ -38,13 +37,13 @@ export async function generateMetadata({ params }: CatalogPageProps): Promise<Me
 
 async function CatalogDetailContent({ params }: CatalogPageProps) {
   const { section, slug } = await params;
-  const product = await fetchProductBySlug(section, slug);
+  const product = getServerProductBySlug(section, slug);
 
   if (!product) {
     notFound();
   }
 
-  const sectionProducts = await fetchProducts({ section: product.mainSection as MainSection });
+  const sectionProducts = getServerProducts({ section: product.mainSection as MainSection });
   const relatedProducts = sectionProducts.filter((p) => p.id !== product.id);
 
   return (

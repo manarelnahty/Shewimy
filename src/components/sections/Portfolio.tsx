@@ -1,23 +1,29 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, ArrowLeft } from "lucide-react";
-import { useProducts } from "@/lib/firebase";
-import { generateWhatsAppLink } from "@/lib/whatsapp";
-import { MainSection } from "@/types/shewimy";
+import { ArrowLeft } from "lucide-react";
+import { useProducts, useSiteSettings } from "@/lib/firebase";
+import { ProductCard, ProductCardSkeleton } from "@/components/products/ProductCard";
+import { DEFAULT_SITE_SETTINGS, MainSection } from "@/types/shewimy";
 
 type TabType = "all" | "kitchens" | "dressing_rooms" | "furniture" | "decor" | "windows";
 
 export function Portfolio() {
   const { products, loading } = useProducts({ featuredOnly: true });
+  const { settings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState<TabType>("all");
 
   const filteredProjects = useMemo(() => {
     if (activeTab === "all") return products;
     return products.filter((p) => p.mainSection === activeTab);
   }, [products, activeTab]);
+
+  const badge = settings.portfolioBadge || DEFAULT_SITE_SETTINGS.portfolioBadge;
+  const headline = settings.portfolioHeadline || DEFAULT_SITE_SETTINGS.portfolioHeadline;
+  const subheadline = settings.portfolioSubheadline || DEFAULT_SITE_SETTINGS.portfolioSubheadline;
+  const ctaText = settings.portfolioCtaText || DEFAULT_SITE_SETTINGS.portfolioCtaText;
+  const phonePrimary = settings.phonePrimary || DEFAULT_SITE_SETTINGS.phonePrimary;
 
   return (
     <section className="w-full bg-surface py-16 lg:py-24" id="portfolio-section">
@@ -26,13 +32,13 @@ export function Portfolio() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pb-2">
           <div>
             <span className="text-xs sm:text-sm text-secondary font-semibold uppercase tracking-wider block mb-1.5">
-              أعمالنا الاستثنائية (محدثة مباشرة من قاعدة البيانات)
+              {badge}
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-primary font-readex">
-              أحدث إبداعاتنا المنفذة بمصانع الشويمي
+              {headline}
             </h2>
             <p className="text-xs sm:text-sm text-on-surface-variant mt-1.5 max-w-xl leading-relaxed">
-              استكشف تشكيلات المطابخ والدريسينج روم والأثاث الراقي التي نفذناها بدقة وإتقان في فلل وقصور عملاء الشويمي.
+              {subheadline}
             </p>
           </div>
 
@@ -85,80 +91,21 @@ export function Portfolio() {
           </div>
         </div>
 
-        {/* 3-Column Portfolio Cards */}
+        {/* 3-Column Portfolio Cards with Lazy-loaded Media and Hover Preload */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-          {filteredProjects.map((item) => {
-            const waUrl = generateWhatsAppLink("01005557109", "فرع المنصورة", {
-              title: item.title || item.name,
-              slug: item.slug,
-              section: item.mainSection,
-            });
-
-            return (
-              <div
+          {loading && filteredProjects.length === 0 ? (
+            Array.from({ length: 3 }).map((_, i) => <ProductCardSkeleton key={i} />)
+          ) : (
+            filteredProjects.map((item) => (
+              <ProductCard
                 key={item.id}
-                className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group border border-outline-variant/15"
-              >
-                <div className="relative overflow-hidden aspect-[4/3] bg-surface-container">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                    <span className="bg-primary/85 backdrop-blur-md text-on-primary text-[11px] font-semibold px-2.5 py-1 rounded-md">
-                      {item.subCategory}
-                    </span>
-                    <span className="bg-white/90 backdrop-blur-md text-[#1F5E4B] text-[11px] font-bold px-2 py-0.5 rounded-md">
-                      ضمان {item.warrantyYears} سنة
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                  <div>
-                    <Link href={`/catalog/${item.mainSection}/${item.slug}`} className="block">
-                      <h3 className="text-base sm:text-lg text-primary font-bold group-hover:text-secondary transition-colors font-readex leading-snug">
-                        {item.name}
-                      </h3>
-                    </Link>
-                    <div className="flex flex-wrap gap-1.5 mt-2.5">
-                      {item.materials.slice(0, 3).map((mat, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant font-medium"
-                        >
-                          ✓ {mat}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 pt-2 border-t border-charcoal/5">
-                    <a
-                      className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs sm:text-sm font-semibold py-2.5 rounded-xl transition-colors duration-200 cursor-pointer"
-                      href={waUrl}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      <MessageCircle className="w-4 h-4 shrink-0" />
-                      <span>استفسر عبر واتساب الموديل</span>
-                    </a>
-
-                    <Link
-                      href={`/catalog/${item.mainSection}/${item.slug}`}
-                      className="w-full inline-flex items-center justify-center gap-1.5 text-xs text-charcoal/70 hover:text-primary font-bold py-1.5 transition-colors"
-                    >
-                      <span>عرض تفاصيل الموديل والمقايسة</span>
-                      <ArrowLeft className="w-3 h-3" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                product={item}
+                whatsappPhone={phonePrimary}
+                branchName="معرض الشويمي الرئيسي"
+                priority={false}
+              />
+            ))
+          )}
         </div>
 
         {/* View Full Catalog Link Banner */}
@@ -167,7 +114,9 @@ export function Portfolio() {
             href="/products"
             className="inline-flex items-center gap-2 bg-primary hover:bg-primary-container text-on-primary text-xs sm:text-sm font-bold py-3 px-8 rounded-xl shadow-md transition-all hover:-translate-y-0.5"
           >
-            <span>استعراض كتالوج المنتجات والأسعار كاملة ({products.length} موديل متاح)</span>
+            <span>
+              {ctaText} ({products.length} موديل متاح)
+            </span>
             <ArrowLeft className="w-4 h-4" />
           </Link>
         </div>

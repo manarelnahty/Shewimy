@@ -2,12 +2,27 @@
 
 import React from "react";
 import { Headset, Calendar, MessageCircle } from "lucide-react";
+import { useSiteSettings } from "@/lib/firebase";
+import { DEFAULT_SITE_SETTINGS } from "@/types/shewimy";
 
 interface CtaSectionProps {
   onOpenConsultation?: () => void;
 }
 
 export function CtaSection({ onOpenConsultation }: CtaSectionProps) {
+  const { settings } = useSiteSettings();
+
+  const badge = settings.ctaBadge || DEFAULT_SITE_SETTINGS.ctaBadge;
+  const headline = settings.ctaHeadline || DEFAULT_SITE_SETTINGS.ctaHeadline;
+  const subheadline = settings.ctaSubheadline || DEFAULT_SITE_SETTINGS.ctaSubheadline;
+  const primaryBtn = settings.ctaPrimaryBtnText || DEFAULT_SITE_SETTINGS.ctaPrimaryBtnText;
+  const waBtn = settings.ctaWhatsappBtnText || DEFAULT_SITE_SETTINGS.ctaWhatsappBtnText;
+  const phone = settings.phonePrimary || DEFAULT_SITE_SETTINGS.phonePrimary;
+
+  const waLink = `https://wa.me/20${phone.replace(/^0+/, "")}?text=${encodeURIComponent(
+    "مرحباً، أود الاستفسار عن حجز استشارة ومعاينة هندسية 3D من مطابخ الشويمي."
+  )}`;
+
   return (
     <section className="w-full bg-primary py-14 lg:py-18 text-inverse-on-surface relative overflow-hidden">
       {/* Architectural glow decoration */}
@@ -21,13 +36,13 @@ export function CtaSection({ onOpenConsultation }: CtaSectionProps) {
           <div className="space-y-3.5 max-w-2xl text-center lg:text-right">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-secondary/20 text-secondary-fixed text-xs font-semibold">
               <Headset className="w-4 h-4 text-secondary-fixed shrink-0" />
-              <span>استشارة معمارية مجانية</span>
+              <span>{badge}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-on-primary font-readex">
-              جاهز لتصميم مطبخ أحلامك؟
+              {headline}
             </h2>
             <p className="text-sm sm:text-base text-on-primary-container leading-relaxed">
-              احصل على استشارة هندسية ومعاينة ثلاثية الأبعاد 3D مجاناً لمساحتك بمساعدة نخبة مهندسي التصميم المعماري في مطابخ الشويمي.
+              {subheadline}
             </p>
           </div>
 
@@ -38,16 +53,16 @@ export function CtaSection({ onOpenConsultation }: CtaSectionProps) {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-3 px-6 rounded shadow-lg transition-transform hover:-translate-y-0.5 cursor-pointer active:translate-y-0"
             >
               <Calendar className="w-4 h-4 shrink-0 text-white" />
-              <span>احجز معاينتك المجانية الآن</span>
+              <span>{primaryBtn}</span>
             </button>
             <a
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-semibold py-3 px-5 rounded transition-colors shadow-md"
-              href="https://wa.me/201005557109?text=مرحباً%20أود%20الاستفسار%20عن%20حجز%20معاينة%20وتصميم%20مطبخ%20من%20مطابخ%20الشويمي"
+              href={waLink}
               rel="noopener noreferrer"
               target="_blank"
             >
               <MessageCircle className="w-4 h-4 shrink-0 text-white" />
-              <span>محادثة واتساب مباشرة</span>
+              <span>{waBtn}</span>
             </a>
           </div>
         </div>

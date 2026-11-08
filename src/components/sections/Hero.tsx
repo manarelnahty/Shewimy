@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { BadgeCheck, Eye, Compass } from "lucide-react";
 import { useBranches, useSiteSettings } from "@/lib/firebase";
+import { DEFAULT_SITE_SETTINGS } from "@/types/shewimy";
+import { isValidImageUrl } from "@/lib/image";
 
 interface HeroProps {
   onOpenConsultation?: () => void;
@@ -13,26 +15,39 @@ export function Hero({ onOpenConsultation }: HeroProps) {
   const { branches } = useBranches();
   const { settings } = useSiteSettings();
 
-  const expYears = settings.heroExperienceYears || 24;
-  const warranty = settings.defaultWarrantyYears || 15;
-  const headline = settings.heroHeadline || "مطابخ فاخرة تُصنع بحرفية استثنائية لمنزلك العصري";
-  const subheadline =
-    settings.heroSubheadline ||
-    "من التصميم الهندسي ثلاثي الأبعاد إلى التصنيع بماكينات إيطالية بمصانعنا الخاصة، نبتكر مساحات تجمع بين الرقي والعملية بأعلى معايير الجودة العالمية.";
+  const expYears = settings.heroExperienceYears || DEFAULT_SITE_SETTINGS.heroExperienceYears;
+  const warranty = settings.defaultWarrantyYears || DEFAULT_SITE_SETTINGS.defaultWarrantyYears;
+  const headline = settings.heroHeadline || DEFAULT_SITE_SETTINGS.heroHeadline;
+  const subheadline = settings.heroSubheadline || DEFAULT_SITE_SETTINGS.heroSubheadline;
+  const badgeText = settings.heroBadgeText || `خبرة ${expYears} عاماً • ضمان ${warranty} سنة حقيقي`;
+  const rawBg = settings.heroBgImage;
+  const heroBgImage = isValidImageUrl(rawBg) ? rawBg : DEFAULT_SITE_SETTINGS.heroBgImage;
+  const rawShowcase = settings.heroShowcaseImage;
+  const heroShowcaseImage = isValidImageUrl(rawShowcase) ? rawShowcase : DEFAULT_SITE_SETTINGS.heroShowcaseImage;
+  const heroShowcaseTag = settings.heroShowcaseTag || DEFAULT_SITE_SETTINGS.heroShowcaseTag;
+  const heroShowcaseTitle = settings.heroShowcaseTitle || DEFAULT_SITE_SETTINGS.heroShowcaseTitle;
+  const heroShowcaseFeature = settings.heroShowcaseFeature || DEFAULT_SITE_SETTINGS.heroShowcaseFeature;
+  const heroShowcaseWarranty = settings.heroShowcaseWarranty || `ضمان ${warranty} سنة`;
+  const ctaPrimary = settings.heroCtaPrimaryText || DEFAULT_SITE_SETTINGS.heroCtaPrimaryText;
+  const ctaSecondary = settings.heroCtaSecondaryText || DEFAULT_SITE_SETTINGS.heroCtaSecondaryText;
+
+  const stats = settings.heroStats || DEFAULT_SITE_SETTINGS.heroStats;
 
   return (
     <section className="relative w-full overflow-hidden bg-primary pt-24 sm:pt-28 pb-14 lg:pb-20 text-inverse-on-surface">
-      {/* Ambient architectural background lighting & subtle textures */}
-      <div className="absolute inset-0 z-0">
-        <div
-          className="w-full h-full bg-cover bg-center opacity-40 mix-blend-luminosity scale-105 transform duration-1000 ease-out"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80')",
-          }}
-          aria-hidden="true"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-primary/60" />
+      {/* Ambient architectural background lighting & customizable decoration texture */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {heroBgImage && (
+          <Image
+            src={heroBgImage}
+            alt="Hero Architectural Decor"
+            fill
+            sizes="100vw"
+            className="object-cover opacity-35 scale-105 transform duration-1000 ease-out"
+            priority
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/75 to-primary/50" />
         <div className="absolute -top-32 right-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-[140px] pointer-events-none" />
       </div>
 
@@ -44,7 +59,7 @@ export function Hero({ onOpenConsultation }: HeroProps) {
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-surface-container-high/10 backdrop-blur-md border border-white/5 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-secondary-container animate-pulse" />
               <span className="text-xs sm:text-sm font-medium text-secondary-fixed">
-                خبرة {expYears} عاماً • ضمان {warranty} سنة حقيقي
+                {badgeText}
               </span>
               <BadgeCheck className="w-4 h-4 text-secondary-fixed shrink-0" />
             </div>
@@ -66,7 +81,7 @@ export function Hero({ onOpenConsultation }: HeroProps) {
                 onClick={onOpenConsultation}
                 className="inline-flex items-center justify-center bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 px-6 sm:px-7 rounded shadow-[0_8px_20px_rgba(31,94,75,0.35)] transition-all transform hover:-translate-y-0.5 cursor-pointer active:translate-y-0"
               >
-                <span>صمم مطبخك الآن</span>
+                <span>{ctaPrimary}</span>
               </button>
 
               <a
@@ -74,7 +89,7 @@ export function Hero({ onOpenConsultation }: HeroProps) {
                 className="inline-flex items-center gap-2.5 bg-surface-container-high/10 hover:bg-surface-container-high/20 text-on-primary text-xs sm:text-sm font-semibold py-2.5 sm:py-3 px-5 sm:px-6 rounded shadow-sm transition-all hover:text-secondary-fixed cursor-pointer"
               >
                 <Eye className="w-4 h-4 shrink-0 text-on-primary" />
-                <span>تصفح أعمالنا</span>
+                <span>{ctaSecondary}</span>
               </a>
             </div>
 
@@ -82,29 +97,31 @@ export function Hero({ onOpenConsultation }: HeroProps) {
             <div className="pt-4 grid grid-cols-3 gap-3 max-w-md">
               <div className="bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center">
                 <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
-                  +3,500
+                  {stats.stat1Value || "+3,500"}
                 </p>
                 <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
-                  مطبخ منفّذ
+                  {stats.stat1Label || "مطبخ منفّذ"}
                 </p>
               </div>
+
               <a
                 href="#branches-section"
                 className="bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center block transition-colors"
               >
                 <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
-                  {branches.length} فروع
+                  {branches.length > 0 ? `${branches.length} فروع` : stats.stat2Value || "3 فروع"}
                 </p>
                 <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
-                  بمنطقة الدلتا
+                  {stats.stat2Label || "بمنطقة الدلتا"}
                 </p>
               </a>
+
               <div className="bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center">
                 <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
-                  100%
+                  {stats.stat3Value || "100%"}
                 </p>
                 <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
-                  خامات أوروبية
+                  {stats.stat3Label || "خامات أوروبية"}
                 </p>
               </div>
             </div>
@@ -115,8 +132,8 @@ export function Hero({ onOpenConsultation }: HeroProps) {
             <div className="relative rounded-xl overflow-hidden shadow-2xl bg-primary-container group border border-white/10">
               <div className="relative w-full h-[340px] sm:h-[390px]">
                 <Image
-                  src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1600&q=85"
-                  alt="مطبخ مودرن فخم مدمج مع جزيرة رخامية وأجهزة إيطالية"
+                  src={heroShowcaseImage}
+                  alt={heroShowcaseTitle}
                   fill
                   sizes="(max-width: 1024px) 100vw, 40vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
@@ -129,19 +146,19 @@ export function Hero({ onOpenConsultation }: HeroProps) {
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2 h-2 rounded-full bg-secondary-container" />
                   <span className="text-[11px] font-semibold text-secondary-fixed uppercase tracking-wider">
-                    تصميم حصري 2026
+                    {heroShowcaseTag}
                   </span>
                 </div>
                 <h3 className="text-base sm:text-lg font-bold text-white font-readex leading-snug">
-                  طراز بولاك ألترا مودرن مع ماكينات تشطيب PUR
+                  {heroShowcaseTitle}
                 </h3>
                 <div className="mt-3 flex items-center justify-between text-xs text-gray-300 border-t border-white/15 pt-3">
                   <span className="flex items-center gap-1.5">
                     <Compass className="w-3.5 h-3.5 text-secondary-fixed" />
-                    ميكانزم بلوم نمساوي أصلي
+                    {heroShowcaseFeature}
                   </span>
                   <span className="text-secondary-fixed font-medium">
-                    ضمان {warranty} سنة
+                    {heroShowcaseWarranty}
                   </span>
                 </div>
               </div>
