@@ -6,15 +6,15 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { ProductDetailSkeleton } from "@/components/products/ProductDetailSkeleton";
+import { productsData } from "@/data/products";
 import { MainSection } from "@/types/shewimy";
 
 interface CatalogPageProps {
   params: Promise<{ section: string; slug: string }>;
 }
 
-export async function generateStaticParams() {
-  const products = await fetchProducts();
-  return products.map((product) => ({
+export function generateStaticParams() {
+  return productsData.map((product) => ({
     section: product.mainSection,
     slug: product.slug,
   }));

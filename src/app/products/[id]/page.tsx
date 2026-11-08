@@ -6,14 +6,14 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { ProductDetailSkeleton } from "@/components/products/ProductDetailSkeleton";
+import { productsData } from "@/data/products";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-  const products = await fetchProducts();
-  return products.map((product) => ({
+export function generateStaticParams() {
+  return productsData.map((product) => ({
     id: product.id,
   }));
 }

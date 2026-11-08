@@ -98,20 +98,23 @@ export default function AdminBranchesPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto font-cairo">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-outline-variant/20">
         <div>
-          <h1 className="text-2xl font-bold text-white font-readex">
-            إدارة الفروع والمعارض (Showroom Branches)
+          <span className="text-xs text-secondary font-semibold uppercase tracking-wider block mb-1">
+            شبكة معارض الدلتا
+          </span>
+          <h1 className="text-2xl font-bold text-primary font-readex">
+            إدارة الفروع والمعارض (Showrooms)
           </h1>
-          <p className="text-xs sm:text-sm text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
             التحكم في أرقام الواتساب الموجهة، العناوين، مواعيد العمل، وروابط خرائط جوجل
           </p>
         </div>
 
-        <div className="text-xs text-gray-400 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl">
-          الفروع النشطة: <span className="font-bold text-white font-mono">{branches.length} فروع</span>
+        <div className="text-xs text-on-surface-variant bg-surface-container-lowest border border-outline-variant/20 px-3.5 py-2 rounded-xl shadow-sm">
+          الفروع النشطة: <span className="font-bold text-primary font-mono">{branches.length} فروع</span>
         </div>
       </div>
 
@@ -119,81 +122,81 @@ export default function AdminBranchesPage() {
         <div
           className={`p-4 rounded-xl text-xs flex items-center gap-2 animate-fadeIn ${
             message.type === "success"
-              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-300"
-              : "bg-rose-500/10 border border-rose-500/20 text-rose-300"
+              ? "bg-emerald-50 border border-emerald-200 text-[#1F5E4B]"
+              : "bg-rose-50 border border-rose-200 text-rose-700"
           }`}
         >
           {message.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#1F5E4B] shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           )}
-          <span>{message.text}</span>
+          <span className="font-medium">{message.text}</span>
         </div>
       )}
 
-      {/* Branches Cards Grid */}
+      {/* Branches Cards Grid (Matching Showrooms on Landing Page) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {branches.map((b) => {
           const isSelected = editingBranch?.id === b.id;
           return (
             <div
               key={b.id}
-              className={`bg-[#0c1217] border rounded-2xl p-5 flex flex-col justify-between transition-all ${
+              className={`bg-surface-container-lowest border rounded-2xl p-6 flex flex-col justify-between transition-all ${
                 isSelected
-                  ? "border-[#7a5b3e] ring-1 ring-[#7a5b3e]"
-                  : "border-white/10 hover:border-white/20"
+                  ? "border-secondary ring-2 ring-secondary/20 shadow-md"
+                  : "border-outline-variant/20 hover:border-outline-variant/40 hover:shadow-md shadow-sm"
               }`}
             >
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-semibold text-[#d4af37] bg-[#d4af37]/10 px-2.5 py-1 rounded-full">
+                <div className="flex items-center justify-between mb-3.5">
+                  <span className="text-[11px] font-bold text-secondary bg-secondary-fixed/50 px-2.5 py-1 rounded-full font-readex">
                     {b.badge || "معرض رئيسي"}
                   </span>
-                  <span className="text-xs font-mono text-gray-500 uppercase">
+                  <span className="text-xs font-mono text-on-surface-variant/70 uppercase">
                     {b.id}
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-white font-readex mb-2">
+                <h3 className="text-lg font-bold text-primary font-readex mb-2.5">
                   {b.name}
                 </h3>
 
-                <div className="space-y-2.5 text-xs text-gray-300 border-t border-white/5 pt-3">
+                <div className="space-y-3 text-xs text-on-surface border-t border-outline-variant/15 pt-3.5">
                   <div className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 text-[#7a5b3e] shrink-0 mt-0.5" />
-                    <span>{b.address}</span>
+                    <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                    <span className="text-on-surface-variant leading-relaxed">{b.address}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span className="font-mono text-gray-200">
+                    <Phone className="w-4 h-4 text-[#1F5E4B] shrink-0" />
+                    <span className="font-mono text-primary font-semibold">
                       {b.phones && b.phones.length > 0 ? b.phones.join(" / ") : "—"}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span className="text-gray-400">واتساب التوجيه:</span>
-                    <span className="font-mono text-emerald-300 font-bold" dir="ltr">
+                    <MessageCircle className="w-4 h-4 text-[#1F5E4B] shrink-0" />
+                    <span className="text-on-surface-variant">واتساب التوجيه:</span>
+                    <span className="font-mono text-[#1F5E4B] font-bold" dir="ltr">
                       +{b.whatsappNumber}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-gray-400 shrink-0" />
-                    <span className="text-gray-400">{b.workingHours}</span>
+                    <Clock className="w-4 h-4 text-on-surface-variant shrink-0" />
+                    <span className="text-on-surface-variant">{b.workingHours}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between">
+              <div className="mt-6 pt-3.5 border-t border-outline-variant/15 flex items-center justify-between">
                 {b.googleMapsUrl && (
                   <a
                     href={b.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-gray-400 hover:text-white flex items-center gap-1"
+                    className="text-xs text-on-surface-variant hover:text-primary flex items-center gap-1 font-medium"
                   >
                     <span>الخريطة</span>
                     <ExternalLink className="w-3 h-3" />
@@ -203,7 +206,7 @@ export default function AdminBranchesPage() {
                 <button
                   type="button"
                   onClick={() => startEdit(b)}
-                  className="bg-[#7a5b3e] hover:bg-[#8f6b49] text-white text-xs font-medium px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  className="bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
                 >
                   تعديل الفرع
                 </button>
@@ -215,20 +218,20 @@ export default function AdminBranchesPage() {
 
       {/* Edit Form */}
       {editingBranch && (
-        <div className="bg-[#0c1217] border border-[#7a5b3e]/40 rounded-2xl p-6 sm:p-8 shadow-xl">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+        <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 sm:p-8 shadow-xl">
+          <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4 mb-6">
             <div>
-              <h2 className="text-lg font-bold text-white font-readex">
+              <h2 className="text-lg font-bold text-primary font-readex">
                 تعديل بيانات {editingBranch.name} ({editingBranch.id})
               </h2>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-on-surface-variant mt-0.5">
                 تحديث أرقام التوجيه والعناوين المحفوظة في مجموعة branches بفايربيس
               </p>
             </div>
             <button
               type="button"
               onClick={() => setEditingBranch(null)}
-              className="text-xs text-gray-400 hover:text-white"
+              className="text-xs text-on-surface-variant hover:text-primary font-medium"
             >
               إلغاء
             </button>
@@ -237,7 +240,7 @@ export default function AdminBranchesPage() {
           <form onSubmit={handleSave} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   اسم الفرع
                 </label>
                 <input
@@ -245,12 +248,12 @@ export default function AdminBranchesPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   رقم واتساب التوجيه (بالصيغة الدولية بدون +)
                 </label>
                 <input
@@ -261,13 +264,13 @@ export default function AdminBranchesPage() {
                     setFormData({ ...formData, whatsappNumber: e.target.value })
                   }
                   placeholder="201005557109"
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                   dir="ltr"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   العنوان التفصيلي
                 </label>
                 <input
@@ -277,12 +280,12 @@ export default function AdminBranchesPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   أرقام الهواتف (مفصولة بفاصلة)
                 </label>
                 <input
@@ -292,13 +295,13 @@ export default function AdminBranchesPage() {
                     setFormData({ ...formData, phonesText: e.target.value })
                   }
                   placeholder="01005557109, 01287153339"
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                   dir="ltr"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   ساعات العمل
                 </label>
                 <input
@@ -308,12 +311,12 @@ export default function AdminBranchesPage() {
                     setFormData({ ...formData, workingHours: e.target.value })
                   }
                   placeholder="يومياً من 11:00 ص إلى 11:00 م"
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   رابط موقع المعرض على Google Maps
                 </label>
                 <input
@@ -323,24 +326,24 @@ export default function AdminBranchesPage() {
                     setFormData({ ...formData, googleMapsUrl: e.target.value })
                   }
                   placeholder="https://maps.app.goo.gl/..."
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                   dir="ltr"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant/20">
               <button
                 type="button"
                 onClick={() => setEditingBranch(null)}
-                className="px-4 py-2.5 rounded-xl text-xs text-gray-400 hover:text-white"
+                className="px-4 py-2.5 rounded-xl text-xs text-on-surface-variant hover:text-primary font-medium"
               >
                 إلغاء
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 bg-[#7a5b3e] hover:bg-[#8f6b49] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-lg transition-colors cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

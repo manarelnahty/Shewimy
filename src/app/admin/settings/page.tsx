@@ -61,14 +61,17 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto font-cairo">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-outline-variant/20">
         <div>
-          <h1 className="text-2xl font-bold text-white font-readex">
+          <span className="text-xs text-secondary font-semibold uppercase tracking-wider block mb-1">
+            المحتوى التفاعلي
+          </span>
+          <h1 className="text-2xl font-bold text-primary font-readex">
             إعدادات المحتوى الديناميكي (Site Settings)
           </h1>
-          <p className="text-xs sm:text-sm text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
             التحكم في نصوص الهيرو، مميزات شريط الثقة، بيانات الاتصال، وسنوات الضمان
           </p>
         </div>
@@ -77,7 +80,7 @@ export default function AdminSettingsPage() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center gap-2 bg-[#7a5b3e] hover:bg-[#8f6b49] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer disabled:opacity-50"
         >
           {saving ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -92,30 +95,30 @@ export default function AdminSettingsPage() {
         <div
           className={`p-4 rounded-xl text-xs flex items-center gap-2 animate-fadeIn ${
             message.type === "success"
-              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-300"
-              : "bg-rose-500/10 border border-rose-500/20 text-rose-300"
+              ? "bg-emerald-50 border border-emerald-200 text-[#1F5E4B]"
+              : "bg-rose-50 border border-rose-200 text-rose-700"
           }`}
         >
           {message.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#1F5E4B] shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           )}
-          <span>{message.text}</span>
+          <span className="font-medium">{message.text}</span>
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Basic Brand Info */}
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-6 space-y-4">
-          <h2 className="text-base font-bold text-white font-readex flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#d4af37]" />
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 space-y-4 shadow-sm">
+          <h2 className="text-base font-bold text-primary font-readex flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-secondary" />
             <span>معلومات وهوية العلامة التجارية</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                 الاسم التجاري للمنصة
               </label>
               <input
@@ -124,12 +127,12 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, companyName: e.target.value })
                 }
-                className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                 سنوات الضمان الافتراضية
               </label>
               <input
@@ -141,12 +144,12 @@ export default function AdminSettingsPage() {
                     defaultWarrantyYears: Number(e.target.value),
                   })
                 }
-                className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                 رقم الهاتف الرئيسي للخدمة
               </label>
               <input
@@ -155,13 +158,13 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, phonePrimary: e.target.value })
                 }
-                className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                 dir="ltr"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                 البريد الإلكتروني المعتمد
               </label>
               <input
@@ -170,7 +173,7 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, emailPrimary: e.target.value })
                 }
-                className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                 dir="ltr"
               />
             </div>
@@ -178,16 +181,16 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Hero Section Dynamic Texts */}
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-6 space-y-4">
-          <h2 className="text-base font-bold text-white font-readex flex items-center gap-2">
-            <Layers className="w-4 h-4 text-[#d4af37]" />
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 space-y-4 shadow-sm">
+          <h2 className="text-base font-bold text-primary font-readex flex items-center gap-2">
+            <Layers className="w-4 h-4 text-secondary" />
             <span>نصوص الواجهة الرئيسية (Hero Section)</span>
           </h2>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   العنوان الرئيسي (Headline)
                 </label>
                 <input
@@ -196,12 +199,12 @@ export default function AdminSettingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, heroHeadline: e.target.value })
                   }
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                   سنوات الخبرة (بالشارة)
                 </label>
                 <input
@@ -213,13 +216,13 @@ export default function AdminSettingsPage() {
                       heroExperienceYears: Number(e.target.value),
                     })
                   }
-                  className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">
+              <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
                 الوصف الترويجي في الهيرو (Subheadline)
               </label>
               <textarea
@@ -228,16 +231,16 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, heroSubheadline: e.target.value })
                 }
-                className="w-full bg-[#131a21] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
               />
             </div>
           </div>
         </div>
 
         {/* Trust Bar Features */}
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-6 space-y-4">
-          <h2 className="text-base font-bold text-white font-readex flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#d4af37]" />
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 space-y-4 shadow-sm">
+          <h2 className="text-base font-bold text-primary font-readex flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-secondary" />
             <span>بطاقات الثقة والمميزات الأربعة (Trust Bar)</span>
           </h2>
 
@@ -245,16 +248,16 @@ export default function AdminSettingsPage() {
             {formData.trustBarItems.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-[#131a21] border border-white/5 rounded-xl p-4 space-y-2.5"
+                className="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 space-y-2.5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-[#d4af37]">
+                  <span className="text-[11px] font-bold text-secondary font-readex">
                     البطاقة #{idx + 1}
                   </span>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] text-gray-400 mb-1">
+                  <label className="block text-[11px] font-semibold text-on-surface mb-1">
                     العنوان
                   </label>
                   <input
@@ -263,12 +266,12 @@ export default function AdminSettingsPage() {
                     onChange={(e) =>
                       handleTrustItemChange(idx, "title", e.target.value)
                     }
-                    className="w-full bg-[#0c1217] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                    className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg px-3 py-2 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] text-gray-400 mb-1">
+                  <label className="block text-[11px] font-semibold text-on-surface mb-1">
                     الوصف المختصر
                   </label>
                   <textarea
@@ -277,7 +280,7 @@ export default function AdminSettingsPage() {
                     onChange={(e) =>
                       handleTrustItemChange(idx, "desc", e.target.value)
                     }
-                    className="w-full bg-[#0c1217] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+                    className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg px-3 py-2 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
                   />
                 </div>
               </div>
@@ -290,7 +293,7 @@ export default function AdminSettingsPage() {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 bg-[#7a5b3e] hover:bg-[#8f6b49] text-white text-xs sm:text-sm font-semibold px-6 py-3 rounded-xl shadow-lg transition-colors cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold px-6 py-3 rounded-xl shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />

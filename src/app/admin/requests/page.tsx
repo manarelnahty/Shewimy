@@ -97,43 +97,46 @@ export default function AdminRequestsPage() {
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case "deal_closed":
-        return { text: "تم إتمام الاتفاق", class: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" };
+        return { text: "تم إتمام الاتفاق", class: "bg-emerald-50 text-emerald-800 border-emerald-200" };
       case "visit_scheduled":
-        return { text: "تم حجز الزيارة", class: "bg-blue-500/10 text-blue-400 border-blue-500/20" };
+        return { text: "تم حجز الزيارة", class: "bg-blue-50 text-blue-800 border-blue-200" };
       case "contacted":
-        return { text: "تم التواصل", class: "bg-purple-500/10 text-purple-400 border-purple-500/20" };
+        return { text: "تم التواصل", class: "bg-purple-50 text-purple-800 border-purple-200" };
       default:
-        return { text: "جديد (بانتظار التواصل)", class: "bg-amber-500/10 text-amber-400 border-amber-500/20" };
+        return { text: "جديد (بانتظار التواصل)", class: "bg-amber-50 text-amber-800 border-amber-200" };
     }
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto font-cairo">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-outline-variant/20">
         <div>
-          <h1 className="text-2xl font-bold text-white font-readex">
+          <span className="text-xs text-secondary font-semibold uppercase tracking-wider block mb-1">
+            إدارة العملاء والمبيعات
+          </span>
+          <h1 className="text-2xl font-bold text-primary font-readex">
             طلبات المعاينة والاستشارات
           </h1>
-          <p className="text-xs sm:text-sm text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
             متابعة استمارات الزيارات الهندسية والتواصل المباشر مع العملاء عبر الواتساب
           </p>
         </div>
 
-        <div className="text-xs text-gray-400 bg-white/5 border border-white/10 px-3.5 py-2 rounded-xl">
-          إجمالي الطلبات المسجلة: <span className="font-bold text-white font-mono">{requests.length}</span>
+        <div className="text-xs text-on-surface-variant bg-surface-container-lowest border border-outline-variant/20 px-3.5 py-2 rounded-xl shadow-sm">
+          إجمالي الطلبات المسجلة: <span className="font-bold text-primary font-mono">{requests.length}</span>
         </div>
       </div>
 
       {notice && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[#1F5E4B] text-xs flex items-center gap-2 animate-fadeIn font-medium">
+          <CheckCircle2 className="w-4 h-4 text-[#1F5E4B]" />
           <span>{notice}</span>
         </div>
       )}
 
       {/* Filter Bar */}
-      <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-4 sm:p-5 space-y-4">
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Search */}
           <div className="relative">
@@ -142,9 +145,9 @@ export default function AdminRequestsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="بحث باسم العميل، الهاتف، أو الملاحظات..."
-              className="w-full bg-[#131a21] border border-white/10 rounded-xl px-4 py-2 pl-9 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#7a5b3e]"
+              className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2 pl-9 text-xs text-primary placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
             />
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-on-surface-variant absolute left-3 top-2.5" />
           </div>
 
           {/* Branch Filter */}
@@ -152,7 +155,7 @@ export default function AdminRequestsPage() {
             <select
               value={branchFilter}
               onChange={(e) => setBranchFilter(e.target.value)}
-              className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+              className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
             >
               <option value="all">كل الفروع (المنصورة، المحلة، سمنود)</option>
               <option value="mansoura">فرع المنصورة</option>
@@ -166,7 +169,7 @@ export default function AdminRequestsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-[#131a21] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#7a5b3e]"
+              className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
             >
               <option value="all">كل الحالات</option>
               <option value="new">جديد (بانتظار التواصل)</option>
@@ -180,10 +183,10 @@ export default function AdminRequestsPage() {
 
       {/* Requests List */}
       {filtered.length === 0 ? (
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-16 text-center text-gray-400">
-          <CalendarCheck className="w-12 h-12 mx-auto text-gray-600 mb-3" />
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-16 text-center text-on-surface-variant shadow-sm">
+          <CalendarCheck className="w-12 h-12 mx-auto text-outline-variant mb-3" />
           <p className="text-sm font-medium">لم يتم العثور على طلبات مطابقة</p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-on-surface-variant/80 mt-1">
             عندما يقوم أي زائر بتعبئة استمارة حجز المعاينة، سيظهر طلبه هنا فورياً.
           </p>
         </div>
@@ -203,56 +206,56 @@ export default function AdminRequestsPage() {
             return (
               <div
                 key={req.id}
-                className="bg-[#0c1217] border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all flex flex-col justify-between"
+                className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col justify-between"
               >
                 <div>
                   {/* Top Bar */}
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white">
-                        <User className="w-4 h-4 text-[#d4af37]" />
+                      <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-secondary border border-outline-variant/20 shadow-sm">
+                        <User className="w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-sm text-white font-readex">
+                        <h3 className="font-bold text-sm text-primary font-readex">
                           {req.clientName}
                         </h3>
-                        <p className="text-xs font-mono text-gray-400" dir="ltr">
+                        <p className="text-xs font-mono text-on-surface-variant font-medium" dir="ltr">
                           {req.phoneNumber}
                         </p>
                       </div>
                     </div>
 
                     <span
-                      className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-semibold border ${badge.class}`}
+                      className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold border ${badge.class}`}
                     >
                       {badge.text}
                     </span>
                   </div>
 
                   {/* Details Grid */}
-                  <div className="space-y-2 py-3 border-y border-white/5 text-xs text-gray-300">
+                  <div className="space-y-2 py-3 border-y border-outline-variant/10 text-xs text-on-surface">
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                      <span className="text-gray-400">الفرع المفضل:</span>
-                      <span className="text-white font-medium">
+                      <MapPin className="w-3.5 h-3.5 text-secondary shrink-0" />
+                      <span className="text-on-surface-variant">الفرع المفضل:</span>
+                      <span className="text-primary font-bold">
                         {getBranchLabel(req.selectedBranch)}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <FileText className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                      <span className="text-gray-400">الخدمة:</span>
-                      <span className="text-gray-200">
+                      <FileText className="w-3.5 h-3.5 text-secondary shrink-0" />
+                      <span className="text-on-surface-variant">الخدمة:</span>
+                      <span className="text-on-surface font-medium">
                         {getServiceLabel(req.requestedService)}
                       </span>
                     </div>
 
                     {req.customerNotes && (
-                      <div className="bg-[#131a21] p-2.5 rounded-lg border border-white/5 mt-2">
-                        <p className="text-[11px] text-gray-400 mb-0.5 font-medium">
+                      <div className="bg-surface-container-low p-3 rounded-xl border border-outline-variant/20 mt-2">
+                        <p className="text-[11px] text-on-surface-variant mb-0.5 font-bold font-readex">
                           ملاحظات العميل:
                         </p>
-                        <p className="text-xs text-gray-200 leading-relaxed">
+                        <p className="text-xs text-on-surface leading-relaxed">
                           {req.customerNotes}
                         </p>
                       </div>
@@ -264,13 +267,13 @@ export default function AdminRequestsPage() {
                 <div className="mt-4 pt-3 flex flex-wrap items-center justify-between gap-3">
                   {/* Status Dropdown */}
                   <div className="flex items-center gap-2">
-                    <label className="text-[11px] text-gray-400">الحالة:</label>
+                    <label className="text-[11px] text-on-surface-variant font-medium">الحالة:</label>
                     <select
                       value={req.status || "new"}
                       onChange={(e) =>
                         handleStatusChange(req.id!, e.target.value as any)
                       }
-                      className="bg-[#131a21] border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none"
+                      className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-2.5 py-1 text-xs text-primary focus:outline-none focus:border-secondary"
                     >
                       <option value="new">جديد</option>
                       <option value="contacted">تم التواصل</option>
@@ -285,7 +288,7 @@ export default function AdminRequestsPage() {
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-xs font-medium transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-semibold shadow-sm transition-all"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />
                       <span>واتساب</span>
@@ -293,16 +296,16 @@ export default function AdminRequestsPage() {
 
                     <a
                       href={`tel:${req.phoneNumber}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 text-xs font-medium transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-on-surface text-xs font-semibold transition-all"
                     >
-                      <PhoneCall className="w-3.5 h-3.5" />
+                      <PhoneCall className="w-3.5 h-3.5 text-secondary" />
                       <span>اتصال</span>
                     </a>
 
                     <button
                       type="button"
                       onClick={() => handleDelete(req.id!, req.clientName)}
-                      className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-colors"
+                      className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
                       title="حذف الطلب"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

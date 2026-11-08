@@ -49,14 +49,17 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto font-cairo">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-outline-variant/20">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white font-readex">
-            لوحة الإدارة والمتابعة
+          <span className="text-xs text-secondary font-semibold uppercase tracking-wider block mb-1">
+            لوحة الإدارة السحابية
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+            متابعة الكتالوج والمعاينات
           </h1>
-          <p className="text-xs sm:text-sm text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
             إحصائيات فورية ومزامنة سحابية مع قاعدة بيانات Firestore
           </p>
         </div>
@@ -64,114 +67,122 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/products"
-            className="inline-flex items-center gap-2 bg-[#7a5b3e] hover:bg-[#8f6b49] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl shadow-md transition-colors"
+            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>إضافة موديل جديد</span>
           </Link>
           <Link
             href="/admin/requests"
-            className="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/30 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
           >
-            <CalendarCheck className="w-4 h-4 text-[#d4af37]" />
+            <CalendarCheck className="w-4 h-4 text-secondary" />
             <span>كافة الطلبات ({requests.length})</span>
           </Link>
         </div>
       </div>
 
-      {/* Top Metrics Cards */}
+      {/* Top Metrics Cards (Matching TrustBar and Landing Page Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Total Products */}
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-5 shadow-sm hover:border-[#7a5b3e]/40 transition-all">
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-400 font-medium">المنتجات في الكتالوج</span>
-            <div className="w-9 h-9 rounded-xl bg-[#7a5b3e]/20 text-[#a37953] flex items-center justify-center">
+            <span className="text-xs text-on-surface-variant font-medium">المنتجات في الكتالوج</span>
+            <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-secondary">
               <Package className="w-5 h-5" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-white font-readex">
-              {loadingProducts ? "..." : products.length}
-            </span>
-            <span className="text-xs text-emerald-400">موديل نشط</span>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+                {loadingProducts ? "..." : products.length}
+              </span>
+              <span className="text-xs text-[#1F5E4B] font-semibold">موديل نشط</span>
+            </div>
+            <p className="text-[11px] text-on-surface-variant mt-1.5">
+              موزعة على 5 أقسام رئيسية حسب معايير DRD
+            </p>
           </div>
-          <p className="text-[11px] text-gray-500 mt-2">
-            موزعة على 5 أقسام رئيسية حسب معايير DRD
-          </p>
         </div>
 
         {/* New Requests */}
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-5 shadow-sm hover:border-amber-500/40 transition-all">
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-400 font-medium">طلبات جديدة بانتظار التواصل</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <span className="text-xs text-on-surface-variant font-medium">طلبات جديدة بانتظار التواصل</span>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Clock className="w-5 h-5" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-amber-300 font-readex">
-              {loadingRequests ? "..." : newRequests.length}
-            </span>
-            <span className="text-xs text-amber-400">طلب جديد</span>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-bold text-amber-800 font-readex">
+                {loadingRequests ? "..." : newRequests.length}
+              </span>
+              <span className="text-xs text-amber-700 font-semibold">طلب جديد</span>
+            </div>
+            <p className="text-[11px] text-on-surface-variant mt-1.5">
+              عملاء ينتظرون الاتصال وتحديد موعد المعاينة
+            </p>
           </div>
-          <p className="text-[11px] text-gray-500 mt-2">
-            عملاء ينتظرون الاتصال وتحديد موعد المعاينة
-          </p>
         </div>
 
         {/* Scheduled Inspections */}
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-5 shadow-sm hover:border-emerald-500/40 transition-all">
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-400 font-medium">معاينات مجدولة</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <span className="text-xs text-on-surface-variant font-medium">معاينات مجدولة</span>
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-white font-readex">
-              {loadingRequests ? "..." : scheduledRequests.length}
-            </span>
-            <span className="text-xs text-gray-400">من أصل {requests.length} طلب</span>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+                {loadingRequests ? "..." : scheduledRequests.length}
+              </span>
+              <span className="text-xs text-on-surface-variant">من أصل {requests.length} طلب</span>
+            </div>
+            <p className="text-[11px] text-on-surface-variant mt-1.5">
+              تم التنسيق وموعد الرفع الهندسي محدد
+            </p>
           </div>
-          <p className="text-[11px] text-gray-500 mt-2">
-            تم التنسيق وموعد الرفع الهندسي محدد
-          </p>
         </div>
 
         {/* Active Branches */}
-        <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-5 shadow-sm hover:border-[#1F5E4B]/40 transition-all">
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-gray-400 font-medium">فروع المعارض النشطة</span>
-            <div className="w-9 h-9 rounded-xl bg-[#1F5E4B]/20 text-emerald-400 flex items-center justify-center">
+            <span className="text-xs text-on-surface-variant font-medium">فروع المعارض النشطة</span>
+            <div className="w-10 h-10 rounded-xl bg-secondary-fixed/40 text-secondary flex items-center justify-center">
               <Building2 className="w-5 h-5" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-white font-readex">
-              {branches.length}
-            </span>
-            <span className="text-xs text-emerald-400">فروع في الدلتا</span>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+                {branches.length}
+              </span>
+              <span className="text-xs text-[#1F5E4B] font-semibold">فروع في الدلتا</span>
+            </div>
+            <p className="text-[11px] text-on-surface-variant mt-1.5">
+              المنصورة • المحلة الكبرى • سمنود
+            </p>
           </div>
-          <p className="text-[11px] text-gray-500 mt-2">
-            المنصورة • المحلة الكبرى • سمنود
-          </p>
         </div>
       </div>
 
       {/* DRD Catalog Taxonomy Breakdown */}
-      <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-6">
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-white font-readex">
+            <h2 className="text-base sm:text-lg font-bold text-primary font-readex">
               توزيع المنتجات والكتالوج (DRD Taxonomy)
             </h2>
-            <p className="text-xs text-gray-400">
-              النسب الرسمية المستهدفة وفق وثيقة المتطلبات
+            <p className="text-xs text-on-surface-variant">
+              النسب الرسمية المستهدفة وفق وثيقة المواصفات الفنية
             </p>
           </div>
           <Link
             href="/admin/products"
-            className="text-xs text-[#d4af37] hover:underline flex items-center gap-1"
+            className="text-xs text-secondary hover:underline font-semibold flex items-center gap-1"
           >
             <span>عرض كل المنتجات</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -185,26 +196,26 @@ export default function AdminDashboardPage() {
             return (
               <div
                 key={key}
-                className="bg-white/[0.02] border border-white/5 rounded-xl p-4 flex flex-col justify-between"
+                className="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between hover:bg-surface-container transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-gray-200">
+                    <span className="text-xs font-bold text-primary font-readex">
                       {info.labelAr.split(" ")[0]}
                     </span>
-                    <span className="text-[10px] bg-white/10 text-gray-300 px-2 py-0.5 rounded-full font-mono">
+                    <span className="text-[10px] bg-secondary-fixed/50 text-secondary font-bold px-2 py-0.5 rounded-full font-mono">
                       {info.sharePercent}
                     </span>
                   </div>
-                  <p className="text-[11px] text-gray-400 line-clamp-1">
+                  <p className="text-[11px] text-on-surface-variant line-clamp-1 leading-relaxed">
                     {info.labelAr}
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-baseline justify-between">
-                  <span className="text-lg font-bold text-white font-readex">
+                <div className="mt-4 pt-3 border-t border-outline-variant/15 flex items-baseline justify-between">
+                  <span className="text-lg font-bold text-primary font-readex">
                     {count}
                   </span>
-                  <span className="text-[11px] text-gray-400">موديل متوفر</span>
+                  <span className="text-[11px] text-on-surface-variant">موديل متوفر</span>
                 </div>
               </div>
             );
@@ -213,19 +224,19 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Recent Inspection Requests Table */}
-      <div className="bg-[#0c1217] border border-white/10 rounded-2xl p-6">
+      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-white font-readex">
+            <h2 className="text-base sm:text-lg font-bold text-primary font-readex">
               أحدث طلبات المعاينة والاستشارات
             </h2>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-on-surface-variant">
               الطلبات الواردة مباشرة من استمارة حجز المعاينة بالموقع
             </p>
           </div>
           <Link
             href="/admin/requests"
-            className="text-xs text-[#d4af37] hover:underline flex items-center gap-1"
+            className="text-xs text-secondary hover:underline font-semibold flex items-center gap-1"
           >
             <span>إدارة كل الطلبات ({requests.length})</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -233,17 +244,17 @@ export default function AdminDashboardPage() {
         </div>
 
         {requests.length === 0 ? (
-          <div className="py-12 text-center text-gray-400">
-            <CalendarCheck className="w-10 h-10 mx-auto text-gray-600 mb-3" />
+          <div className="py-12 text-center text-on-surface-variant">
+            <CalendarCheck className="w-10 h-10 mx-auto text-outline-variant mb-3" />
             <p className="text-sm font-medium">لا توجد طلبات معاينة مسجلة حتى الآن</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-on-surface-variant/80 mt-1">
               الطلبات المقدمة من نموذج &quot;صمم مطبخك&quot; ستظهر هنا فورياً
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-right text-xs">
-              <thead className="bg-white/[0.02] border-b border-white/10 text-gray-400">
+              <thead className="bg-surface-container-low border-b border-outline-variant/20 text-on-surface-variant">
                 <tr>
                   <th className="py-3 px-4 font-semibold">اسم العميل</th>
                   <th className="py-3 px-4 font-semibold">رقم الهاتف</th>
@@ -253,7 +264,7 @@ export default function AdminDashboardPage() {
                   <th className="py-3 px-4 font-semibold text-center">الإجراء السريع</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 text-gray-200">
+              <tbody className="divide-y divide-outline-variant/10 text-on-surface">
                 {requests.slice(0, 6).map((req) => {
                   const cleanPhone = (req.phoneNumber || "").replace(/[^0-9]/g, "");
                   const intlPhone = cleanPhone.startsWith("0")
@@ -265,15 +276,15 @@ export default function AdminDashboardPage() {
                   )}`;
 
                   return (
-                    <tr key={req.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3.5 px-4 font-medium text-white">
+                    <tr key={req.id} className="hover:bg-surface-container-low/60 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-primary font-readex">
                         {req.clientName}
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-gray-300">
+                      <td className="py-3.5 px-4 font-mono text-on-surface-variant">
                         {req.phoneNumber}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-white/5 text-gray-300">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-surface-container text-on-surface font-medium">
                           {req.selectedBranch === "mansoura"
                             ? "المنصورة"
                             : req.selectedBranch === "mahalla"
@@ -281,7 +292,7 @@ export default function AdminDashboardPage() {
                             : "سمنود"}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-gray-400">
+                      <td className="py-3.5 px-4 text-on-surface-variant">
                         {req.requestedService === "kitchen_3d"
                           ? "تصميم مطبخ 3D"
                           : req.requestedService === "dressing_inspection"
@@ -294,7 +305,7 @@ export default function AdminDashboardPage() {
                           onChange={(e) =>
                             handleQuickStatusChange(req.id!, e.target.value as any)
                           }
-                          className="bg-[#131a21] border border-white/10 rounded-lg px-2.5 py-1 text-[11px] text-gray-200 focus:outline-none"
+                          className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-2.5 py-1 text-[11px] text-on-surface focus:outline-none focus:border-secondary"
                         >
                           <option value="new">جديد (بانتظار التواصل)</option>
                           <option value="contacted">تم التواصل</option>
@@ -308,14 +319,14 @@ export default function AdminDashboardPage() {
                             href={whatsappUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                            className="p-1.5 rounded-lg bg-emerald-50 text-[#1F5E4B] hover:bg-emerald-100 transition-colors"
                             title="مراسلة عبر واتساب"
                           >
                             <MessageCircle className="w-4 h-4" />
                           </a>
                           <a
                             href={`tel:${req.phoneNumber}`}
-                            className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
+                            className="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
                             title="اتصال هاتفي"
                           >
                             <PhoneCall className="w-4 h-4" />
