@@ -10,8 +10,8 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { login, loginDemo } = useAdminAuth();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@shewimy.com");
+  const [password, setPassword] = useState("Shewimy@2026");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
       setError(null);
       const res = await login(email, password);
       if (res.success) {
-        router.push("/admin");
+        window.location.href = "/admin";
       } else {
         setError(res.error || "تعذر تسجيل الدخول");
       }
@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
 
   const handleQuickDemoLogin = () => {
     loginDemo();
-    router.push("/admin");
+    window.location.href = "/admin";
   };
 
   return (
