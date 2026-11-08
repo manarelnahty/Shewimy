@@ -1,16 +1,55 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, serverTimestamp, writeBatch } from "firebase/firestore";
 
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from .env.local or .env
+function loadEnv() {
+  const envFiles = [".env.local", ".env"];
+  for (const f of envFiles) {
+    const fullPath = path.resolve(__dirname, "..", f);
+    if (fs.existsSync(fullPath)) {
+      const content = fs.readFileSync(fullPath, "utf-8");
+      for (const line of content.split("\n")) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#")) continue;
+        const eqIdx = trimmed.indexOf("=");
+        if (eqIdx !== -1) {
+          const key = trimmed.slice(0, eqIdx).trim();
+          let val = trimmed.slice(eqIdx + 1).trim();
+          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            val = val.slice(1, -1);
+          }
+          if (!process.env[key]) {
+            process.env[key] = val;
+          }
+        }
+      }
+    }
+  }
+}
+loadEnv();
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDWT2BLMMkDAjmHnH6EWqdarDLlh2ue8yo",
-  authDomain: "dawrah-test.firebaseapp.com",
-  databaseURL: "https://dawrah-test-default-rtdb.firebaseio.com",
-  projectId: "dawrah-test",
-  storageBucket: "dawrah-test.firebasestorage.app",
-  messagingSenderId: "613358099601",
-  appId: "1:613358099601:web:2112a3eb4e3fdf5ae83330",
-  measurementId: "G-5XBMQN24BV",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+
+if (!firebaseConfig.apiKey) {
+  console.error("❌ Error: NEXT_PUBLIC_FIREBASE_API_KEY is not defined in .env or .env.local");
+  process.exit(1);
+}
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
