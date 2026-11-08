@@ -66,7 +66,7 @@ const initialForm: ProductFormData = {
 };
 
 export default function AdminProductsPage() {
-  const { products, loading, error, refetch } = useAdminProducts();
+  const { products, loading, refetch } = useAdminProducts();
 
   const [activeSection, setActiveSection] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -142,7 +142,7 @@ export default function AdminProductsPage() {
         setMessage({ type: "error", text: res.error || "فشل رفع الصورة" });
       }
     } catch (err: any) {
-      setMessage({ type: "error", text: err?.message || "خطأ أثناء رفع الملف" });
+      setMessage({ type: "error", text: err?.message || "حدث خطأ أثناء رفع الصورة" });
     } finally {
       setUploadingImage(false);
     }
@@ -150,8 +150,8 @@ export default function AdminProductsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name) {
-      setMessage({ type: "error", text: "يرجى كتابة اسم الموديل" });
+    if (!formData.name || !formData.slug) {
+      setMessage({ type: "error", text: "يرجى كتابة اسم الموديل والرابط الإنجليزي" });
       return;
     }
 
@@ -164,19 +164,10 @@ export default function AdminProductsPage() {
         .map((m) => m.trim())
         .filter(Boolean);
 
-      const generatedSlug =
-        formData.slug ||
-        formData.name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "") ||
-        `item-${Date.now()}`;
-
       const payload: Partial<Product> = {
-        name: formData.name,
-        title: formData.name,
         code: formData.code,
-        slug: generatedSlug,
+        name: formData.name,
+        slug: formData.slug,
         mainSection: formData.mainSection,
         category: formData.mainSection as any,
         subCategory: formData.subCategory,
@@ -242,17 +233,17 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto font-cairo">
+    <div className="space-y-6 max-w-7xl mx-auto font-cairo text-[#1b1c1a]">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-outline-variant/20">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e7e5e0]">
         <div>
-          <span className="text-xs text-secondary font-semibold uppercase tracking-wider block mb-1">
+          <span className="text-xs text-[#855224] font-semibold uppercase tracking-wider block mb-1">
             الكتالوج السحابي
           </span>
-          <h1 className="text-2xl font-bold text-primary font-readex">
+          <h1 className="text-2xl font-bold text-[#1b1c1a] font-readex">
             إدارة الموديلات والمنتجات
           </h1>
-          <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
+          <p className="text-xs sm:text-sm text-[#5e6368] mt-1">
             إضافة وتعديل وحذف الموديلات المتزامنة فورياً مع صفحات الكتالوج
           </p>
         </div>
@@ -260,7 +251,7 @@ export default function AdminProductsPage() {
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>إضافة منتج جديد</span>
@@ -272,13 +263,13 @@ export default function AdminProductsPage() {
         <div
           className={`p-4 rounded-xl text-xs flex items-center justify-between animate-fadeIn ${
             message.type === "success"
-              ? "bg-emerald-50 border border-emerald-200 text-[#1F5E4B]"
-              : "bg-rose-50 border border-rose-200 text-rose-700"
+              ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border border-rose-200 text-rose-800"
           }`}
         >
           <div className="flex items-center gap-2">
             {message.type === "success" ? (
-              <Check className="w-4 h-4 text-[#1F5E4B]" />
+              <Check className="w-4 h-4 text-emerald-600" />
             ) : (
               <AlertCircle className="w-4 h-4 text-rose-600" />
             )}
@@ -287,25 +278,25 @@ export default function AdminProductsPage() {
           <button
             type="button"
             onClick={() => setMessage(null)}
-            className="text-on-surface-variant hover:text-primary"
+            className="text-[#5e6368] hover:text-[#1b1c1a]"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      {/* Filters and Search Bar (Exact Landing Page Filter Pills) */}
-      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
+      {/* Filters and Search Bar */}
+      <div className="bg-white border border-[#e7e5e0] rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Section Filter Pills */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-container overflow-x-auto">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#f8f6f2] border border-[#e7e5e0] overflow-x-auto">
             <button
               type="button"
               onClick={() => setActiveSection("all")}
               className={`text-xs px-3.5 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeSection === "all"
-                  ? "bg-primary text-white shadow-sm"
-                  : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
+                  ? "bg-[#1F5E4B] text-white shadow-xs"
+                  : "text-[#5e6368] hover:text-[#1b1c1a] hover:bg-white"
               }`}
             >
               الكل ({products.length})
@@ -317,8 +308,8 @@ export default function AdminProductsPage() {
                 onClick={() => setActiveSection(secKey)}
                 className={`text-xs px-3.5 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   activeSection === secKey
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
+                    ? "bg-[#1F5E4B] text-white shadow-xs"
+                    : "text-[#5e6368] hover:text-[#1b1c1a] hover:bg-white"
                 }`}
               >
                 {MAIN_SECTIONS_INFO[secKey].labelAr.split(" ")[0]} (
@@ -334,28 +325,28 @@ export default function AdminProductsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="بحث بالاسم، الكود، أو الخامات..."
-              className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-2 pl-9 text-xs text-primary placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+              className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-4 py-2 pl-9 text-xs text-[#1b1c1a] placeholder-[#9ca3af] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
             />
-            <Search className="w-4 h-4 text-on-surface-variant absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-[#855224] absolute left-3 top-2.5" />
           </div>
         </div>
       </div>
 
       {/* Products Table */}
-      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#e7e5e0] rounded-2xl overflow-hidden shadow-xs">
         {loading ? (
-          <div className="py-20 text-center text-on-surface-variant flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-secondary" />
+          <div className="py-20 text-center text-[#5e6368] flex flex-col items-center justify-center gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-[#855224]" />
             <p className="text-xs">جاري تحميل المنتجات من Firestore...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="py-20 text-center text-on-surface-variant">
-            <Package className="w-12 h-12 mx-auto text-outline-variant mb-3" />
-            <p className="text-sm font-medium">لم يتم العثور على منتجات مطابقة للبحث</p>
+          <div className="py-20 text-center text-[#5e6368]">
+            <Package className="w-12 h-12 mx-auto text-[#9ca3af] mb-3" />
+            <p className="text-sm font-medium text-[#1b1c1a]">لم يتم العثور على منتجات مطابقة للبحث</p>
             <button
               type="button"
               onClick={openCreateModal}
-              className="mt-3 text-xs text-secondary hover:underline font-semibold"
+              className="mt-3 text-xs text-[#855224] hover:underline font-semibold"
             >
               + إضافة أول موديل في هذا القسم
             </button>
@@ -363,28 +354,28 @@ export default function AdminProductsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-right text-xs">
-              <thead className="bg-surface-container-low border-b border-outline-variant/20 text-on-surface-variant">
+              <thead className="bg-[#f5f3ef] border-b border-[#e7e5e0] text-[#5e6368]">
                 <tr>
-                  <th className="py-3.5 px-4 font-semibold">الموديل والرمز</th>
-                  <th className="py-3.5 px-4 font-semibold">القسم والتصنيف</th>
-                  <th className="py-3.5 px-4 font-semibold">السعر / الوحدة</th>
-                  <th className="py-3.5 px-4 font-semibold">الضمان</th>
-                  <th className="py-3.5 px-4 font-semibold">المميز في الهيرو</th>
-                  <th className="py-3.5 px-4 font-semibold">الحالة</th>
-                  <th className="py-3.5 px-4 font-semibold text-center">الإجراءات</th>
+                  <th className="py-3.5 px-4 font-semibold font-readex">الموديل والرمز</th>
+                  <th className="py-3.5 px-4 font-semibold font-readex">القسم والتصنيف</th>
+                  <th className="py-3.5 px-4 font-semibold font-readex">السعر / الوحدة</th>
+                  <th className="py-3.5 px-4 font-semibold font-readex">الضمان</th>
+                  <th className="py-3.5 px-4 font-semibold font-readex">المميز في الهيرو</th>
+                  <th className="py-3.5 px-4 font-semibold font-readex">الحالة</th>
+                  <th className="py-3.5 px-4 font-semibold text-center font-readex">الإجراءات</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline-variant/10 text-on-surface">
+              <tbody className="divide-y divide-[#e7e5e0] text-[#1b1c1a]">
                 {filteredProducts.map((p) => {
                   const isFeat = Boolean(p.isFeatured || p.featured);
                   const img = p.imageUrl || p.coverImage || "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80";
 
                   return (
-                    <tr key={p.id} className="hover:bg-surface-container-low/60 transition-colors">
+                    <tr key={p.id} className="hover:bg-[#fbf9f5] transition-colors">
                       {/* Image & Title */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-outline-variant/20 bg-surface-container">
+                          <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-[#e7e5e0] bg-[#f8f6f2]">
                             <Image
                               src={img}
                               alt={p.name}
@@ -394,10 +385,10 @@ export default function AdminProductsPage() {
                             />
                           </div>
                           <div>
-                            <p className="font-bold text-primary font-readex line-clamp-1">
+                            <p className="font-bold text-[#1b1c1a] font-readex line-clamp-1">
                               {p.name}
                             </p>
-                            <span className="text-[10px] font-mono text-secondary font-semibold">
+                            <span className="text-[10px] font-mono text-[#855224] font-semibold">
                               {p.code}
                             </span>
                           </div>
@@ -406,20 +397,20 @@ export default function AdminProductsPage() {
 
                       {/* Section & Category */}
                       <td className="py-3 px-4">
-                        <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-surface-container text-on-surface font-medium mb-1">
+                        <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-[#855224]/10 text-[#855224] font-medium border border-[#855224]/20 mb-1">
                           {MAIN_SECTIONS_INFO[p.mainSection]?.labelAr || p.mainSection}
                         </span>
-                        <p className="text-[11px] text-on-surface-variant line-clamp-1">
+                        <p className="text-[11px] text-[#5e6368] line-clamp-1">
                           {p.subCategory || "تصميم مخصص"}
                         </p>
                       </td>
 
                       {/* Price */}
                       <td className="py-3 px-4">
-                        <p className="font-bold text-primary font-mono">
+                        <p className="font-bold text-[#1b1c1a] font-mono">
                           {p.price ? `${p.price.toLocaleString()} ج.م` : p.priceDisplay}
                         </p>
-                        <p className="text-[10px] text-on-surface-variant">
+                        <p className="text-[10px] text-[#5e6368]">
                           {p.pricingMode === "whatsapp_quote" ? "طلب مقايسة" : "سعر محدد"}
                         </p>
                       </td>
@@ -436,10 +427,10 @@ export default function AdminProductsPage() {
                         <button
                           type="button"
                           onClick={() => handleToggleFeatured(p)}
-                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          className={`p-1.5 rounded-lg transition-colors cursor-pointer border ${
                             isFeat
-                              ? "bg-amber-100 text-amber-600"
-                              : "bg-surface-container text-outline-variant hover:text-on-surface"
+                              ? "bg-amber-50 text-amber-600 border-amber-200"
+                              : "bg-[#f5f3ef] text-[#9ca3af] hover:text-[#1b1c1a] border-[#e7e5e0]"
                           }`}
                           title={isFeat ? "معروض في الرئيسية (انقر للإلغاء)" : "إبراز في المعرض"}
                         >
@@ -450,12 +441,12 @@ export default function AdminProductsPage() {
                       {/* Status */}
                       <td className="py-3 px-4">
                         <span
-                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold border ${
                             p.status === "published"
-                              ? "bg-emerald-50 text-emerald-700"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                               : p.status === "draft"
-                              ? "bg-amber-50 text-amber-700"
-                              : "bg-gray-100 text-gray-600"
+                              ? "bg-amber-50 text-amber-800 border-amber-200"
+                              : "bg-gray-100 text-gray-600 border-gray-200"
                           }`}
                         >
                           {p.status === "published"
@@ -473,7 +464,7 @@ export default function AdminProductsPage() {
                             href={`/catalog/${p.mainSection}/${p.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors"
+                            className="p-1.5 rounded-lg bg-[#f5f3ef] hover:bg-[#eae8e4] text-[#44474a] hover:text-[#1b1c1a] border border-[#e7e5e0] transition-colors"
                             title="معاينة الصفحة الحية"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
@@ -481,7 +472,7 @@ export default function AdminProductsPage() {
                           <button
                             type="button"
                             onClick={() => openEditModal(p)}
-                            className="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-[#f5f3ef] hover:bg-[#eae8e4] text-[#44474a] hover:text-[#1b1c1a] border border-[#e7e5e0] transition-colors cursor-pointer"
                             title="تعديل الموديل"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -489,7 +480,7 @@ export default function AdminProductsPage() {
                           <button
                             type="button"
                             onClick={() => handleDelete(p.id, p.name)}
-                            className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer"
                             title="حذف الموديل"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -507,16 +498,16 @@ export default function AdminProductsPage() {
 
       {/* Add / Edit Product Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative text-on-surface">
-            <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4 mb-6">
-              <h2 className="text-lg font-bold text-primary font-readex">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white border border-[#e7e5e0] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative text-[#1b1c1a]">
+            <div className="flex items-center justify-between border-b border-[#e7e5e0] pb-4 mb-6">
+              <h2 className="text-lg font-bold text-[#1b1c1a] font-readex">
                 {editingId ? "تعديل الموديل في الكتالوج" : "إضافة موديل جديد إلى الكتالوج"}
               </h2>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-on-surface-variant hover:text-primary p-1 rounded-lg"
+                className="text-[#5e6368] hover:text-[#1b1c1a] p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -526,7 +517,7 @@ export default function AdminProductsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Title */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     اسم الموديل *
                   </label>
                   <input
@@ -535,13 +526,13 @@ export default function AdminProductsPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="مثال: مطبخ إيطالي بولاك آيلاند"
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                   />
                 </div>
 
                 {/* Code */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     كود الموديل
                   </label>
                   <input
@@ -549,13 +540,13 @@ export default function AdminProductsPage() {
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                     placeholder="SHW-101"
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                   />
                 </div>
 
                 {/* Slug */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     الرابط الإنجليزي (Slug)
                   </label>
                   <input
@@ -563,14 +554,14 @@ export default function AdminProductsPage() {
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                     placeholder="pollak-island-italian"
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                     dir="ltr"
                   />
                 </div>
 
                 {/* Main Section */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     القسم الرئيسي (DRD) *
                   </label>
                   <select
@@ -581,7 +572,7 @@ export default function AdminProductsPage() {
                         mainSection: e.target.value as MainSection,
                       })
                     }
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                   >
                     {(Object.keys(MAIN_SECTIONS_INFO) as MainSection[]).map((k) => (
                       <option key={k} value={k}>
@@ -593,7 +584,7 @@ export default function AdminProductsPage() {
 
                 {/* SubCategory */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     التصنيف الفرعي
                   </label>
                   <input
@@ -601,13 +592,13 @@ export default function AdminProductsPage() {
                     value={formData.subCategory}
                     onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
                     placeholder="مثال: نيو كلاسيك خشب أرو"
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                   />
                 </div>
 
                 {/* Warranty */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     سنوات الضمان
                   </label>
                   <input
@@ -616,13 +607,13 @@ export default function AdminProductsPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, warrantyYears: Number(e.target.value) })
                     }
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                   />
                 </div>
 
                 {/* Price */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     السعر التقديري (ج.م)
                   </label>
                   <input
@@ -631,13 +622,13 @@ export default function AdminProductsPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, price: Number(e.target.value) })
                     }
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                   />
                 </div>
 
                 {/* Price Display */}
                 <div>
-                  <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                     نص عرض السعر
                   </label>
                   <input
@@ -647,14 +638,14 @@ export default function AdminProductsPage() {
                       setFormData({ ...formData, priceDisplay: e.target.value })
                     }
                     placeholder="طلب مقايسة وتسعير"
-                    className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                   />
                 </div>
               </div>
 
               {/* Materials */}
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                   الخامات الأساسية (مفصولة بفواصل)
                 </label>
                 <input
@@ -662,13 +653,13 @@ export default function AdminProductsPage() {
                   value={formData.materialsText}
                   onChange={(e) => setFormData({ ...formData, materialsText: e.target.value })}
                   placeholder="شاسيه كونتر أوروبي، لزق ألماني PUR، رخام كلكتا"
-                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                  className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                 />
               </div>
 
               {/* Hardware */}
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                   المفصلات والإكسسوارات الميكانيكية
                 </label>
                 <input
@@ -676,13 +667,13 @@ export default function AdminProductsPage() {
                   value={formData.hardware}
                   onChange={(e) => setFormData({ ...formData, hardware: e.target.value })}
                   placeholder="مفصلات ومجاري هيدروليك بلوم نمساوية أصلية"
-                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                  className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                 />
               </div>
 
               {/* Image URL & Upload */}
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                   صورة الغلاف (رابط مباشر أو رفع ملف)
                 </label>
                 <div className="flex gap-2">
@@ -691,11 +682,11 @@ export default function AdminProductsPage() {
                     value={formData.imageUrl}
                     onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                     placeholder="https://..."
-                    className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-xl px-3.5 py-2.5 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                    className="flex-1 bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                     dir="ltr"
                   />
-                  <label className="cursor-pointer bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 text-primary font-medium">
-                    <Upload className="w-4 h-4 text-secondary" />
+                  <label className="cursor-pointer bg-[#f5f3ef] hover:bg-[#eae8e4] border border-[#d6d3cd] px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 text-[#1b1c1a] font-medium transition-colors">
+                    <Upload className="w-4 h-4 text-[#855224]" />
                     <span>{uploadingImage ? "جاري الرفع..." : "رفع صورة"}</span>
                     <input
                       type="file"
@@ -710,19 +701,19 @@ export default function AdminProductsPage() {
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1 font-readex">
+                <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
                   الوصف والمواصفات الفنية
                 </label>
                 <textarea
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-xs text-primary focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary"
+                  className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl p-3 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                 />
               </div>
 
               {/* Status and Featured Checks */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-outline-variant/20">
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-[#e7e5e0]">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -730,15 +721,15 @@ export default function AdminProductsPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, isFeatured: e.target.checked })
                     }
-                    className="w-4 h-4 rounded text-[#1F5E4B] focus:ring-0 bg-surface-container border-outline-variant"
+                    className="w-4 h-4 rounded text-[#1F5E4B] focus:ring-0 bg-[#fbf9f5] border-[#d6d3cd]"
                   />
-                  <span className="text-xs text-on-surface font-medium">
+                  <span className="text-xs text-[#1b1c1a] font-medium">
                     إبراز الموديل في الصفحة الرئيسية (Featured Portfolio)
                   </span>
                 </label>
 
                 <div className="flex items-center gap-2">
-                  <label className="text-xs text-on-surface-variant font-medium">حالة النشر:</label>
+                  <label className="text-xs text-[#5e6368] font-medium">حالة النشر:</label>
                   <select
                     value={formData.status}
                     onChange={(e) =>
@@ -747,7 +738,7 @@ export default function AdminProductsPage() {
                         status: e.target.value as any,
                       })
                     }
-                    className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-2.5 py-1 text-xs text-primary"
+                    className="bg-[#fbf9f5] border border-[#d6d3cd] rounded-lg px-2.5 py-1 text-xs text-[#1b1c1a]"
                   >
                     <option value="published">منشور (حي على الموقع)</option>
                     <option value="draft">مسودة</option>
@@ -757,18 +748,18 @@ export default function AdminProductsPage() {
               </div>
 
               {/* Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant/20">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#e7e5e0]">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs text-on-surface-variant hover:text-primary font-medium"
+                  className="px-4 py-2.5 rounded-xl text-xs text-[#5e6368] hover:text-[#1b1c1a] font-medium transition-colors"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-50"
                 >
                   {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                   <span>{editingId ? "حفظ التعديلات" : "إضافة المنتج الآن"}</span>

@@ -15,8 +15,6 @@ import {
   Menu,
   X,
   Shield,
-  Layers,
-  Sparkles,
 } from "lucide-react";
 import { useAdminAuth } from "@/lib/firebase/hooks";
 
@@ -30,25 +28,25 @@ export default function AdminLayout({
   const { user, loading, isAuthenticated, logout } = useAdminAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // If on login page, render bare layout
+  // If on login page, render bare layout in light mode
   if (pathname === "/admin/login") {
-    return <div className="min-h-screen bg-surface text-on-surface">{children}</div>;
+    return <div className="min-h-screen bg-[#fbf9f5] text-[#1b1c1a]">{children}</div>;
   }
 
   // Guard: if unauthenticated and finished loading, show prompt or redirect
   if (!loading && !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-6 text-center text-on-surface">
-        <div className="w-16 h-16 rounded-2xl bg-secondary/10 border border-secondary/30 flex items-center justify-center text-secondary mb-4 shadow-sm">
+      <div className="min-h-screen bg-[#fbf9f5] flex flex-col items-center justify-center p-6 text-center text-[#1b1c1a]">
+        <div className="w-16 h-16 rounded-2xl bg-[#855224]/10 border border-[#855224]/20 flex items-center justify-center text-[#855224] mb-4 shadow-sm">
           <Shield className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl font-bold font-readex text-primary mb-2">منطقة الإدارة محمية</h1>
-        <p className="text-on-surface-variant max-w-sm mb-6 text-sm">
+        <h1 className="text-2xl font-bold font-readex text-[#1b1c1a] mb-2">منطقة الإدارة محمية</h1>
+        <p className="text-[#5e6368] max-w-sm mb-6 text-sm">
           يرجى تسجيل الدخول بحساب مسؤول لوحة تحكم مطابخ وديكورات الشويمي للمتابعة.
         </p>
         <Link
           href="/admin/login"
-          className="inline-flex items-center justify-center bg-[#1F5E4B] hover:bg-[#164638] text-white font-medium px-6 py-2.5 rounded-lg shadow-md transition-all text-sm cursor-pointer"
+          className="inline-flex items-center justify-center bg-[#1F5E4B] hover:bg-[#164638] text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition-all text-sm cursor-pointer"
         >
           الانتقال إلى صفحة تسجيل الدخول
         </Link>
@@ -95,11 +93,11 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface flex flex-col lg:flex-row antialiased font-cairo">
+    <div className="min-h-screen bg-[#fbf9f5] text-[#1b1c1a] flex flex-col lg:flex-row antialiased font-cairo">
       {/* Mobile Top Header */}
-      <header className="lg:hidden flex items-center justify-between px-5 py-4 bg-primary text-white sticky top-0 z-50 shadow-md">
+      <header className="lg:hidden flex items-center justify-between px-5 py-4 bg-white text-[#1b1c1a] sticky top-0 z-50 shadow-sm border-b border-[#e7e5e0]">
         <div className="flex items-center gap-3">
-          <div className="relative h-9 w-9 bg-surface-container-lowest rounded-lg p-1 shrink-0 flex items-center justify-center">
+          <div className="relative h-9 w-9 bg-[#f8f6f2] rounded-lg p-1 shrink-0 flex items-center justify-center border border-[#e7e5e0]">
             <Image
               src="/images/logo.png"
               alt="الشويمي"
@@ -110,30 +108,30 @@ export default function AdminLayout({
             />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-white font-readex">مطابخ الشويمي</h2>
-            <p className="text-[11px] text-secondary-fixed">لوحة الإدارة السحابية</p>
+            <h2 className="text-sm font-bold text-[#1b1c1a] font-readex">مطابخ الشويمي</h2>
+            <p className="text-[11px] text-[#855224] font-medium">لوحة الإدارة السحابية</p>
           </div>
         </div>
 
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+          className="p-2 rounded-lg bg-[#f5f3ef] text-[#1b1c1a] hover:bg-[#eae8e4] transition-colors"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </header>
 
-      {/* Sidebar Navigation (Matching Hero & Header Dark Architectural Palette) */}
+      {/* Light Mode Elegant Sidebar */}
       <aside
         className={`${
           mobileMenuOpen ? "block" : "hidden"
-        } lg:flex lg:flex-col lg:w-72 bg-primary text-white shrink-0 z-40 fixed lg:sticky top-0 h-auto lg:h-screen w-full shadow-xl border-l border-white/10`}
+        } lg:flex lg:flex-col lg:w-72 bg-white text-[#1b1c1a] shrink-0 z-40 fixed lg:sticky top-0 h-auto lg:h-screen w-full shadow-sm border-l border-[#e7e5e0]`}
       >
         {/* Brand Header */}
-        <div className="p-6 border-b border-white/10 hidden lg:flex items-center justify-between">
+        <div className="p-6 border-b border-[#e7e5e0] hidden lg:flex items-center justify-between bg-white">
           <div className="flex items-center gap-3.5">
-            <div className="relative h-11 w-11 rounded-xl bg-surface-container-lowest p-1.5 shrink-0 flex items-center justify-center shadow-sm">
+            <div className="relative h-11 w-11 rounded-xl bg-[#f8f6f2] border border-[#e7e5e0] p-1.5 shrink-0 flex items-center justify-center shadow-xs">
               <Image
                 src="/images/logo.png"
                 alt="شعار مطابخ الشويمي"
@@ -144,11 +142,11 @@ export default function AdminLayout({
               />
             </div>
             <div>
-              <h1 className="text-base font-bold text-white font-readex tracking-tight">
+              <h1 className="text-base font-bold text-[#1b1c1a] font-readex tracking-tight">
                 مطابخ الشويمي
               </h1>
-              <span className="inline-flex items-center gap-1.5 text-[11px] text-secondary-fixed">
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary-fixed animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 text-[11px] text-[#855224] font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#855224] animate-pulse" />
                 لوحة الإدارة السحابية
               </span>
             </div>
@@ -156,9 +154,9 @@ export default function AdminLayout({
         </div>
 
         {/* User Info Bar */}
-        <div className="px-6 py-4 border-b border-white/10 bg-white/5">
-          <p className="text-[11px] text-gray-300">مرحباً بك،</p>
-          <p className="text-xs font-semibold text-white truncate font-readex">
+        <div className="px-6 py-4 border-b border-[#e7e5e0] bg-[#faf8f5]">
+          <p className="text-[11px] text-[#6e7276]">مرحباً بك،</p>
+          <p className="text-xs font-semibold text-[#1b1c1a] truncate font-readex">
             {user?.email || "مدير النظام (الشويمي)"}
           </p>
         </div>
@@ -177,11 +175,11 @@ export default function AdminLayout({
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-[#1F5E4B] text-white shadow-lg shadow-[#1F5E4B]/30 font-semibold"
-                    : "text-gray-300 hover:text-white hover:bg-white/10"
+                    ? "bg-[#1F5E4B] text-white shadow-md shadow-[#1F5E4B]/20 font-semibold"
+                    : "text-[#44474a] hover:text-[#1b1c1a] hover:bg-[#f5f3ef]"
                 }`}
               >
-                <span className={isActive ? "text-white" : "text-secondary-fixed"}>
+                <span className={isActive ? "text-white" : "text-[#855224]"}>
                   {link.icon}
                 </span>
                 <span>{link.label}</span>
@@ -191,17 +189,17 @@ export default function AdminLayout({
         </nav>
 
         {/* Bottom Actions */}
-        <div className="p-4 border-t border-white/10 space-y-2 bg-primary-container/40">
+        <div className="p-4 border-t border-[#e7e5e0] space-y-2 bg-[#faf8f5]">
           <Link
             href="/"
             target="_blank"
-            className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg text-xs text-gray-200 hover:text-white hover:bg-white/10 transition-colors border border-white/10"
+            className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-xs text-[#44474a] hover:text-[#1b1c1a] hover:bg-white transition-colors border border-[#e7e5e0] bg-white shadow-xs"
           >
             <span className="flex items-center gap-2">
-              <ExternalLink className="w-3.5 h-3.5 text-secondary-fixed" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#855224]" />
               <span>مشاهدة الموقع الرئيسي</span>
             </span>
-            <span className="text-[10px] bg-white/15 px-2 py-0.5 rounded text-gray-200 font-mono">
+            <span className="text-[10px] bg-[#855224]/10 text-[#855224] px-2 py-0.5 rounded font-mono font-bold">
               Live
             </span>
           </Link>
@@ -209,7 +207,7 @@ export default function AdminLayout({
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-2 w-full px-4 py-2.5 rounded-lg text-xs text-rose-300 hover:text-white hover:bg-rose-600/20 transition-colors cursor-pointer"
+            className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>تسجيل الخروج</span>
@@ -217,8 +215,8 @@ export default function AdminLayout({
         </div>
       </aside>
 
-      {/* Main Content Canvas (Warm Alabaster/Cream Landing Page Background) */}
-      <main className="flex-1 min-w-0 overflow-y-auto p-5 sm:p-8 lg:p-10 bg-surface">
+      {/* Main Content Area (Clean Light Mode Canvas) */}
+      <main className="flex-1 min-w-0 overflow-y-auto p-5 sm:p-8 lg:p-10 bg-[#fbf9f5]">
         {children}
       </main>
     </div>

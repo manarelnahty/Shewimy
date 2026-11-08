@@ -12,7 +12,6 @@ import {
   MessageCircle,
   PhoneCall,
   CheckCircle2,
-  AlertCircle,
   Sparkles,
 } from "lucide-react";
 import {
@@ -49,17 +48,17 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto font-cairo">
+    <div className="space-y-8 max-w-7xl mx-auto font-cairo text-[#1b1c1a]">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-outline-variant/20">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#e7e5e0]">
         <div>
-          <span className="text-xs text-secondary font-semibold uppercase tracking-wider block mb-1">
+          <span className="text-xs text-[#855224] font-semibold uppercase tracking-wider block mb-1">
             لوحة الإدارة السحابية
           </span>
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#1b1c1a] font-readex">
             متابعة الكتالوج والمعاينات
           </h1>
-          <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
+          <p className="text-xs sm:text-sm text-[#5e6368] mt-1">
             إحصائيات فورية ومزامنة سحابية مع قاعدة بيانات Firestore
           </p>
         </div>
@@ -67,49 +66,49 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/products"
-            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>إضافة موديل جديد</span>
           </Link>
           <Link
             href="/admin/requests"
-            className="inline-flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/30 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 bg-white hover:bg-[#f5f3ef] text-[#1b1c1a] border border-[#d6d3cd] text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl transition-colors shadow-xs"
           >
-            <CalendarCheck className="w-4 h-4 text-secondary" />
+            <CalendarCheck className="w-4 h-4 text-[#855224]" />
             <span>كافة الطلبات ({requests.length})</span>
           </Link>
         </div>
       </div>
 
-      {/* Top Metrics Cards (Matching TrustBar and Landing Page Cards) */}
+      {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Total Products */}
-        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+        <div className="bg-white border border-[#e7e5e0] rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-on-surface-variant font-medium">المنتجات في الكتالوج</span>
-            <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-secondary">
+            <span className="text-xs text-[#5e6368] font-medium">المنتجات في الكتالوج</span>
+            <div className="w-10 h-10 rounded-xl bg-[#855224]/10 border border-[#855224]/20 flex items-center justify-center text-[#855224]">
               <Package className="w-5 h-5" />
             </div>
           </div>
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+              <span className="text-2xl sm:text-3xl font-bold text-[#1b1c1a] font-readex">
                 {loadingProducts ? "..." : products.length}
               </span>
               <span className="text-xs text-[#1F5E4B] font-semibold">موديل نشط</span>
             </div>
-            <p className="text-[11px] text-on-surface-variant mt-1.5">
+            <p className="text-[11px] text-[#5e6368] mt-1.5">
               موزعة على 5 أقسام رئيسية حسب معايير DRD
             </p>
           </div>
         </div>
 
         {/* New Requests */}
-        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+        <div className="bg-white border border-[#e7e5e0] rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-on-surface-variant font-medium">طلبات جديدة بانتظار التواصل</span>
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span className="text-xs text-[#5e6368] font-medium">طلبات جديدة بانتظار التواصل</span>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center">
               <Clock className="w-5 h-5" />
             </div>
           </div>
@@ -120,49 +119,49 @@ export default function AdminDashboardPage() {
               </span>
               <span className="text-xs text-amber-700 font-semibold">طلب جديد</span>
             </div>
-            <p className="text-[11px] text-on-surface-variant mt-1.5">
+            <p className="text-[11px] text-[#5e6368] mt-1.5">
               عملاء ينتظرون الاتصال وتحديد موعد المعاينة
             </p>
           </div>
         </div>
 
         {/* Scheduled Inspections */}
-        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+        <div className="bg-white border border-[#e7e5e0] rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-on-surface-variant font-medium">معاينات مجدولة</span>
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span className="text-xs text-[#5e6368] font-medium">معاينات مجدولة</span>
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-[#1F5E4B] flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+              <span className="text-2xl sm:text-3xl font-bold text-[#1b1c1a] font-readex">
                 {loadingRequests ? "..." : scheduledRequests.length}
               </span>
-              <span className="text-xs text-on-surface-variant">من أصل {requests.length} طلب</span>
+              <span className="text-xs text-[#5e6368]">من أصل {requests.length} طلب</span>
             </div>
-            <p className="text-[11px] text-on-surface-variant mt-1.5">
+            <p className="text-[11px] text-[#5e6368] mt-1.5">
               تم التنسيق وموعد الرفع الهندسي محدد
             </p>
           </div>
         </div>
 
         {/* Active Branches */}
-        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+        <div className="bg-white border border-[#e7e5e0] rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-on-surface-variant font-medium">فروع المعارض النشطة</span>
-            <div className="w-10 h-10 rounded-xl bg-secondary-fixed/40 text-secondary flex items-center justify-center">
+            <span className="text-xs text-[#5e6368] font-medium">فروع المعارض النشطة</span>
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center">
               <Building2 className="w-5 h-5" />
             </div>
           </div>
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-bold text-primary font-readex">
+              <span className="text-2xl sm:text-3xl font-bold text-[#1b1c1a] font-readex">
                 {branches.length}
               </span>
               <span className="text-xs text-[#1F5E4B] font-semibold">فروع في الدلتا</span>
             </div>
-            <p className="text-[11px] text-on-surface-variant mt-1.5">
+            <p className="text-[11px] text-[#5e6368] mt-1.5">
               المنصورة • المحلة الكبرى • سمنود
             </p>
           </div>
@@ -170,19 +169,19 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* DRD Catalog Taxonomy Breakdown */}
-      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-[#e7e5e0] rounded-2xl p-6 shadow-xs">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-primary font-readex">
+            <h2 className="text-base sm:text-lg font-bold text-[#1b1c1a] font-readex">
               توزيع المنتجات والكتالوج (DRD Taxonomy)
             </h2>
-            <p className="text-xs text-on-surface-variant">
+            <p className="text-xs text-[#5e6368]">
               النسب الرسمية المستهدفة وفق وثيقة المواصفات الفنية
             </p>
           </div>
           <Link
             href="/admin/products"
-            className="text-xs text-secondary hover:underline font-semibold flex items-center gap-1"
+            className="text-xs text-[#855224] hover:underline font-semibold flex items-center gap-1"
           >
             <span>عرض كل المنتجات</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -196,26 +195,26 @@ export default function AdminDashboardPage() {
             return (
               <div
                 key={key}
-                className="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 flex flex-col justify-between hover:bg-surface-container transition-colors"
+                className="bg-[#f8f6f2] border border-[#e7e5e0] rounded-xl p-4 flex flex-col justify-between hover:border-[#855224]/50 transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-primary font-readex">
+                    <span className="text-xs font-bold text-[#1b1c1a] font-readex">
                       {info.labelAr.split(" ")[0]}
                     </span>
-                    <span className="text-[10px] bg-secondary-fixed/50 text-secondary font-bold px-2 py-0.5 rounded-full font-mono">
+                    <span className="text-[10px] bg-[#855224]/10 text-[#855224] font-bold px-2 py-0.5 rounded-full font-mono border border-[#855224]/20">
                       {info.sharePercent}
                     </span>
                   </div>
-                  <p className="text-[11px] text-on-surface-variant line-clamp-1 leading-relaxed">
+                  <p className="text-[11px] text-[#5e6368] line-clamp-1 leading-relaxed">
                     {info.labelAr}
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-outline-variant/15 flex items-baseline justify-between">
-                  <span className="text-lg font-bold text-primary font-readex">
+                <div className="mt-4 pt-3 border-t border-[#e7e5e0] flex items-baseline justify-between">
+                  <span className="text-lg font-bold text-[#1b1c1a] font-readex">
                     {count}
                   </span>
-                  <span className="text-[11px] text-on-surface-variant">موديل متوفر</span>
+                  <span className="text-[11px] text-[#5e6368]">موديل متوفر</span>
                 </div>
               </div>
             );
@@ -224,19 +223,19 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Recent Inspection Requests Table */}
-      <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-[#e7e5e0] rounded-2xl p-6 shadow-xs">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-primary font-readex">
+            <h2 className="text-base sm:text-lg font-bold text-[#1b1c1a] font-readex">
               أحدث طلبات المعاينة والاستشارات
             </h2>
-            <p className="text-xs text-on-surface-variant">
+            <p className="text-xs text-[#5e6368]">
               الطلبات الواردة مباشرة من استمارة حجز المعاينة بالموقع
             </p>
           </div>
           <Link
             href="/admin/requests"
-            className="text-xs text-secondary hover:underline font-semibold flex items-center gap-1"
+            className="text-xs text-[#855224] hover:underline font-semibold flex items-center gap-1"
           >
             <span>إدارة كل الطلبات ({requests.length})</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -244,27 +243,27 @@ export default function AdminDashboardPage() {
         </div>
 
         {requests.length === 0 ? (
-          <div className="py-12 text-center text-on-surface-variant">
-            <CalendarCheck className="w-10 h-10 mx-auto text-outline-variant mb-3" />
-            <p className="text-sm font-medium">لا توجد طلبات معاينة مسجلة حتى الآن</p>
-            <p className="text-xs text-on-surface-variant/80 mt-1">
+          <div className="py-12 text-center text-[#5e6368]">
+            <CalendarCheck className="w-10 h-10 mx-auto text-[#9ca3af] mb-3" />
+            <p className="text-sm font-medium text-[#1b1c1a]">لا توجد طلبات معاينة مسجلة حتى الآن</p>
+            <p className="text-xs text-[#5e6368] mt-1">
               الطلبات المقدمة من نموذج &quot;صمم مطبخك&quot; ستظهر هنا فورياً
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-right text-xs">
-              <thead className="bg-surface-container-low border-b border-outline-variant/20 text-on-surface-variant">
+              <thead className="bg-[#f5f3ef] border-b border-[#e7e5e0] text-[#5e6368]">
                 <tr>
-                  <th className="py-3 px-4 font-semibold">اسم العميل</th>
-                  <th className="py-3 px-4 font-semibold">رقم الهاتف</th>
-                  <th className="py-3 px-4 font-semibold">الفرع المفضل</th>
-                  <th className="py-3 px-4 font-semibold">الخدمة المطلوبة</th>
-                  <th className="py-3 px-4 font-semibold">حالة الطلب</th>
-                  <th className="py-3 px-4 font-semibold text-center">الإجراء السريع</th>
+                  <th className="py-3 px-4 font-semibold font-readex">اسم العميل</th>
+                  <th className="py-3 px-4 font-semibold font-readex">رقم الهاتف</th>
+                  <th className="py-3 px-4 font-semibold font-readex">الفرع المفضل</th>
+                  <th className="py-3 px-4 font-semibold font-readex">الخدمة المطلوبة</th>
+                  <th className="py-3 px-4 font-semibold font-readex">حالة الطلب</th>
+                  <th className="py-3 px-4 font-semibold text-center font-readex">الإجراء السريع</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline-variant/10 text-on-surface">
+              <tbody className="divide-y divide-[#e7e5e0] text-[#1b1c1a]">
                 {requests.slice(0, 6).map((req) => {
                   const cleanPhone = (req.phoneNumber || "").replace(/[^0-9]/g, "");
                   const intlPhone = cleanPhone.startsWith("0")
@@ -276,15 +275,15 @@ export default function AdminDashboardPage() {
                   )}`;
 
                   return (
-                    <tr key={req.id} className="hover:bg-surface-container-low/60 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-primary font-readex">
+                    <tr key={req.id} className="hover:bg-[#fbf9f5] transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-[#1b1c1a] font-readex">
                         {req.clientName}
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-on-surface-variant">
+                      <td className="py-3.5 px-4 font-mono text-[#44474a]">
                         {req.phoneNumber}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-surface-container text-on-surface font-medium">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-[#f5f3ef] text-[#1b1c1a] font-medium border border-[#e7e5e0]">
                           {req.selectedBranch === "mansoura"
                             ? "المنصورة"
                             : req.selectedBranch === "mahalla"
@@ -292,7 +291,7 @@ export default function AdminDashboardPage() {
                             : "سمنود"}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-on-surface-variant">
+                      <td className="py-3.5 px-4 text-[#5e6368]">
                         {req.requestedService === "kitchen_3d"
                           ? "تصميم مطبخ 3D"
                           : req.requestedService === "dressing_inspection"
@@ -305,7 +304,7 @@ export default function AdminDashboardPage() {
                           onChange={(e) =>
                             handleQuickStatusChange(req.id!, e.target.value as any)
                           }
-                          className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-2.5 py-1 text-[11px] text-on-surface focus:outline-none focus:border-secondary"
+                          className="bg-[#fbf9f5] border border-[#d6d3cd] rounded-lg px-2.5 py-1 text-[11px] text-[#1b1c1a] focus:outline-none focus:border-[#855224]"
                         >
                           <option value="new">جديد (بانتظار التواصل)</option>
                           <option value="contacted">تم التواصل</option>
@@ -319,14 +318,14 @@ export default function AdminDashboardPage() {
                             href={whatsappUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 rounded-lg bg-emerald-50 text-[#1F5E4B] hover:bg-emerald-100 transition-colors"
+                            className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors"
                             title="مراسلة عبر واتساب"
                           >
                             <MessageCircle className="w-4 h-4" />
                           </a>
                           <a
                             href={`tel:${req.phoneNumber}`}
-                            className="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                            className="p-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
                             title="اتصال هاتفي"
                           >
                             <PhoneCall className="w-4 h-4" />
