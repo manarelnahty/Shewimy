@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { BadgeCheck, Eye, Compass } from "lucide-react";
-import { useBranches } from "@/lib/firebase";
+import { useBranches, useSiteSettings } from "@/lib/firebase";
 
 interface HeroProps {
   onOpenConsultation?: () => void;
@@ -11,6 +11,15 @@ interface HeroProps {
 
 export function Hero({ onOpenConsultation }: HeroProps) {
   const { branches } = useBranches();
+  const { settings } = useSiteSettings();
+
+  const expYears = settings.heroExperienceYears || 24;
+  const warranty = settings.defaultWarrantyYears || 15;
+  const headline = settings.heroHeadline || "مطابخ فاخرة تُصنع بحرفية استثنائية لمنزلك العصري";
+  const subheadline =
+    settings.heroSubheadline ||
+    "من التصميم الهندسي ثلاثي الأبعاد إلى التصنيع بماكينات إيطالية بمصانعنا الخاصة، نبتكر مساحات تجمع بين الرقي والعملية بأعلى معايير الجودة العالمية.";
+
   return (
     <section className="relative w-full overflow-hidden bg-primary pt-24 sm:pt-28 pb-14 lg:pb-20 text-inverse-on-surface">
       {/* Ambient architectural background lighting & subtle textures */}
@@ -35,19 +44,19 @@ export function Hero({ onOpenConsultation }: HeroProps) {
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-surface-container-high/10 backdrop-blur-md border border-white/5 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-secondary-container animate-pulse" />
               <span className="text-xs sm:text-sm font-medium text-secondary-fixed">
-                خبرة ٢٤ عاماً • ضمان ١٥ سنة حقيقي
+                خبرة {expYears} عاماً • ضمان {warranty} سنة حقيقي
               </span>
               <BadgeCheck className="w-4 h-4 text-secondary-fixed shrink-0" />
             </div>
 
-            {/* Bold Arabic Headline - Refined, Balanced Architectural Scale */}
+            {/* Bold Arabic Headline */}
             <h1 className="text-2xl sm:text-3xl lg:text-[38px] xl:text-[42px] font-bold tracking-tight text-on-primary leading-[1.3] text-balance font-readex">
-              مطابخ فاخرة تُصنع بحرفية استثنائية لمنزلك العصري
+              {headline}
             </h1>
 
             {/* Editorial Subtitle */}
             <p className="text-sm sm:text-base text-gray-300 max-w-xl leading-relaxed">
-              من التصميم الهندسي ثلاثي الأبعاد إلى التصنيع بماكينات إيطالية بمصانعنا الخاصة، نبتكر مساحات تجمع بين الرقي والعملية بأعلى معايير الجودة العالمية.
+              {subheadline}
             </p>
 
             {/* CTAs Side-by-Side */}
@@ -79,7 +88,10 @@ export function Hero({ onOpenConsultation }: HeroProps) {
                   مطبخ منفّذ
                 </p>
               </div>
-              <a href="#branches-section" className="bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center block transition-colors">
+              <a
+                href="#branches-section"
+                className="bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center block transition-colors"
+              >
                 <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
                   {branches.length} فروع
                 </p>
@@ -113,18 +125,24 @@ export function Hero({ onOpenConsultation }: HeroProps) {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-transparent opacity-90 pointer-events-none" />
 
-              {/* Architectural Tag Card */}
-              <div className="absolute bottom-4 inset-x-4 p-3.5 rounded-lg bg-primary-container/90 backdrop-blur-md shadow-lg flex items-center justify-between border border-white/5">
-                <div>
-                  <span className="text-[11px] font-medium text-secondary-fixed block">
-                    الخامات المعتمدة
-                  </span>
-                  <span className="text-xs sm:text-sm text-on-primary font-bold font-readex">
-                    جوز أمريكي طبيعي مع بورسلين كلكتا
+              <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 text-on-primary">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 rounded-full bg-secondary-container" />
+                  <span className="text-[11px] font-semibold text-secondary-fixed uppercase tracking-wider">
+                    تصميم حصري 2026
                   </span>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-secondary/30 flex items-center justify-center text-secondary-fixed shrink-0">
-                  <Compass className="w-4 h-4 text-secondary-fixed" />
+                <h3 className="text-base sm:text-lg font-bold text-white font-readex leading-snug">
+                  طراز بولاك ألترا مودرن مع ماكينات تشطيب PUR
+                </h3>
+                <div className="mt-3 flex items-center justify-between text-xs text-gray-300 border-t border-white/15 pt-3">
+                  <span className="flex items-center gap-1.5">
+                    <Compass className="w-3.5 h-3.5 text-secondary-fixed" />
+                    ميكانزم بلوم نمساوي أصلي
+                  </span>
+                  <span className="text-secondary-fixed font-medium">
+                    ضمان {warranty} سنة
+                  </span>
                 </div>
               </div>
             </div>

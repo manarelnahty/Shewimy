@@ -176,5 +176,62 @@ export interface InspectionRequest {
   requestedService: "kitchen_3d" | "dressing_inspection" | "full_home_decor";
   customerNotes?: string;
   status: "new" | "contacted" | "visit_scheduled" | "deal_closed";
-  createdAt: Timestamp;
+  createdAt: any;
 }
+
+// Collection `site_settings` - Dynamic Site Content
+export interface SiteSettings {
+  id?: string;
+  companyName: string;
+  phonePrimary: string;
+  emailPrimary: string;
+  defaultWarrantyYears: number;
+  heroHeadline: string;
+  heroHighlight: string;
+  heroSubheadline: string;
+  heroExperienceYears: number;
+  trustBarItems: {
+    title: string;
+    desc: string;
+  }[];
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    tiktok?: string;
+    youtube?: string;
+  };
+}
+
+export const DEFAULT_SITE_SETTINGS: SiteSettings = {
+  companyName: "الشويمي للمطابخ والديكورات الحديثة",
+  phonePrimary: "01005557109",
+  emailPrimary: "info@shewimy.com",
+  defaultWarrantyYears: 15,
+  heroHeadline: "فخامة معمارية تُصنع بحرفية",
+  heroHighlight: "إتقان هندسي وضمان ١٥ سنة حقيقي",
+  heroSubheadline: "نحوّل المساحات إلى لوحات فنية حية عبر خامات أوروبية معتمدة 100%، وتقنيات PUR الألمانية المقاومة للمياه والحرارة، وتصميمات 3D تفاعلية قبل خط الإنتاج.",
+  heroExperienceYears: 24,
+  trustBarItems: [
+    {
+      title: "ضمان 15 سنة",
+      desc: "ضمان حقيقي شامل الخامات والإكسسوارات والمفصلات دون أي شروط خفية.",
+    },
+    {
+      title: "مصانعنا الخاصة - أول يد",
+      desc: "إنتاج مباشر بدون وسطاء بأفضل سعر تصنيع وجودة تفصيلية مضمونة ومطابقة للمواصفات.",
+    },
+    {
+      title: "ماكينات إيطالي ولزق ألماني",
+      desc: "تقنيات PUR الألمانية المقاومة للمياه والحرارة بالكامل لحماية حواف الخشب لسنوات.",
+    },
+    {
+      title: "تصميم هندسي 3D",
+      desc: "معاينة واقعية لمطبخك وتوزيع مثلث الحركة الذكي قبل بدء خط التصنيع الفعلي.",
+    },
+  ],
+  socialLinks: {
+    facebook: "https://facebook.com/shewimy",
+    instagram: "https://instagram.com/shewimy",
+  },
+};
+

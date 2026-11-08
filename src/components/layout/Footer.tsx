@@ -161,6 +161,12 @@ export function Footer() {
             <Link href="#" className="hover:text-inverse-on-surface transition-colors">
               الضمان وخدمات ما بعد البيع
             </Link>
+            <Link
+              href="/admin"
+              className="text-on-primary-container/50 hover:text-inverse-on-surface transition-colors flex items-center gap-1"
+            >
+              <span>لوحة الإدارة</span>
+            </Link>
           </div>
         </div>
       </div>
