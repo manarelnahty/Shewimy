@@ -235,6 +235,19 @@ export function useAdminAuth() {
     return res;
   };
 
+  const loginDemo = () => {
+    const demoUser = {
+      uid: "admin-master",
+      email: "admin@shewimy.com",
+      displayName: "مدير النظام (الشويمي)",
+    };
+    setUser(demoUser);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("shewimy_admin_session", JSON.stringify(demoUser));
+    }
+    return { success: true, user: demoUser };
+  };
+
   const logout = async () => {
     await signOutAdmin();
     setUser(null);
@@ -248,6 +261,7 @@ export function useAdminAuth() {
     loading,
     isAuthenticated: Boolean(user),
     login,
+    loginDemo,
     logout,
   };
 }

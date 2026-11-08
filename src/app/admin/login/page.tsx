@@ -8,7 +8,7 @@ import { useAdminAuth } from "@/lib/firebase/hooks";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { login } = useAdminAuth();
+  const { login, loginDemo } = useAdminAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,16 +38,9 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleQuickDemoLogin = async () => {
-    setEmail("admin@shewimy.com");
-    setPassword("Shewimy@2026");
-    setLoading(true);
-    setError(null);
-    const res = await login("admin@shewimy.com", "Shewimy@2026");
-    setLoading(false);
-    if (res.success) {
-      router.push("/admin");
-    }
+  const handleQuickDemoLogin = () => {
+    loginDemo();
+    router.push("/admin");
   };
 
   return (
