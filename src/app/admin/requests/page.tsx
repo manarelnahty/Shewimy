@@ -15,11 +15,11 @@ import {
   MapPin,
   FileText,
 } from "lucide-react";
+import { useAdminRequests } from "@/lib/firebase/hooks";
 import {
-  useAdminRequests,
   updateInspectionRequestStatus,
   deleteInspectionRequest,
-} from "@/lib/firebase";
+} from "@/lib/firebase/firestore";
 import { InspectionRequest, BranchId } from "@/types/shewimy";
 
 export default function AdminRequestsPage() {

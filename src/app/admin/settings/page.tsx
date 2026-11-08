@@ -13,7 +13,8 @@ import {
   Mail,
   ShieldCheck,
 } from "lucide-react";
-import { useSiteSettings, updateSiteSettings } from "@/lib/firebase";
+import { useSiteSettings } from "@/lib/firebase/hooks";
+import { updateSiteSettings } from "@/lib/firebase/firestore";
 import { SiteSettings, DEFAULT_SITE_SETTINGS } from "@/types/shewimy";
 
 export default function AdminSettingsPage() {

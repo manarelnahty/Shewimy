@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Shield, Lock, Mail, ArrowRight, Loader2, Sparkles, AlertCircle } from "lucide-react";
-import { useAdminAuth } from "@/lib/firebase";
+import { useAdminAuth } from "@/lib/firebase/hooks";
 
 export default function AdminLoginPage() {
   const router = useRouter();

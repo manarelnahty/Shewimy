@@ -17,13 +17,13 @@ import {
   Loader2,
   Filter,
 } from "lucide-react";
+import { useAdminProducts } from "@/lib/firebase/hooks";
 import {
-  useAdminProducts,
   createProduct,
   updateProduct,
   deleteProduct,
-  uploadImageFile,
-} from "@/lib/firebase";
+} from "@/lib/firebase/firestore";
+import { uploadImageFile } from "@/lib/firebase/storage";
 import { Product } from "@/data/products";
 import { MAIN_SECTIONS_INFO, MainSection } from "@/types/shewimy";
 

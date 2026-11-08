@@ -19,8 +19,8 @@ import {
   useAdminProducts,
   useAdminRequests,
   useBranches,
-  updateInspectionRequestStatus,
-} from "@/lib/firebase";
+} from "@/lib/firebase/hooks";
+import { updateInspectionRequestStatus } from "@/lib/firebase/firestore";
 import { MAIN_SECTIONS_INFO, MainSection } from "@/types/shewimy";
 
 export default function AdminDashboardPage() {

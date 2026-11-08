@@ -13,7 +13,8 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import { useBranches, updateBranch } from "@/lib/firebase";
+import { useBranches } from "@/lib/firebase/hooks";
+import { updateBranch } from "@/lib/firebase/firestore";
 import { BranchExtended } from "@/data/branches";
 import { BranchId } from "@/types/shewimy";
 

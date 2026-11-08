@@ -16,7 +16,7 @@ import {
   Shield,
   Layers,
 } from "lucide-react";
-import { useAdminAuth } from "@/lib/firebase";
+import { useAdminAuth } from "@/lib/firebase/hooks";
 
 export default function AdminLayout({
   children,
