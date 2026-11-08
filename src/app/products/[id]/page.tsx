@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { productsData } from "@/data/products";
+import { fetchProductById, fetchProducts } from "@/lib/firebase";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
@@ -12,16 +12,15 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return productsData.map((product) => ({
+  const products = await fetchProducts();
+  return products.map((product) => ({
     id: product.id,
   }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const product = productsData.find(
-    (p) => p.id === id || p.code.toLowerCase() === id.toLowerCase()
-  );
+  const product = await fetchProductById(id);
 
   if (!product) {
     return {
@@ -37,17 +36,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 async function ProductDetailContent({ params }: PageProps) {
   const { id } = await params;
-  const product = productsData.find(
-    (p) => p.id === id || p.code.toLowerCase() === id.toLowerCase()
-  );
+  const product = await fetchProductById(id);
 
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = productsData.filter(
-    (p) => p.category === product.category && p.id !== product.id
-  );
+  const allProducts = await fetchProducts({ section: product.mainSection });
+  const relatedProducts = allProducts.filter((p) => p.id !== product.id);
 
   return (
     <ProductDetailClient

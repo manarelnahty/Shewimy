@@ -3,12 +3,14 @@
 import React from "react";
 import Image from "next/image";
 import { BadgeCheck, Eye, Compass } from "lucide-react";
+import { useBranches } from "@/lib/firebase";
 
 interface HeroProps {
   onOpenConsultation?: () => void;
 }
 
 export function Hero({ onOpenConsultation }: HeroProps) {
+  const { branches } = useBranches();
   return (
     <section className="relative w-full overflow-hidden bg-primary pt-24 sm:pt-28 pb-14 lg:pb-20 text-inverse-on-surface">
       {/* Ambient architectural background lighting & subtle textures */}
@@ -77,14 +79,14 @@ export function Hero({ onOpenConsultation }: HeroProps) {
                   مطبخ منفّذ
                 </p>
               </div>
-              <div className="bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center">
+              <a href="#branches-section" className="bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center block transition-colors">
                 <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
-                  3 فروع
+                  {branches.length} فروع
                 </p>
                 <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
                   بمنطقة الدلتا
                 </p>
-              </div>
+              </a>
               <div className="bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg p-3.5 shadow-sm text-center">
                 <p className="text-lg sm:text-xl font-bold text-[#ffdcc3] font-readex">
                   100%
