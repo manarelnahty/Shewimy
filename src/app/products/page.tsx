@@ -8,6 +8,9 @@ import { Footer } from "@/components/layout/Footer";
 import { ConsultationDrawer } from "@/components/common/ConsultationDrawer";
 import { BranchSelectionModal } from "@/components/common/BranchSelectionModal";
 import { productsData, Product, BranchKey } from "@/data/products";
+import { BRANCHES_LIST } from "@/data/branches";
+import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { useProducts, useBranches } from "@/lib/firebase";
 import {
   Search,
   ChevronDown,
@@ -47,14 +50,35 @@ function ReloadIcon({ className = "w-3.5 h-3.5 shrink-0" }: { className?: string
   );
 }
 
-type CategoryFilter = "all" | "kitchens" | "dressing" | "furniture" | "cladding";
+type CategoryFilter =
+  | "all"
+  | "kitchens"
+  | "dressing_rooms"
+  | "furniture"
+  | "decor"
+  | "windows"
+  | "dressing"
+  | "cladding";
+
 type StyleFilter = "all" | "modern" | "classic" | "neoclassic" | "ultramodern";
-type MaterialFilter = "all" | "polylac" | "hpl" | "natural_walnut" | "massive_oak" | "fume_glass";
+type MaterialFilter =
+  | "all"
+  | "polylac"
+  | "hpl"
+  | "natural_walnut"
+  | "massive_oak"
+  | "fume_glass"
+  | "upvc"
+  | "cnc_wood";
+
 type SortOption = "default" | "price_asc" | "price_desc";
 type PriceRangeFilter = "all" | "under_80k" | "80k_to_120k" | "above_120k";
-type BranchFilter = "all" | BranchKey;
+type BranchFilter = "all" | "mansoura" | "mahalla" | "samanoud" | "samanoud_mahalla";
 
 export default function ProductsPage() {
+  const { products: allProducts, loading } = useProducts();
+  const { branches } = useBranches();
+
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [branchModalProduct, setBranchModalProduct] = useState<Product | null>(null);
 
@@ -78,18 +102,30 @@ export default function ProductsPage() {
     setPriceRange("all");
   };
 
-  // Filtered & Sorted Products
+  // Filtered & Sorted Products (Dynamic from Firestore)
   const filteredProducts = useMemo(() => {
-    let result = [...productsData];
+    let result = [...allProducts];
 
     // Branch filter
     if (selectedBranch !== "all") {
-      result = result.filter((p) => p.branches.includes(selectedBranch));
+      const targetBranch =
+        selectedBranch === "samanoud_mahalla" ? "mahalla" : selectedBranch;
+      result = result.filter((p) =>
+        p.branches.some((b) => b === targetBranch || b === selectedBranch)
+      );
     }
 
-    // Category filter
+    // Category filter (mapping legacy dressing -> dressing_rooms, cladding -> decor)
     if (selectedCategory !== "all") {
-      result = result.filter((p) => p.category === selectedCategory);
+      result = result.filter((p) => {
+        if (selectedCategory === "dressing" || selectedCategory === "dressing_rooms") {
+          return p.mainSection === "dressing_rooms" || p.category === "dressing" || p.category === "dressing_rooms";
+        }
+        if (selectedCategory === "cladding" || selectedCategory === "decor") {
+          return p.mainSection === "decor" || p.category === "cladding" || p.category === "decor";
+        }
+        return p.mainSection === selectedCategory || p.category === selectedCategory;
+      });
     }
 
     // Style filter
@@ -119,8 +155,8 @@ export default function ProductsPage() {
           p.name.toLowerCase().includes(q) ||
           p.code.toLowerCase().includes(q) ||
           p.description.toLowerCase().includes(q) ||
-          p.materialLabel.toLowerCase().includes(q) ||
-          p.specs.some((s) => s.toLowerCase().includes(q))
+          p.subCategory.toLowerCase().includes(q) ||
+          p.materials.some((m) => m.toLowerCase().includes(q))
       );
     }
 
@@ -132,71 +168,48 @@ export default function ProductsPage() {
     }
 
     return result;
-  }, [selectedCategory, selectedBranch, selectedStyle, selectedMaterial, priceRange, searchQuery, sortBy]);
+  }, [
+    selectedCategory,
+    selectedBranch,
+    selectedStyle,
+    selectedMaterial,
+    priceRange,
+    searchQuery,
+    sortBy,
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">
-      {/* Header with consultation trigger */}
+      {/* Header */}
       <Header onOpenConsultation={() => setIsConsultationOpen(true)} />
 
       <main className="flex-1 w-full pt-20">
-        {/* SUB-HERO SECTION */}
-        <section className="w-full bg-surface-container-low/70 py-10 lg:py-14 border-b border-charcoal/10">
-          <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
-            {/* Breadcrumb Navigation */}
-            <nav
-              aria-label="مسار التصفح"
-              className="flex items-center gap-2 mb-4 text-xs font-semibold text-on-surface-variant"
-            >
-              <Link href="/" className="hover:text-primary transition-colors">
-                الرئيسية
-              </Link>
-              <span className="text-outline-variant font-bold">/</span>
-              <span className="text-secondary font-bold">كتالوج أعمال ومنتجات الشويمي</span>
-            </nav>
+        {/* HERO BANNER SECTION */}
+        <section className="bg-primary text-inverse-on-surface py-12 sm:py-16 relative overflow-hidden border-b border-charcoal/10">
+          <div className="absolute inset-0 z-0">
+            <div
+              className="w-full h-full bg-cover bg-center opacity-30 mix-blend-luminosity scale-105"
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1920&q=80')",
+              }}
+              aria-hidden="true"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/85 to-primary/60" />
+          </div>
 
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-              <div className="max-w-2xl space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-fixed/50 text-secondary text-xs font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                  <span>الأسعار الاسترشادية الشاملة للتصنيع والتركيب</span>
-                </div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary font-readex leading-tight">
-                  كتالوج منتجات ومطابخ الشويمي .. <br />
-                  <span className="text-secondary">الأصل، النظام، ودقة الصنعة</span>
-                </h1>
-                <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-                  تصفح تشكيلاتنا مع الأسعار التقديرية لكل موديل وفق المقاييس القياسية. جميع المنتجات تصنع بماكينات إيطالية وخامات أوروبية 100% مع ضمان حقيقي 15 سنة.
-                </p>
+          <div className="relative z-10 max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
+            <div className="max-w-3xl space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high/15 backdrop-blur-md border border-white/10 text-xs font-semibold text-secondary-fixed">
+                <span className="w-2 h-2 rounded-full bg-secondary-container animate-pulse" />
+                <span>شجرة التصنيف الموحدة • ضمان 15 سنة حقيقي</span>
               </div>
-
-              {/* Quick Highlights Bar */}
-              <div className="grid grid-cols-3 gap-3 p-3 bg-white rounded-xl shadow-sm shrink-0 border border-charcoal/10" dir="rtl">
-                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low" dir="rtl">
-                  <span className="text-lg sm:text-xl font-bold text-primary font-readex">
-                    {productsData.length}
-                  </span>
-                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-semibold font-cairo">
-                    موديل معروض
-                  </span>
-                </div>
-                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low" dir="rtl">
-                  <span className="text-lg sm:text-xl font-bold text-[#1F5E4B] font-readex">
-                    100%
-                  </span>
-                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-semibold font-cairo">
-                    خامات أوروبية
-                  </span>
-                </div>
-                <div className="flex flex-col items-center justify-center p-2.5 text-center rounded-lg bg-surface-container-low" dir="rtl">
-                  <span className="text-lg sm:text-xl font-bold text-secondary font-readex">
-                    15 سنة
-                  </span>
-                  <span className="text-[11px] text-on-surface-variant mt-0.5 font-semibold font-cairo">
-                    ضمان حقيقي
-                  </span>
-                </div>
-              </div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-on-primary font-readex leading-tight">
+                كتالوج مطابخ وديكورات الشويمي
+              </h1>
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
+                استعرض تشكيلاتنا الخمس المعتمدة (المطابخ الحديثة والميكانزم، الدريسينج روم، الأثاث الراقي، الديكورات، والشبابيك UPVC). تواصل مباشرة مع واتساب الفرع الأقرب إليك للتسعير الفوري وحجز المعاينة.
+              </p>
             </div>
           </div>
         </section>
@@ -208,7 +221,7 @@ export default function ProductsPage() {
           style={{ backgroundColor: "#fbf9f5" }}
         >
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 space-y-3">
-            {/* Category Tabs (Pills with exact Stitch AI style) */}
+            {/* Category Tabs (5 DRD Sections Section 2) */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
               <button
                 type="button"
@@ -219,7 +232,7 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                الكل
+                كافة الأقسام
               </button>
               <button
                 type="button"
@@ -230,18 +243,18 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                مطابخ حديثة
+                المطابخ الحديثة (60%)
               </button>
               <button
                 type="button"
-                onClick={() => setSelectedCategory("dressing")}
+                onClick={() => setSelectedCategory("dressing_rooms")}
                 className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "dressing"
+                  selectedCategory === "dressing_rooms" || selectedCategory === "dressing"
                     ? "bg-[#1E2225] text-white shadow-sm"
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                دريسينج روم ووحدات تخزين
+                الدريسينج ووحدات التخزين
               </button>
               <button
                 type="button"
@@ -252,18 +265,29 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                أثاث منزلي مخصص
+                الأثاث المنزلي الراقي
               </button>
               <button
                 type="button"
-                onClick={() => setSelectedCategory("cladding")}
+                onClick={() => setSelectedCategory("decor")}
                 className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "cladding"
+                  selectedCategory === "decor" || selectedCategory === "cladding"
                     ? "bg-[#1E2225] text-white shadow-sm"
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                ديكورات وتجاليد خشبية
+                الديكورات وتجاليد الحوائط
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory("windows")}
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  selectedCategory === "windows"
+                    ? "bg-[#1E2225] text-white shadow-sm"
+                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
+                }`}
+              >
+                الشبابيك والقطاعات UPVC
               </button>
             </div>
 
@@ -274,23 +298,26 @@ export default function ProductsPage() {
                 <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="ابحث بالاسم أو الكود..."
+                  placeholder="ابحث بالاسم أو الكود أو الخامة..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-white text-gray-700 placeholder:text-gray-400 text-sm pr-9 pl-3.5 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] transition-all"
                 />
               </div>
 
-              {/* Branch Selector Dropdown */}
+              {/* Branch Selector Dropdown (3 Branches DRD Section 4) */}
               <div className="lg:col-span-3 relative">
                 <select
                   value={selectedBranch}
                   onChange={(e) => setSelectedBranch(e.target.value as BranchFilter)}
                   className="w-full appearance-none bg-white border border-gray-300 rounded-lg pr-9 pl-8 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] cursor-pointer transition-all font-semibold"
                 >
-                  <option value="all">كافة الفروع</option>
-                  <option value="mansoura">فرع المنصورة</option>
-                  <option value="samanoud_mahalla">فرع سمنود والمحلة</option>
+                  <option value="all">كافة الفروع ({branches.length} فروع)</option>
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
                 </select>
                 <MapPin className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-[#1F5E4B] pointer-events-none" />
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -320,11 +347,12 @@ export default function ProductsPage() {
                   className="w-full appearance-none bg-white border border-gray-300 rounded-lg px-3 pl-8 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] cursor-pointer transition-all font-medium"
                 >
                   <option value="all">كافة الخامات</option>
-                  <option value="polylac">بولاك تركي</option>
+                  <option value="polylac">بولي لاك تركي</option>
                   <option value="hpl">HPL ألماني</option>
                   <option value="natural_walnut">جوز أمريكي</option>
-                  <option value="massive_oak">أرو ماسيف</option>
+                  <option value="massive_oak">أرو وبلوط ماسيف</option>
                   <option value="fume_glass">زجاج فاميه</option>
+                  <option value="upvc">قطاعات UPVC</option>
                 </select>
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
@@ -343,119 +371,124 @@ export default function ProductsPage() {
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
-
-            {/* Filter Status & Reset Sub-bar (Stitch AI Layout) */}
-            <div className="flex items-center justify-between pt-2 border-t border-gray-200/50 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block animate-pulse" />
-                <span className="text-gray-700 font-medium">
-                  عرض <strong>{filteredProducts.length}</strong> من إجمالي <strong>{productsData.length}</strong> تصميماً جاهزاً للمعاينة
-                </span>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="inline-flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors text-xs font-semibold cursor-pointer"
-              >
-                <ReloadIcon className="w-3.5 h-3.5" />
-                <span>إعادة ضبط الفلاتر</span>
-              </button>
-            </div>
           </div>
         </section>
 
-        {/* PRODUCTS GRID */}
-        <section className="w-full py-10 lg:py-14">
+        {/* RESULTS STATS & ACTIVE FILTERS BAR */}
+        <section className="py-4 border-b border-gray-200/50 bg-[#faf8f4]">
+          <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-charcoal/70">
+            <div className="flex items-center gap-2">
+              <span>عرض</span>
+              <span className="font-bold text-primary font-mono text-sm">
+                {filteredProducts.length}
+              </span>
+              <span>من أصل</span>
+              <span className="font-bold text-primary font-mono text-sm">
+                {allProducts.length}
+              </span>
+              <span>موديل متاح للتفصيل والمعاينة</span>
+            </div>
+
+            {(selectedCategory !== "all" ||
+              selectedBranch !== "all" ||
+              selectedStyle !== "all" ||
+              selectedMaterial !== "all" ||
+              priceRange !== "all" ||
+              searchQuery.trim()) && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="inline-flex items-center gap-1.5 text-secondary hover:text-primary font-semibold transition-colors cursor-pointer"
+              >
+                <ReloadIcon className="w-3.5 h-3.5" />
+                <span>إعادة تعيين كافة الفلاتر</span>
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* PRODUCT CATALOG GRID */}
+        <section className="py-10 lg:py-16">
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12">
             {filteredProducts.length === 0 ? (
-              /* Empty State */
-              <div className="py-20 text-center space-y-4 bg-white rounded-2xl border border-charcoal/10 p-8">
-                <div className="w-16 h-16 mx-auto rounded-full bg-surface-container flex items-center justify-center text-charcoal/40">
+              <div className="py-20 text-center space-y-4 max-w-md mx-auto">
+                <div className="w-16 h-16 rounded-full bg-[#f0eae1] flex items-center justify-center mx-auto text-charcoal/40">
                   <Search className="w-8 h-8" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-primary font-readex">
-                  لم يتم العثور على منتجات مطابقة لخيارات البحث
-                </h3>
-                <p className="text-xs sm:text-sm text-on-surface-variant max-w-md mx-auto">
-                  جرب تغيير كلمات البحث، أو اختر خامة أو نمطاً مختلفاً، أو أعد ضبط الفلاتر للاطلاع على كامل الموديلات.
-                </p>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold text-primary font-readex">
+                    لا توجد منتجات تطابق هذه الفلاتر
+                  </h3>
+                  <p className="text-xs text-charcoal/60 leading-relaxed">
+                    جرّب تغيير معايير البحث أو اختيار فرع أو قسم آخر لعرض المنتجات.
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="inline-flex items-center gap-2 bg-[#1F5E4B] text-white text-xs sm:text-sm font-semibold py-2.5 px-6 rounded-xl hover:bg-[#164638] transition-colors cursor-pointer shadow-sm"
+                  className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm transition-colors cursor-pointer"
                 >
-                  <ReloadIcon className="w-4 h-4" />
-                  <span>عرض كافة المنتجات</span>
+                  <ReloadIcon className="w-3.5 h-3.5" />
+                  <span>عرض كافة المعروضات</span>
                 </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 {filteredProducts.map((product) => {
-                  const isBothBranches = product.branches.length === 2;
-                  const isMansouraOnly =
-                    product.branches.length === 1 && product.branches[0] === "mansoura";
-                  const isSamanoudOnly =
-                    product.branches.length === 1 && product.branches[0] === "samanoud_mahalla";
+                  const availableBranchObjects = branches.filter((b) =>
+                    product.branches.includes(b.id)
+                  );
 
                   return (
                     <article
                       key={product.id}
-                      className="group bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col border border-charcoal/10"
+                      className="group bg-white rounded-2xl overflow-hidden border border-charcoal/10 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
                     >
-                      <div>
-                        {/* Image Container with Badges */}
-                        <Link href={`/products/${product.id}`} className="block relative w-full h-64 overflow-hidden rounded-t-xl bg-[#ECE8E1]">
-                          <Image
-                            src={product.imageUrl}
-                            alt={product.name}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="w-full h-64 object-cover rounded-t-xl transition-transform duration-700 group-hover:scale-105"
-                          />
-                          {/* Top Badges */}
-                          <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
-                            <span className="px-2.5 py-1 rounded-md bg-[#1E2225]/90 backdrop-blur-md text-white text-[11px] font-semibold shadow-2xs">
-                              {product.badgePrimary}
-                            </span>
-                            <span className="px-2.5 py-1 rounded-md bg-[#F5E6D3]/95 backdrop-blur-md text-[#8C5D33] text-[11px] font-bold shadow-2xs">
-                              {product.badgeSecondary}
-                            </span>
-                          </div>
+                      {/* Image & Top Badges */}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#ECE8E1]">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                          {/* Bottom Left Code Badge */}
-                          <div className="absolute bottom-3 left-3 px-2.5 py-0.5 rounded bg-white/95 backdrop-blur-md text-primary text-[11px] font-bold font-mono border border-charcoal/10 shadow-2xs">
-                            كود : {product.code}
-                          </div>
-                        </Link>
+                        {/* Top Badges */}
+                        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                          <span className="px-2.5 py-1 rounded-md bg-[#1E2225]/85 backdrop-blur-md text-white text-[11px] font-semibold">
+                            {product.badgePrimary}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-white/95 backdrop-blur-md text-[#1F5E4B] text-[11px] font-bold">
+                            ضمان 15 سنة
+                          </span>
+                        </div>
 
-                        {/* Content Area - Right Aligned with zero dead space */}
-                        <div className="p-4 sm:p-5 text-right space-y-2">
-                          {/* Subheading & Branch Tag */}
+                        {/* Product Code Badge */}
+                        <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-white font-mono text-[10px] font-semibold">
+                          كود: {product.code}
+                        </div>
+                      </div>
+
+                      {/* Content Area */}
+                      <div className="p-4 sm:p-5 space-y-3 flex-1 flex flex-col justify-between">
+                        <div className="space-y-2">
+                          {/* Subcategory & Branch tags */}
                           <div className="flex items-center justify-between gap-2 text-xs">
-                            <span className="text-secondary font-bold tracking-wide">
-                              {product.subtitle}
+                            <span className="text-[11px] text-secondary font-bold font-readex">
+                              {product.subCategory}
                             </span>
-                            {isBothBranches && (
-                              <span className="text-[11px] text-[#1F5E4B] font-semibold bg-emerald-50 px-2 py-0.5 rounded">
-                                متوفر بالفرعين
-                              </span>
-                            )}
-                            {isMansouraOnly && (
-                              <span className="text-[11px] text-amber-800 font-semibold bg-amber-50 px-2 py-0.5 rounded">
-                                فرع المنصورة
-                              </span>
-                            )}
-                            {isSamanoudOnly && (
-                              <span className="text-[11px] text-blue-800 font-semibold bg-blue-50 px-2 py-0.5 rounded">
-                                فرع سمنود
-                              </span>
-                            )}
+                            <span className="text-[11px] text-[#1F5E4B] font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                              {availableBranchObjects.length === 3
+                                ? "متوفر بـ 3 فروع"
+                                : availableBranchObjects.map((b) => b.id === "mansoura" ? "المنصورة" : b.id === "mahalla" ? "المحلة" : "سمنود").join(" • ")}
+                            </span>
                           </div>
 
-                          {/* Title (Clickable) */}
+                          {/* Title */}
                           <Link href={`/products/${product.id}`} className="block">
-                            <h2 className="text-base sm:text-lg font-bold text-primary hover:text-secondary transition-colors font-readex leading-snug">
+                            <h2 className="text-base sm:text-lg font-bold text-primary hover:text-secondary transition-colors font-readex leading-snug line-clamp-1">
                               {product.name}
                             </h2>
                           </Link>
@@ -465,64 +498,55 @@ export default function ProductsPage() {
                             {product.description}
                           </p>
 
-                          {/* Specs Chips - Right Aligned (Side) */}
-                          <div className="flex flex-wrap items-center justify-start gap-1.5 pt-1">
-                            {product.specs.map((spec, i) => (
+                          {/* Materials Badges (DRD Section 3) */}
+                          <div className="flex flex-wrap items-center justify-start gap-1 pt-1">
+                            {product.materials.slice(0, 3).map((mat, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded bg-surface-container-low border border-charcoal/10 text-charcoal/80 text-[11px] font-medium"
+                                className="px-2 py-0.5 rounded bg-surface-container-low border border-charcoal/10 text-charcoal/80 text-[10px] font-medium"
                               >
-                                {spec}
+                                ✓ {mat}
                               </span>
                             ))}
                           </div>
                         </div>
+
+                        {/* Price */}
+                        <div className="pt-2 border-t border-charcoal/10 flex items-center justify-between">
+                          <div>
+                            <span className="text-[10px] text-charcoal/50 block">
+                              {product.pricingMode === "per_meter"
+                                ? "تسعير بالمتر المربع"
+                                : "استفسار وتسعير بالواتساب"}
+                            </span>
+                            <span className="text-sm sm:text-base font-extrabold text-primary font-mono">
+                              {product.priceDisplay}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-charcoal/60 bg-surface-container-low px-2 py-1 rounded">
+                            {product.pricingMode === "whatsapp_quote" ? "عرض سعر فوري" : "حسب المقاس"}
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Action Buttons - Compact gap right below specs chips */}
-                      <div className="p-4 sm:p-5 pt-2 space-y-2 border-t border-charcoal/5 mt-1">
-                        {/* WhatsApp Button */}
-                        {isBothBranches ? (
-                          <button
-                            type="button"
-                            onClick={() => setBranchModalProduct(product)}
-                            className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 cursor-pointer border border-[#1F5E4B]/15"
-                          >
-                            <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
-                            <span>استفسر عن الموديل بالواتساب</span>
-                          </button>
-                        ) : isMansouraOnly ? (
-                          <a
-                            className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-[#1F5E4B]/15"
-                            href={`https://wa.me/201005557109?text=${encodeURIComponent(
-                              `السلام عليكم مطابخ الشويمي (فرع المنصورة)، أود الاستفسار عن كود [${product.code}] - ${product.name}`
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
-                            <span>استفسر عن الموديل بالواتساب</span>
-                          </a>
-                        ) : (
-                          <a
-                            className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-[#1F5E4B]/15"
-                            href={`https://wa.me/201287153339?text=${encodeURIComponent(
-                              `السلام عليكم مطابخ الشويمي (فرع سمنود والمحلة)، أود الاستفسار عن كود [${product.code}] - ${product.name}`
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
-                            <span>استفسر عن الموديل بالواتساب</span>
-                          </a>
-                        )}
+                      {/* Action Buttons */}
+                      <div className="p-4 sm:p-5 pt-0 space-y-2">
+                        {/* WhatsApp CTA Button */}
+                        <button
+                          type="button"
+                          onClick={() => setBranchModalProduct(product)}
+                          className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-200 cursor-pointer border border-[#1F5E4B]/15"
+                        >
+                          <WhatsAppIcon className="w-4 h-4 shrink-0 text-[#1F5E4B]" />
+                          <span>استفسر وتواصل مع واتساب الفرع</span>
+                        </button>
 
-                        {/* Secondary Button: Navigates to Product Details Page */}
+                        {/* Details Page Link */}
                         <Link
                           href={`/products/${product.id}`}
                           className="w-full inline-flex items-center justify-center gap-2 bg-[#F5F4F0] hover:bg-[#EAE8E2] text-charcoal text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-200 border border-charcoal/5"
                         >
-                          <span>تفاصيل الموديل والمقاسات</span>
+                          <span>المواصفات الفنية والمقاسات</span>
                           <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
                         </Link>
                       </div>
@@ -556,7 +580,7 @@ export default function ProductsPage() {
                 className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-bold py-3 px-6 rounded-xl shadow-md transition-transform hover:-translate-y-0.5 cursor-pointer whitespace-nowrap active:translate-y-0"
               >
                 <Sparkles className="w-4 h-4 shrink-0" />
-                <span>طلب معاينة وتصميم خاص</span>
+                <span>طلب معاينة وتصميم 3D خاص</span>
               </button>
             </div>
           </div>
@@ -569,7 +593,7 @@ export default function ProductsPage() {
         onClose={() => setIsConsultationOpen(false)}
       />
 
-      {/* Branch Selection Modal for items available in both branches */}
+      {/* Branch Selection Modal for items */}
       <BranchSelectionModal
         isOpen={Boolean(branchModalProduct)}
         product={branchModalProduct}

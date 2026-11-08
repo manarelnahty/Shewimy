@@ -54,6 +54,7 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
+      data-scroll-behavior="smooth"
       className={`${cairo.variable} ${readexPro.variable} scroll-smooth`}
     >
       <body className="min-h-screen flex flex-col font-cairo bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">

@@ -28,6 +28,7 @@ export function Header({ onOpenConsultation }: HeaderProps) {
               alt="شعار مطابخ الشويمي | Al Shewimy Kitchens"
               width={40}
               height={40}
+              style={{ width: "auto" }}
               className="h-10 w-auto object-contain drop-shadow-sm"
               priority
             />

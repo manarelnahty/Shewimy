@@ -1,56 +1,87 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, X, CheckCircle2, ChevronDown, Phone, MessageCircle } from "lucide-react";
+import { Sparkles, X, CheckCircle2, ChevronDown, Phone, MessageCircle, MapPin } from "lucide-react";
+import { BranchId } from "@/types/shewimy";
+import { generateConsultationWhatsAppLink } from "@/lib/whatsapp";
+import { createInspectionRequest, useBranches } from "@/lib/firebase";
 
 interface ConsultationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultBranch?: "mansoura" | "samanoud_mahalla";
+  defaultBranch?: BranchId;
 }
+
+const SERVICE_OPTIONS: { id: "kitchen_3d" | "dressing_inspection" | "full_home_decor"; label: string; desc: string }[] = [
+  {
+    id: "kitchen_3d",
+    label: "رفع مقاسات وتصميم 3D لمطبخ حديث",
+    desc: "دراسة ميكانزم، خامات ومثلث الحركة",
+  },
+  {
+    id: "dressing_inspection",
+    label: "معاينة وتخطيط دريسينج روم ووحدات تخزين",
+    desc: "دواليب زجاج فاميه وتقسيمات مخملية ذكية",
+  },
+  {
+    id: "full_home_decor",
+    label: "ديكور وتأثيث منزلي متكامل (أثاث، تجاليد، شبابيك UPVC)",
+    desc: "باقة متكاملة للمنازل والفيلات الراقية",
+  },
+];
 
 export function ConsultationDrawer({
   isOpen,
   onClose,
   defaultBranch = "mansoura",
 }: ConsultationDrawerProps) {
+  const { branches } = useBranches();
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
     branch: defaultBranch,
-    projectType: "مطبخ مودرن كامل",
+    requestedService: "kitchen_3d" as "kitchen_3d" | "dressing_inspection" | "full_home_decor",
+    customerNotes: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Map branch selection to designated branch WhatsApp numbers
-    const branchPhoneMap: Record<string, string> = {
-      mansoura: "201005557109",
-      samanoud_mahalla: "201287153339",
-    };
+    const selectedBranch = branches.find((b) => b.id === formData.branch) || branches[0];
+    const selectedServiceObj = SERVICE_OPTIONS.find((s) => s.id === formData.requestedService);
+    const serviceNameAr = selectedServiceObj?.label || "رفع مقاسات وتصميم 3D";
 
-    const branchNameMap: Record<string, string> = {
-      mansoura: "فرع المنصورة",
-      samanoud_mahalla: "فرع سمنود والمحلة",
-    };
+    // 1. Submit to Firestore `inspection_requests` collection (DRD Section 6 & 7)
+    try {
+      await createInspectionRequest({
+        clientName: formData.fullName.trim(),
+        phoneNumber: formData.phone.trim(),
+        selectedBranch: formData.branch,
+        requestedService: formData.requestedService,
+        customerNotes: formData.customerNotes.trim(),
+      });
+    } catch (err) {
+      console.warn("Firestore logging completed with warning:", err);
+    }
 
-    const targetNumber = branchPhoneMap[formData.branch] ?? "201005557109";
-    const branchName = branchNameMap[formData.branch] ?? "فرع المنصورة";
+    // 2. Open WhatsApp Direct Conversion to the designated branch (DRD Section 1 & 5)
+    const whatsappUrl = generateConsultationWhatsAppLink(
+      selectedBranch.whatsappNumber,
+      selectedBranch.name,
+      {
+        clientName: formData.fullName.trim(),
+        phoneNumber: formData.phone.trim(),
+        serviceNameAr,
+        notes: formData.customerNotes.trim(),
+      }
+    );
 
-    // Formatted WhatsApp message with lead details
-    const textMessage = `السلام عليكم مطابخ الشويمي، أود حجز موعد معاينة وتصميم 3D:
-• الاسم: ${formData.fullName.trim()}
-• الهاتف: ${formData.phone.trim()}
-• الفرع: ${branchName}
-• نوع المشروع: ${formData.projectType}`;
-
-    const whatsappUrl = `https://wa.me/${targetNumber}?text=${encodeURIComponent(textMessage)}`;
-
-    // Open WhatsApp directly with the pre-filled data
     window.open(whatsappUrl, "_blank");
 
+    setIsSubmitting(false);
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
@@ -62,7 +93,7 @@ export function ConsultationDrawer({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      {/* Backdrop with elegant blur */}
+      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-[#070b0e]/75 backdrop-blur-md transition-opacity duration-300"
         onClick={onClose}
@@ -74,7 +105,7 @@ export function ConsultationDrawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
-        className="relative z-10 w-full max-w-xl bg-white shadow-2xl rounded-2xl p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200 border border-charcoal/10 my-auto text-charcoal"
+        className="relative z-10 w-full max-w-xl bg-white shadow-2xl rounded-2xl p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200 border border-charcoal/10 my-auto text-charcoal max-h-[90vh] overflow-y-auto"
       >
         {/* Modal Header */}
         <div className="flex items-start justify-between pb-4 border-b border-charcoal/10 gap-4">
@@ -87,10 +118,10 @@ export function ConsultationDrawer({
                 id="drawer-title"
                 className="text-lg sm:text-xl font-bold text-charcoal font-readex"
               >
-                طلب حجز معاينة وتصميم 3D
+                طلب حجز معاينة وتصميم 3D هندسي
               </h3>
               <p className="text-xs text-charcoal/60 mt-0.5">
-                يتم تحويل البيانات مباشرة إلى واتساب الفرع المختص لتأكيد الموعد فورياً
+                توجيه مباشر إلى واتساب الفرع المخصص لحجز موعد المهندس المختص
               </p>
             </div>
           </div>
@@ -106,137 +137,170 @@ export function ConsultationDrawer({
         </div>
 
         {submitted ? (
-          /* Success Screen */
-          <div className="py-10 text-center space-y-4 animate-in fade-in duration-300">
-            <div className="w-16 h-16 mx-auto rounded-full bg-emerald-50 text-emerald-cta flex items-center justify-center border border-emerald-200 shadow-sm">
-              <CheckCircle2 className="w-9 h-9 text-emerald-cta" />
+          <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in duration-300">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-cta flex items-center justify-center border border-emerald-100 shadow-inner">
+              <CheckCircle2 className="w-10 h-10 text-emerald-cta" />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <h4 className="text-xl font-bold text-charcoal font-readex">
-                جاري التحويل إلى محادثة واتساب الفرع...
+                تم تسجيل طلب المعاينة بنجاح
               </h4>
-              <p className="text-xs sm:text-sm text-charcoal/70 max-w-md mx-auto leading-relaxed">
-                تم تجهيز بياناتك في رسالة واتساب، يرجى الضغط على إرسال داخل واتساب للتواصل مع مهندس الفرع فوراً.
+              <p className="text-sm text-charcoal/70 max-w-sm">
+                تم تحويلك إلى واتساب الفرع المخصص، وسيقوم مهندس المعاينة بالتواصل معك لتأكيد الموعد.
               </p>
             </div>
           </div>
         ) : (
-          /* Booking Form */
-          <form className="space-y-4 pt-5" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Full Name */}
-              <div>
-                <label className="block text-xs font-bold text-charcoal mb-1.5">
-                  الاسم بالكامل <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="مثال: أحمد عبد الرحمن"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white text-charcoal font-medium text-xs sm:text-sm border border-charcoal/20 hover:border-charcoal/40 focus:border-emerald-cta focus:outline-none focus:ring-4 focus:ring-emerald-cta/10 transition-all placeholder:text-charcoal/40 shadow-sm"
-                />
-              </div>
-
-              {/* Phone / WhatsApp */}
-              <div>
-                <label className="block text-xs font-bold text-charcoal mb-1.5">
-                  رقم الهاتف / الواتساب <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="tel"
-                    required
-                    dir="ltr"
-                    placeholder="010XXXXXXXX"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white text-charcoal font-medium text-xs sm:text-sm border border-charcoal/20 hover:border-charcoal/40 focus:border-emerald-cta focus:outline-none focus:ring-4 focus:ring-emerald-cta/10 transition-all placeholder:text-charcoal/40 text-right shadow-sm"
-                  />
-                  <Phone className="w-4 h-4 text-charcoal/30 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Preferred Branch */}
-              <div>
-                <label className="block text-xs font-bold text-charcoal mb-1.5">
-                  الفرع الأقرب لك
-                </label>
-                <div className="relative">
-                  <select
-                    value={formData.branch}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        branch: e.target.value as "mansoura" | "samanoud_mahalla",
-                      })
-                    }
-                    className="w-full pr-3.5 pl-9 py-2.5 rounded-xl bg-white text-charcoal font-medium text-xs sm:text-sm border border-charcoal/20 hover:border-charcoal/40 focus:border-emerald-cta focus:outline-none focus:ring-4 focus:ring-emerald-cta/10 transition-all appearance-none cursor-pointer shadow-sm"
-                  >
-                    <option value="mansoura">فرع المنصورة</option>
-                    <option value="samanoud_mahalla">فرع سمنود والمحلة</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Project Type */}
-              <div>
-                <label className="block text-xs font-bold text-charcoal mb-1.5">
-                  نوع المشروع المطلوب
-                </label>
-                <div className="relative">
-                  <select
-                    value={formData.projectType}
-                    onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                    className="w-full pr-3.5 pl-9 py-2.5 rounded-xl bg-white text-charcoal font-medium text-xs sm:text-sm border border-charcoal/20 hover:border-charcoal/40 focus:border-emerald-cta focus:outline-none focus:ring-4 focus:ring-emerald-cta/10 transition-all appearance-none cursor-pointer shadow-sm"
-                  >
-                    <option value="مطبخ مودرن كامل">مطبخ مودرن كامل</option>
-                    <option value="دريسينج روم فاخرة">دريسينج روم فاخرة</option>
-                    <option value="مطبخ + دريسينج روم">مطبخ + دريسينج روم</option>
-                    <option value="فرش فيلا / شقة متكامل">فرش فيلا / شقة متكامل</option>
-                    <option value="تجاليد وأعمال خشبية معمارية">تجاليد وأعمال خشبية معمارية</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-charcoal/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="pt-3 flex items-center justify-between border-t border-charcoal/10 gap-3">
-              <a
-                href={
-                  formData.branch === "mansoura"
-                    ? "https://wa.me/201005557109?text=مرحباً%20فرع%20المنصورة%20أود%20الاستفسار%20عن%20المطابخ"
-                    : "https://wa.me/201287153339?text=مرحباً%20فرع%20سمنود%20والمحلة%20أود%20الاستفسار%20عن%20المطابخ"
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs text-[#128C7E] hover:text-[#0b6459] font-semibold transition-colors"
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            {/* Full Name */}
+            <div>
+              <label
+                htmlFor="consultation-name"
+                className="block text-xs font-bold text-charcoal/80 mb-1.5"
               >
-                <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-                <span>محادثة فورية بالفرع</span>
-              </a>
+                الاسم بالكامل <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="consultation-name"
+                type="text"
+                required
+                placeholder="أحمد محمد"
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                className="w-full px-4 py-2.5 rounded-xl border border-charcoal/20 focus:border-emerald-cta focus:ring-2 focus:ring-emerald-cta/20 outline-none text-sm transition-all"
+              />
+            </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="text-xs sm:text-sm text-charcoal/60 hover:text-charcoal hover:bg-charcoal/5 px-3.5 py-2 rounded-xl transition-colors cursor-pointer font-medium"
-                >
-                  إلغاء
-                </button>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-xl shadow-md shadow-emerald-950/20 transition-all duration-200 cursor-pointer active:translate-y-0.5"
-                >
-                  <MessageCircle className="w-4 h-4 shrink-0" />
-                  <span>تأكيد وتحويل للواتساب</span>
-                </button>
+            {/* Phone Number */}
+            <div>
+              <label
+                htmlFor="consultation-phone"
+                className="block text-xs font-bold text-charcoal/80 mb-1.5"
+              >
+                رقم الهاتف (واتساب مفعل) <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  id="consultation-phone"
+                  type="tel"
+                  required
+                  placeholder="01000000000"
+                  dir="ltr"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  className="w-full text-right px-4 py-2.5 rounded-xl border border-charcoal/20 focus:border-emerald-cta focus:ring-2 focus:ring-emerald-cta/20 outline-none text-sm transition-all"
+                />
+                <Phone className="w-4 h-4 text-charcoal/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
+            </div>
+
+            {/* Branch Selection (3 Branches DRD Section 4) */}
+            <div>
+              <label
+                htmlFor="consultation-branch"
+                className="block text-xs font-bold text-charcoal/80 mb-1.5"
+              >
+                الفرع الأقرب إليك لمتابعة المعاينة <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <select
+                  id="consultation-branch"
+                  value={formData.branch}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      branch: e.target.value as BranchId,
+                    })
+                  }
+                  className="w-full px-4 py-2.5 rounded-xl border border-charcoal/20 focus:border-emerald-cta focus:ring-2 focus:ring-emerald-cta/20 outline-none text-sm appearance-none bg-white transition-all cursor-pointer"
+                >
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name} - {b.regionServed}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-charcoal/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Requested Service (DRD Section 6) */}
+            <div>
+              <label className="block text-xs font-bold text-charcoal/80 mb-1.5">
+                نوع الخدمة المطلوبة <span className="text-red-500">*</span>
+              </label>
+              <div className="space-y-2">
+                {SERVICE_OPTIONS.map((srv) => (
+                  <label
+                    key={srv.id}
+                    className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
+                      formData.requestedService === srv.id
+                        ? "border-[#1F5E4B] bg-emerald-50/50"
+                        : "border-charcoal/15 bg-white hover:bg-charcoal/5"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="requestedService"
+                      value={srv.id}
+                      checked={formData.requestedService === srv.id}
+                      onChange={() =>
+                        setFormData({ ...formData, requestedService: srv.id })
+                      }
+                      className="mt-1 text-[#1F5E4B] focus:ring-[#1F5E4B]"
+                    />
+                    <div className="text-right">
+                      <span className="text-xs sm:text-sm font-bold text-charcoal block">
+                        {srv.label}
+                      </span>
+                      <span className="text-[11px] text-charcoal/60 block mt-0.5">
+                        {srv.desc}
+                      </span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Customer Notes (DRD Section 6 customerNotes) */}
+            <div>
+              <label
+                htmlFor="consultation-notes"
+                className="block text-xs font-bold text-charcoal/80 mb-1.5"
+              >
+                ملاحظات حول المكان أو موعد الزيارة المفضل (اختياري)
+              </label>
+              <textarea
+                id="consultation-notes"
+                rows={2}
+                placeholder="مثلاً: المساحة التقريبية للمطبخ، المدينة أو الحي، تفضيل الزيارة مساءً..."
+                value={formData.customerNotes}
+                onChange={(e) =>
+                  setFormData({ ...formData, customerNotes: e.target.value })
+                }
+                className="w-full px-4 py-2 rounded-xl border border-charcoal/20 focus:border-emerald-cta focus:ring-2 focus:ring-emerald-cta/20 outline-none text-xs sm:text-sm transition-all"
+              />
+            </div>
+
+            {/* Submit CTA */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-sm font-bold py-3 px-6 rounded-xl shadow-md transition-all active:scale-[0.99] cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4 shrink-0 text-white" />
+                <span>
+                  {isSubmitting ? "جارٍ التجهيز..." : "تأكيد الطلب والتحويل لواتساب الفرع"}
+                </span>
+              </button>
+              <p className="text-[11px] text-center text-charcoal/50 mt-2">
+                * لن يتم إلزامك بأي رسوم شراء أو حجز، المعاينة والاستشارة الهندسية مبدئية ومجانية.
+              </p>
             </div>
           </form>
         )}

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,9 +9,12 @@ import {
   PhoneCall,
   ArrowLeft,
 } from "lucide-react";
+import { useBranches } from "@/lib/firebase";
+import { generateWhatsAppLink } from "@/lib/whatsapp";
 
 export function Footer() {
   const currentYear = 2026;
+  const { branches } = useBranches();
 
   return (
     <footer className="w-full bg-primary-container text-inverse-on-surface">
@@ -32,7 +37,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-xs sm:text-[13px] text-on-primary-container leading-relaxed">
-              تصاميم معمارية فاخرة ومطابخ خشبية مخصصة تجمع بين الحرفية اليدوية الرفيعة وأحدث التقنيات الأوروبية للمنازل الراقية.
+              تصاميم معمارية فاخرة ومطابخ خشبية وميكانزم إيطالي وألماني، دريسينج روم، وأثاث مخصص بأعلى معايير الجودة العالمية وضمان ١٥ سنة حقيقي.
             </p>
             <div className="flex items-center gap-2.5 pt-1">
               <a
@@ -59,7 +64,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Col 2: Collections & Designs */}
+          {/* Col 2: Collections & Taxonomy (5 Sections DRD) */}
           <div className="space-y-3">
             <h3 className="text-xs sm:text-sm text-on-primary font-bold font-readex">
               التشكيلات والتصاميم
@@ -67,85 +72,85 @@ export function Footer() {
             <ul className="space-y-2 text-xs sm:text-[13px] text-on-primary-container">
               <li>
                 <Link href="/products?category=kitchens" className="hover:text-secondary-fixed transition-colors block">
-                  مطابخ خشب طبيعي مودرن
+                  المطابخ الحديثة والميكانزم (60%)
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=kitchens" className="hover:text-secondary-fixed transition-colors block">
-                  مطابخ كلاسيك ونيوكلاسيك
+                <Link href="/products?category=dressing_rooms" className="hover:text-secondary-fixed transition-colors block">
+                  الدريسينج ووحدات التخزين
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=dressing" className="hover:text-secondary-fixed transition-colors block">
-                  دريسينج روم ووحدات تخزين فاخرة
+                <Link href="/products?category=furniture" className="hover:text-secondary-fixed transition-colors block">
+                  الأثاث المنزلي الراقي
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=cladding" className="hover:text-secondary-fixed transition-colors block">
-                  تجاليد حوائط وديكورات خشبية
+                <Link href="/products?category=decor" className="hover:text-secondary-fixed transition-colors block">
+                  الديكورات وتجاليد الحوائط
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="hover:text-secondary-fixed transition-colors block font-semibold text-secondary-fixed">
-                  استعراض كتالوج المنتجات والأسعار ←
+                <Link href="/products?category=windows" className="hover:text-secondary-fixed transition-colors block">
+                  الشبابيك والقطاعات UPVC
+                </Link>
+              </li>
+              <li>
+                <Link href="/products" className="hover:text-secondary-fixed transition-colors block font-semibold text-secondary-fixed pt-1">
+                  استعراض الكتالوج والأسعار ←
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Factories & Showrooms */}
+          {/* Col 3: Branches Showrooms & Factories (Dynamic from Firestore) */}
           <div className="space-y-3">
             <h3 className="text-xs sm:text-sm text-on-primary font-bold font-readex">
-              فروع الشويمي
+              فروع ومصانع الشويمي ({branches.length} فروع)
             </h3>
-            <div className="space-y-2.5 text-xs sm:text-[13px] text-on-primary-container">
-              <div>
-                <span className="font-bold text-on-primary block">فرع المنصورة:</span>
-                <span className="block text-secondary-fixed" dir="ltr">01005557109 / 01012623138</span>
-                <span className="block text-on-primary-container/80">شارع المشاية السفلية، أمام حديقة شجر الدر</span>
-              </div>
-              <div className="pt-1">
-                <span className="font-bold text-on-primary block">فرع سمنود والمحلة:</span>
-                <span className="block text-secondary-fixed" dir="ltr">01287153339 / 01098199288</span>
-                <span className="block text-on-primary-container/80">طريق سمنود الرئيسي، بجوار المجمع الصناعي</span>
-              </div>
+            <div className="space-y-3 text-xs text-on-primary-container">
+              {branches.map((branch) => (
+                <div key={branch.id} className="border-b border-outline-variant/15 pb-2 last:border-0">
+                  <span className="font-bold text-on-primary block">{branch.name}:</span>
+                  <span className="block text-secondary-fixed font-mono text-[11px]" dir="ltr">
+                    {branch.phones.join(" / ")}
+                  </span>
+                  <span className="block text-on-primary-container/80 text-[11px] leading-relaxed">
+                    {branch.address}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Col 4: Private Consultation */}
+          {/* Col 4: Private Consultation & WhatsApp Direct Conversion */}
           <div className="space-y-3">
             <h3 className="text-xs sm:text-sm text-on-primary font-bold font-readex">
               استشارة معمارية وتصميم 3D
             </h3>
             <p className="text-xs sm:text-[13px] text-on-primary-container leading-relaxed">
-              تواصل مباشرة مع مهندسينا المعماريين لتحديد موعد زيارة للموقع ومعاينة المساحات بدقة مع رسم ثلاثي الأبعاد مجاني.
+              تواصل مباشرة مع مسؤولي الفروع لتحديد موعد زيارة للموقع ومعاينة المساحات بدقة مع رسم ثلاثي الأبعاد مجاني.
             </p>
-            <div className="space-y-1.5 pt-1">
-              <a
-                href="https://wa.me/201005557109?text=مرحباً%20فرع%20المنصورة%20أود%20طلب%20استشارة"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-secondary-fixed hover:text-on-primary text-xs font-semibold transition-colors block"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
-                <span>واتساب فرع المنصورة: 01005557109</span>
-              </a>
-              <a
-                href="https://wa.me/201287153339?text=مرحباً%20فرع%20سمنود%20والمحلة%20أود%20طلب%20استشارة"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-secondary-fixed hover:text-on-primary text-xs font-semibold transition-colors block"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
-                <span>واتساب فرع سمنود والمحلة: 01287153339</span>
-              </a>
+            <div className="space-y-2 pt-1">
+              {branches.map((b) => (
+                <a
+                  key={b.id}
+                  href={generateWhatsAppLink(b.whatsappNumber, b.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-secondary-fixed hover:text-on-primary text-xs font-semibold transition-colors block"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+                  <span>واتساب {b.name.split("(")[0].trim()}: {b.phones[0]}</span>
+                </a>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-on-primary-container/80">
-          <p>© {currentYear} مطابخ الشويمي. جميع الحقوق محفوظة. تنفيذ وتصميم مخصص بأعلى معايير الجودة.</p>
+          <p>© {currentYear} مطابخ الشويمي. جميع الحقوق محفوظة. تنفيذ وتصميم مخصص بأعلى معايير الجودة وضمان ١٥ سنة.</p>
           <div className="flex items-center gap-5">
             <Link href="#" className="hover:text-inverse-on-surface transition-colors">
               سياسة الخصوصية
@@ -155,6 +160,12 @@ export function Footer() {
             </Link>
             <Link href="#" className="hover:text-inverse-on-surface transition-colors">
               الضمان وخدمات ما بعد البيع
+            </Link>
+            <Link
+              href="/admin"
+              className="text-on-primary-container/50 hover:text-inverse-on-surface transition-colors flex items-center gap-1"
+            >
+              <span>لوحة الإدارة</span>
             </Link>
           </div>
         </div>

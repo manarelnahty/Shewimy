@@ -18,6 +18,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Product, BRANCH_CONTACTS } from "@/data/products";
+import { BRANCHES_LIST, SHOWROOM_BRANCHES } from "@/data/branches";
+import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { ConsultationDrawer } from "@/components/common/ConsultationDrawer";
 import { BranchSelectionModal } from "@/components/common/BranchSelectionModal";
 
@@ -54,14 +56,9 @@ export function ProductDetailClient({
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
 
-  const isBothBranches = product.branches.length === 2;
-  const isMansouraOnly =
-    product.branches.length === 1 && product.branches[0] === "mansoura";
-  const isSamanoudOnly =
-    product.branches.length === 1 && product.branches[0] === "samanoud_mahalla";
-
-  const mansouraContact = BRANCH_CONTACTS.mansoura;
-  const samanoudContact = BRANCH_CONTACTS.samanoud_mahalla;
+  const availableBranches = useMemo(() => {
+    return BRANCHES_LIST.filter((b) => product.branches.includes(b.id));
+  }, [product.branches]);
 
   const handlePrevImage = () => {
     setActiveImageIndex((prev) =>
@@ -75,9 +72,12 @@ export function ProductDetailClient({
     );
   };
 
-  const buildWhatsappUrl = (phone: string) => {
-    const text = `مرحباً، أود الاستفسار عن تفاصيل وأسعار الموديل: ${product.name} (كود: ${product.code})`;
-    return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  const buildWhatsappUrl = (phone: string, branchName: string) => {
+    return generateWhatsAppLink(phone, branchName, {
+      title: product.title || product.name,
+      slug: product.slug,
+      section: product.mainSection || product.category,
+    });
   };
 
   const activeImageUrl = galleryImages[activeImageIndex] || product.imageUrl;
@@ -232,81 +232,74 @@ export function ProductDetailClient({
             </p>
           </div>
 
-          {/* Branch Display & Availability */}
+          {/* Approved Materials Badges (DRD Section 2 & 3) */}
+          {product.materials && product.materials.length > 0 && (
+            <div className="p-4 rounded-xl bg-surface-container-low border border-charcoal/10 space-y-2">
+              <span className="text-xs font-bold text-primary block">
+                الخامات المعتمدة (جودة وتصنيع أوروبي):
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {product.materials.map((mat, mIdx) => (
+                  <span
+                    key={mIdx}
+                    className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-white text-[#1F5E4B] border border-charcoal/10 shadow-2xs"
+                  >
+                    ✓ {mat}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Branch Display & Availability (3 Branches DRD Section 4) */}
           <div className="p-4 rounded-xl bg-white border border-charcoal/10 space-y-2">
             <span className="text-xs font-bold text-primary block flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-secondary" />
               <span>جاهزية الموديل للمعاينة في الفروع:</span>
             </span>
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              {isBothBranches && (
-                <span className="px-3 py-1 rounded-lg bg-emerald-50 text-[#1F5E4B] font-bold border border-emerald-200">
-                  متوفر للمعاينة بفرعي المنصورة وسمنود والمحلة
+              {availableBranches.map((b) => (
+                <span
+                  key={b.id}
+                  className="px-3 py-1 rounded-lg bg-emerald-50 text-[#1F5E4B] font-bold border border-emerald-200"
+                >
+                  متوفر بـ {b.name}
                 </span>
-              )}
-              {isMansouraOnly && (
-                <span className="px-3 py-1 rounded-lg bg-amber-50 text-amber-800 font-bold border border-amber-200">
-                  متوفر بصالة عرض فرع المنصورة فقط
-                </span>
-              )}
-              {isSamanoudOnly && (
-                <span className="px-3 py-1 rounded-lg bg-blue-50 text-blue-800 font-bold border border-blue-200">
-                  متوفر بمعرض ومصنع سمنود والمحلة فقط
-                </span>
-              )}
+              ))}
             </div>
           </div>
 
           {/* Dynamic Branch WhatsApp & Consultation CTAs */}
           <div className="space-y-2.5 pt-1">
-            {isBothBranches ? (
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-charcoal/70 block">
-                  اختر الفرع للتواصل المباشر عبر واتساب:
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-charcoal/70 block">
+                تواصل مباشر وفوري عبر واتساب الفرع:
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {availableBranches.slice(0, 2).map((branch) => (
                   <a
-                    href={buildWhatsappUrl(mansouraContact.whatsapp)}
+                    key={branch.id}
+                    href={buildWhatsappUrl(branch.whatsappNumber, branch.name)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs font-bold py-3 px-3 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
                   >
                     <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                    <span>استفسر وتواصل مع واتساب فرع المنصورة</span>
+                    <span>واتساب {branch.id === "mansoura" ? "المنصورة" : branch.id === "mahalla" ? "المحلة" : "سمنود"}</span>
                   </a>
-
-                  <a
-                    href={buildWhatsappUrl(samanoudContact.whatsapp)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs font-bold py-3 px-3 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
-                  >
-                    <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                    <span>استفسر وتواصل مع واتساب فرع سمنود والمحلة</span>
-                  </a>
-                </div>
+                ))}
               </div>
-            ) : isMansouraOnly ? (
-              <a
-                href={buildWhatsappUrl(mansouraContact.whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-3 px-4 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
-              >
-                <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                <span>استفسر وتواصل مع واتساب فرع المنصورة</span>
-              </a>
-            ) : (
-              <a
-                href={buildWhatsappUrl(samanoudContact.whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs sm:text-sm font-bold py-3 px-4 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs"
-              >
-                <WhatsAppIcon className="w-4 h-4 shrink-0" />
-                <span>استفسر وتواصل مع واتساب فرع سمنود والمحلة</span>
-              </a>
-            )}
+              {availableBranches.length > 2 && (
+                <button
+                  type="button"
+                  onClick={() => setIsBranchModalOpen(true)}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#E8F8F0] hover:bg-[#d6f2e4] text-[#1F5E4B] text-xs font-bold py-2.5 px-3 rounded-xl transition-colors border border-[#1F5E4B]/15 shadow-2xs cursor-pointer"
+                >
+                  <WhatsAppIcon className="w-4 h-4 shrink-0" />
+                  <span>تواصل مع فرع سمنود والمصانع أو اختر فرعاً آخر</span>
+                </button>
+              )}
+            </div>
 
             {/* Book 3D Consultation Button with Calendar Icon */}
             <button
