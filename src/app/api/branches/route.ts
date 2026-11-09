@@ -1,27 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { BRANCHES_LIST, BranchExtended } from "@/data/branches";
+import { BranchExtended } from "@/data/branches";
+import { getLatestBranches } from "@/lib/serverSettings";
 
 const BRANCHES_FILE = path.join(process.cwd(), "src", "data", "branches.json");
 
-function getStoredBranches(): BranchExtended[] {
-  try {
-    if (fs.existsSync(BRANCHES_FILE)) {
-      const content = fs.readFileSync(BRANCHES_FILE, "utf8");
-      const parsed = JSON.parse(content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error("Error reading branches.json:", err);
-  }
-  return BRANCHES_LIST;
-}
-
 export async function GET() {
-  const branches = getStoredBranches();
+  const branches = getLatestBranches();
   return NextResponse.json({ success: true, branches });
 }
 
@@ -38,7 +24,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const currentBranches = getStoredBranches();
+    const currentBranches = getLatestBranches();
     const index = currentBranches.findIndex((b) => b.id === targetId);
 
     let updatedBranch: BranchExtended;

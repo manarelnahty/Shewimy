@@ -119,30 +119,7 @@ export async function fetchProducts(filters?: {
   branch?: string;
   featuredOnly?: boolean;
 }): Promise<Product[]> {
-  // 1. Fetch from /api/products first (persisted to disk at src/data/products.json)
-  if (typeof window !== "undefined") {
-    try {
-      const params = new URLSearchParams();
-      if (filters?.section) params.set("section", filters.section);
-      if (filters?.branch) params.set("branch", filters.branch);
-      if (filters?.featuredOnly) params.set("featuredOnly", "true");
-      params.set("_t", Date.now().toString());
-
-      const res = await fetch(`/api/products?${params.toString()}`, {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && Array.isArray(data.products)) {
-          return data.products;
-        }
-      }
-    } catch (apiErr) {
-      console.warn("Could not fetch /api/products:", apiErr);
-    }
-  }
-
-  // 2. Check Firestore if configured
+  // 1. Authoritative Firestore read when Firebase is configured
   const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
@@ -174,6 +151,29 @@ export async function fetchProducts(filters?: {
       }
     } catch (err) {
       console.warn("Firestore fetchProducts returned error, using fallback:", err);
+    }
+  }
+
+  // 2. Fetch from /api/products fallback (persisted to disk at src/data/products.json)
+  if (typeof window !== "undefined") {
+    try {
+      const params = new URLSearchParams();
+      if (filters?.section) params.set("section", filters.section);
+      if (filters?.branch) params.set("branch", filters.branch);
+      if (filters?.featuredOnly) params.set("featuredOnly", "true");
+      params.set("_t", Date.now().toString());
+
+      const res = await fetch(`/api/products?${params.toString()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.products)) {
+          return data.products;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/products:", apiErr);
     }
   }
 
@@ -277,25 +277,7 @@ export async function fetchProductById(id: string): Promise<Product | null> {
  * 3. Fallback to localStorage or BRANCHES_LIST.
  */
 export async function fetchBranches(): Promise<BranchExtended[]> {
-  // 1. Fetch fresh authoritative branches from /api/branches first
-  if (typeof window !== "undefined") {
-    try {
-      const res = await fetch(`/api/branches?_t=${Date.now()}`, {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
-          localStorage.setItem("shewimy_branches", JSON.stringify(data.branches));
-          return data.branches;
-        }
-      }
-    } catch (apiErr) {
-      console.warn("Could not fetch /api/branches:", apiErr);
-    }
-  }
-
-  // 2. Check Firestore if configured
+  // 1. Check Firestore first if configured
   const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
@@ -327,6 +309,24 @@ export async function fetchBranches(): Promise<BranchExtended[]> {
       }
     } catch (err) {
       console.warn("Firestore fetchBranches error, using fallback:", err);
+    }
+  }
+
+  // 2. Fetch fresh branches from /api/branches fallback
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/branches?_t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.branches) && data.branches.length > 0) {
+          localStorage.setItem("shewimy_branches", JSON.stringify(data.branches));
+          return data.branches;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/branches:", apiErr);
     }
   }
 
@@ -416,6 +416,8 @@ export async function seedFirestore(): Promise<{
   success: boolean;
   seededItems: number;
   seededBranches: number;
+  seededSettings?: boolean;
+  seededAdmin?: boolean;
   message: string;
 }> {
   const db = getDb();
@@ -488,13 +490,50 @@ export async function seedFirestore(): Promise<{
       );
     }
 
+    // 3. Seed Site Settings (DRD Section 1 & 7)
+    const settingsRef = doc(db, "site_settings", "general");
+    batch.set(
+      settingsRef,
+      {
+        ...siteSettingsData,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    // 4. Seed Super Admin Account profile (DRD Section 8)
+    const adminRef = doc(db, "admins", "admin-master");
+    batch.set(
+      adminRef,
+      {
+        uid: "admin-master",
+        email: "admin@shewimy.com",
+        displayName: "مدير النظام (الشويمي)",
+        role: "super_admin",
+        status: "active",
+        permissions: [
+          "all",
+          "manage_catalog",
+          "manage_branches",
+          "manage_requests",
+          "manage_settings",
+        ],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+
     await batch.commit();
 
     return {
       success: true,
       seededItems: productsData.length,
       seededBranches: BRANCHES_LIST.length,
-      message: "Firestore collections (items, branches) seeded successfully with DRD data.",
+      seededSettings: true,
+      seededAdmin: true,
+      message:
+        "Firestore collections (items, branches, site_settings, admins) seeded successfully with DRD data.",
     };
   } catch (error) {
     console.error("Error seeding Firestore:", error);
@@ -511,7 +550,23 @@ export async function seedFirestore(): Promise<{
  * Fetch all products for Admin panel (including drafts and archived items).
  */
 export async function fetchAllProductsAdmin(): Promise<Product[]> {
-  // 1. Fetch from /api/products first
+  // 1. Check Firestore first if configured
+  const db = getDb();
+  if (db && isFirebaseConfigured()) {
+    try {
+      const itemsRef = collection(db, "items");
+      const snapshot = await getDocs(itemsRef);
+      if (!snapshot.empty) {
+        return snapshot.docs.map((docSnap) =>
+          mapDocToProduct(docSnap.id, docSnap.data())
+        );
+      }
+    } catch (err) {
+      console.warn("Firestore fetchAllProductsAdmin error, falling back:", err);
+    }
+  }
+
+  // 2. Fallback to /api/products
   if (typeof window !== "undefined") {
     try {
       const res = await fetch(`/api/products?_t=${Date.now()}`, {
@@ -528,20 +583,6 @@ export async function fetchAllProductsAdmin(): Promise<Product[]> {
     }
   }
 
-  const db = getDb();
-  if (db && isFirebaseConfigured()) {
-    try {
-      const itemsRef = collection(db, "items");
-      const snapshot = await getDocs(itemsRef);
-      if (!snapshot.empty) {
-        return snapshot.docs.map((docSnap) =>
-          mapDocToProduct(docSnap.id, docSnap.data())
-        );
-      }
-    } catch (err) {
-      console.warn("Firestore fetchAllProductsAdmin error, falling back:", err);
-    }
-  }
   return [...productsData];
 }
 
@@ -701,7 +742,37 @@ export async function deleteProduct(
  * 2. Checks Firestore if configured.
  */
 export async function fetchInspectionRequests(): Promise<InspectionRequest[]> {
-  // 1. Fetch from /api/requests first
+  // 1. Authoritative Firestore read when configured
+  const db = getDb();
+  if (db && isFirebaseConfigured()) {
+    try {
+      const colRef = collection(db, "inspection_requests");
+      const q = query(colRef, orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        return snapshot.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<InspectionRequest, "id">),
+        }));
+      }
+    } catch (err) {
+      console.warn("Error fetching inspection requests with orderBy:", err);
+      try {
+        const colRef = collection(db, "inspection_requests");
+        const snapshot = await getDocs(colRef);
+        if (!snapshot.empty) {
+          return snapshot.docs.map((d) => ({
+            id: d.id,
+            ...(d.data() as Omit<InspectionRequest, "id">),
+          }));
+        }
+      } catch (e) {
+        console.warn("Fallback query error:", e);
+      }
+    }
+  }
+
+  // 2. Fallback to /api/requests
   if (typeof window !== "undefined") {
     try {
       const res = await fetch(`/api/requests?_t=${Date.now()}`, {
@@ -718,33 +789,6 @@ export async function fetchInspectionRequests(): Promise<InspectionRequest[]> {
     }
   }
 
-  // 2. Check Firestore if configured
-  const db = getDb();
-  if (db && isFirebaseConfigured()) {
-    try {
-      const colRef = collection(db, "inspection_requests");
-      const q = query(colRef, orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
-      if (!snapshot.empty) {
-        return snapshot.docs.map((d) => ({
-          id: d.id,
-          ...(d.data() as Omit<InspectionRequest, "id">),
-        }));
-      }
-    } catch (err) {
-      console.warn("Error fetching inspection requests:", err);
-      try {
-        const colRef = collection(db, "inspection_requests");
-        const snapshot = await getDocs(colRef);
-        return snapshot.docs.map((d) => ({
-          id: d.id,
-          ...(d.data() as Omit<InspectionRequest, "id">),
-        }));
-      } catch (e) {
-        console.warn("Fallback query error:", e);
-      }
-    }
-  }
   return [];
 }
 
@@ -901,25 +945,7 @@ export async function updateBranch(
  * 4. Gracefully defaults to DEFAULT_SITE_SETTINGS.
  */
 export async function fetchSiteSettings(): Promise<SiteSettings> {
-  // 1. Fetch fresh authoritative settings from /api/settings first
-  if (typeof window !== "undefined") {
-    try {
-      const res = await fetch(`/api/settings?_t=${Date.now()}`, {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.settings) {
-          localStorage.setItem("shewimy_site_settings", JSON.stringify(data.settings));
-          return data.settings;
-        }
-      }
-    } catch (apiErr) {
-      console.warn("Could not fetch /api/settings:", apiErr);
-    }
-  }
-
-  // 2. If Firestore is available, attempt read
+  // 1. Authoritative Firestore read when configured
   const db = getDb();
   if (db && isFirebaseConfigured()) {
     try {
@@ -951,6 +977,24 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
       }
     } catch (err) {
       console.warn("fetchSiteSettings Firestore error:", err);
+    }
+  }
+
+  // 2. Fetch fresh authoritative settings from /api/settings fallback
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/settings?_t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.settings) {
+          localStorage.setItem("shewimy_site_settings", JSON.stringify(data.settings));
+          return data.settings;
+        }
+      }
+    } catch (apiErr) {
+      console.warn("Could not fetch /api/settings:", apiErr);
     }
   }
 

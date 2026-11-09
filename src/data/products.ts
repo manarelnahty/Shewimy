@@ -106,8 +106,8 @@ export const productsData: Product[] = [
   {
     id: "prod-1",
     code: "SHW-204",
-    name: "مطبخ بولاك رمادي مات - ميكانزم بلوم",
-    title: "مطبخ بولاك رمادي مات - ميكانزم بلوم",
+    name: "مطبخ بولاك رمادي مات - ميكانزم بلوم نمساوي",
+    title: "مطبخ بولاك رمادي مات - ميكانزم بلوم نمساوي",
     slug: "pollak-island-italian",
     subtitle: "تشكيلة 2026 الحصرية",
     category: "kitchens",

@@ -280,7 +280,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   heroShowcaseFeature: "ميكانزم بلوم نمساوي أصلي",
   heroShowcaseWarranty: "ضمان 15 سنة",
   heroCtaPrimaryText: "صمم مطبخك الآن",
-  heroCtaSecondaryText: "تصفح أعمالنا",
+  heroCtaSecondaryText: "تصفح سابقة أعمالنا",
   heroStats: {
     stat1Value: "+3,500",
     stat1Label: "مطبخ منفّذ",
@@ -311,7 +311,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   ],
 
   // 3. Portfolio Section
-  portfolioBadge: "أعمالنا الاستثنائية (محدثة مباشرة من قاعدة البيانات)",
+  portfolioBadge: "معرض الإبداعات المعمارية",
   portfolioHeadline: "أحدث إبداعاتنا المنفذة بمصانع الشويمي",
   portfolioSubheadline: "استكشف تشكيلات المطابخ والدريسينج روم والأثاث الراقي التي نفذناها بدقة وإتقان في فلل وقصور عملاء الشويمي.",
   portfolioCtaText: "استعراض كتالوج المنتجات والأسعار كاملة",

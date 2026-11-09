@@ -109,22 +109,6 @@ export async function signInAdmin(
     }
   }
 
-  // 3. Fallback for demo admin credentials
-  if (
-    cleanEmail === "admin@shewimy.com" &&
-    (cleanPass === "Shewimy@2026" || cleanPass === "admin")
-  ) {
-    const demoUser = {
-      uid: "admin-master",
-      email: "admin@shewimy.com",
-      displayName: "مدير النظام (الشويمي)",
-    };
-    if (typeof window !== "undefined") {
-      localStorage.setItem("shewimy_admin_session", JSON.stringify(demoUser));
-    }
-    return { success: true, user: demoUser };
-  }
-
   return { success: false, error: "البريد الإلكتروني أو كلمة المرور غير صحيحة" };
 }
 

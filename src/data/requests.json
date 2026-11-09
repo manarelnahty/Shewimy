@@ -1,23 +1,68 @@
 [
   {
     "id": "req-1794177615951",
-    "clientName": "منار",
-    "phoneNumber": "01000000000",
+    "clientName": "د. هبة البسيوني",
+    "phoneNumber": "01019876543",
     "selectedBranch": "mansoura",
-    "requestedService": "other",
-    "customerNotes": "",
+    "requestedService": "kitchens",
+    "customerNotes": "معاينة مطبخ أرو ماسيف نيوكلاسيك أوف وايت وميكانزم بلوم نمساوي لشقة بالمشاية السفلية.",
     "status": "deal_closed",
-    "createdAt": "2026-11-08T22:40:15.951Z",
-    "updatedAt": "2026-11-08T22:40:38.753Z"
+    "createdAt": "2026-11-08T20:40:15.951Z",
+    "updatedAt": "2026-11-09T09:15:38.753Z"
   },
   {
     "id": "req-1794177489222",
-    "clientName": "أحمد محمود",
-    "phoneNumber": "01012345678",
-    "selectedBranch": "mansoura",
-    "requestedService": "other",
-    "customerNotes": "استفسار عن تجليد جداري رخام وبديل خشب لفيلا بالمنصورة",
+    "clientName": "م. كريم الشناوي",
+    "phoneNumber": "01091234567",
+    "selectedBranch": "samanoud",
+    "requestedService": "decor",
+    "customerNotes": "طلب مقايسة تجليد جداري خشب طبيعي ووحدة تلفزيون جدارية CNC مع إضاءة ليد بروفايل لفيلا بسمنود.",
     "status": "new",
-    "createdAt": "2026-11-08T22:38:09.223Z"
+    "createdAt": "2026-11-09T08:38:09.223Z",
+    "updatedAt": "2026-11-09T08:38:09.223Z"
+  },
+  {
+    "id": "req-1794178120340",
+    "clientName": "د. طارق عبد الحميد",
+    "phoneNumber": "01005551234",
+    "selectedBranch": "mansoura",
+    "requestedService": "kitchens",
+    "customerNotes": "مطبخ بولاك رمادي مات مع جزيرة رخامية كلكتا وميكانزم Blum - زيارة الموقع بحي الجامعة بالمنصورة.",
+    "status": "visit_scheduled",
+    "createdAt": "2026-11-09T09:20:10.112Z",
+    "updatedAt": "2026-11-09T10:45:00.000Z"
+  },
+  {
+    "id": "req-1794178345610",
+    "clientName": "أ. سارة القاضي",
+    "phoneNumber": "01223456789",
+    "selectedBranch": "mahalla",
+    "requestedService": "dressing_rooms",
+    "customerNotes": "استشارة تصميم دريسينج روم زجاج فاميه سيكوريت مع بروفايل إيطالي أسود وإضاءة سينسور ذكية.",
+    "status": "contacted",
+    "createdAt": "2026-11-09T10:15:22.450Z",
+    "updatedAt": "2026-11-09T11:00:15.200Z"
+  },
+  {
+    "id": "req-1794178789012",
+    "clientName": "أ. محمود فوزي",
+    "phoneNumber": "01145678901",
+    "selectedBranch": "mahalla",
+    "requestedService": "windows",
+    "customerNotes": "طلب مقايسة قطاعات UPVC ألمانية عازلة للصوت والحرارة بزجاج دبل جورجيا لفيلا بشارع البحر بالمحلة.",
+    "status": "new",
+    "createdAt": "2026-11-09T11:30:45.890Z",
+    "updatedAt": "2026-11-09T11:30:45.890Z"
+  },
+  {
+    "id": "req-1794179123456",
+    "clientName": "م. عصام المنشاوي",
+    "phoneNumber": "01067890123",
+    "selectedBranch": "mansoura",
+    "requestedService": "furniture",
+    "customerNotes": "طلب طاولة طعام رويال خشب بلوط صلب 8 مقاعد وتنسيق دريسينج روم متناسق بمنطقة توريل.",
+    "status": "contacted",
+    "createdAt": "2026-11-09T12:05:18.330Z",
+    "updatedAt": "2026-11-09T12:40:22.110Z"
   }
 ]

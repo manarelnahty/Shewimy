@@ -1,8 +1,10 @@
 import fs from "fs";
 import path from "path";
 import { DEFAULT_SITE_SETTINGS, SiteSettings } from "@/types/shewimy";
+import { BRANCHES_LIST, BranchExtended } from "@/data/branches";
 
 const SETTINGS_FILE = path.join(process.cwd(), "src", "data", "siteSettings.json");
+const BRANCHES_FILE = path.join(process.cwd(), "src", "data", "branches.json");
 
 /**
  * Server-only utility to fetch the absolute latest site settings directly from disk.
@@ -42,4 +44,25 @@ export function getLatestSiteSettings(): SiteSettings {
   }
 
   return DEFAULT_SITE_SETTINGS;
+}
+
+/**
+ * Server-only utility to fetch the absolute latest branches directly from disk.
+ * Bypasses bundler/module caching so every SSR request renders the latest edits immediately
+ * with zero hydration mismatch and zero visual flicker.
+ */
+export function getLatestBranches(): BranchExtended[] {
+  try {
+    if (fs.existsSync(BRANCHES_FILE)) {
+      const content = fs.readFileSync(BRANCHES_FILE, "utf8");
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error("Error reading branches.json in getLatestBranches:", err);
+  }
+
+  return BRANCHES_LIST;
 }

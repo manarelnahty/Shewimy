@@ -5,6 +5,7 @@ import { Product, productsData } from "@/data/products";
 import { BRANCHES_LIST, BranchExtended } from "@/data/branches";
 import siteSettingsData from "@/data/siteSettings.json";
 import { SiteSettingsContext } from "@/lib/SiteSettingsContext";
+import { BranchesContext } from "@/lib/BranchesContext";
 import {
   MainSection,
   SiteSettings,
@@ -138,24 +139,20 @@ export function useProducts(options?: UseProductsOptions) {
 }
 
 /**
- * React hook to dynamically fetch branches from Firestore `branches` collection.
+ * React hook to dynamically fetch branches from Firestore `branches` collection
+ * or from BranchesContext if provided.
  */
-export function useBranches() {
+export function useBranches(initialBranches?: BranchExtended[]) {
+  const context = useContext(BranchesContext);
+  if (context) {
+    return context;
+  }
+
+  // Fallback for standalone usage outside BranchesProvider
   const [branches, setBranches] = useState<BranchExtended[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const local = localStorage.getItem("shewimy_branches");
-        if (local) {
-          const parsed = JSON.parse(local);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed;
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-    return BRANCHES_LIST;
+    // ALWAYS initialize with server-safe initialBranches or fallback.
+    // NEVER read localStorage here to prevent SSR hydration mismatch.
+    return initialBranches || BRANCHES_LIST;
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -173,6 +170,19 @@ export function useBranches() {
   }, []);
 
   useEffect(() => {
+    // Safely load cached branches after hydration has completed
+    try {
+      const local = localStorage.getItem("shewimy_branches");
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setBranches(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    }
+
     loadBranches();
 
     // Listen to local custom event (same tab) and storage event (cross-tab)
@@ -241,23 +251,9 @@ export function useSiteSettings(initialSettings?: SiteSettings) {
   }
 
   const [settings, setSettings] = useState<SiteSettings>(() => {
-    if (initialSettings) {
-      return initialSettings;
-    }
-    if (typeof window !== "undefined") {
-      try {
-        const local = localStorage.getItem("shewimy_site_settings");
-        if (local) {
-          const parsed = JSON.parse(local);
-          if (parsed && typeof parsed === "object") {
-            return { ...(siteSettingsData as unknown as SiteSettings), ...parsed };
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-    return siteSettingsData as unknown as SiteSettings;
+    // ALWAYS initialize with server-safe initialSettings or fallback.
+    // NEVER read localStorage here to prevent SSR hydration mismatch.
+    return initialSettings || (siteSettingsData as unknown as SiteSettings);
   });
   const [loading, setLoading] = useState(false);
 
@@ -273,6 +269,19 @@ export function useSiteSettings(initialSettings?: SiteSettings) {
   }, []);
 
   useEffect(() => {
+    // Safely load cached settings after hydration has completed
+    try {
+      const local = localStorage.getItem("shewimy_site_settings");
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (parsed && typeof parsed === "object") {
+          setSettings((prev) => ({ ...(siteSettingsData as unknown as SiteSettings), ...prev, ...parsed }));
+        }
+      }
+    } catch {
+      // ignore
+    }
+
     loadSettings();
 
     // Listen to local custom event (same tab) and storage event (cross-tab)
@@ -388,19 +397,6 @@ export function useAdminAuth() {
     return res;
   };
 
-  const loginDemo = () => {
-    const demoUser = {
-      uid: "admin-master",
-      email: "admin@shewimy.com",
-      displayName: "مدير النظام (الشويمي)",
-    };
-    setUser(demoUser);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("shewimy_admin_session", JSON.stringify(demoUser));
-    }
-    return { success: true, user: demoUser };
-  };
-
   const logout = async () => {
     await signOutAdmin();
     setUser(null);
@@ -422,7 +418,6 @@ export function useAdminAuth() {
     loading,
     isAuthenticated: Boolean(user),
     login,
-    loginDemo,
     logout,
     changeEmail,
     changePassword,
