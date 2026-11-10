@@ -10,7 +10,7 @@ import { BranchSelectionModal } from "@/components/common/BranchSelectionModal";
 import { productsData, Product, BranchKey } from "@/data/products";
 import { BRANCHES_LIST } from "@/data/branches";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
-import { useProducts, useBranches } from "@/lib/firebase";
+import { useProducts, useBranches, useCategories, useMaterials } from "@/lib/firebase";
 import { ProductCard, ProductCardSkeleton } from "@/components/products/ProductCard";
 import {
   Search,
@@ -51,26 +51,10 @@ function ReloadIcon({ className = "w-3.5 h-3.5 shrink-0" }: { className?: string
   );
 }
 
-type CategoryFilter =
-  | "all"
-  | "kitchens"
-  | "dressing_rooms"
-  | "furniture"
-  | "decor"
-  | "windows"
-  | "dressing"
-  | "cladding";
+type CategoryFilter = string;
 
 type StyleFilter = "all" | "modern" | "classic" | "neoclassic" | "ultramodern";
-type MaterialFilter =
-  | "all"
-  | "polylac"
-  | "hpl"
-  | "natural_walnut"
-  | "massive_oak"
-  | "fume_glass"
-  | "upvc"
-  | "cnc_wood";
+type MaterialFilter = string;
 
 type SortOption = "default" | "price_asc" | "price_desc";
 type PriceRangeFilter = "all" | "under_80k" | "80k_to_120k" | "above_120k";
@@ -79,6 +63,8 @@ type BranchFilter = "all" | "mansoura" | "mahalla" | "samanoud" | "samanoud_maha
 export default function ProductsPage() {
   const { products: allProducts, loading } = useProducts();
   const { branches } = useBranches();
+  const { categories } = useCategories();
+  const { materials } = useMaterials();
 
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [branchModalProduct, setBranchModalProduct] = useState<Product | null>(null);
@@ -134,9 +120,21 @@ export default function ProductsPage() {
       result = result.filter((p) => p.style === selectedStyle);
     }
 
-    // Material filter
+    // Material filter (Dynamic matching by ID, label, or tagged materials)
     if (selectedMaterial !== "all") {
-      result = result.filter((p) => p.material === selectedMaterial);
+      const matObj = materials.find((m) => m.id === selectedMaterial);
+      const targetName = matObj ? matObj.name.toLowerCase() : selectedMaterial.toLowerCase();
+      result = result.filter((p) => {
+        return (
+          p.material === selectedMaterial ||
+          (p.materialLabel && p.materialLabel.toLowerCase().includes(targetName)) ||
+          p.materials.some(
+            (m) =>
+              m.toLowerCase().includes(targetName) ||
+              m.toLowerCase().includes(selectedMaterial.toLowerCase())
+          )
+        );
+      });
     }
 
     // Price range filter
@@ -206,10 +204,10 @@ export default function ProductsPage() {
                 <span>شجرة التصنيف الموحدة • ضمان 15 سنة حقيقي</span>
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-on-primary font-readex leading-tight">
-                كتالوج مطابخ وديكورات الشويمي
+                أثاث ومطابخ الشويمي
               </h1>
               <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
-                استعرض تشكيلاتنا الخمس المعتمدة (المطابخ الحديثة والميكانزم، الدريسينج روم، الأثاث الراقي، الديكورات، والشبابيك UPVC). تواصل مباشرة مع واتساب الفرع الأقرب إليك للتسعير الفوري وحجز المعاينة.
+                استعرض تشكيلاتنا المعتمدة (الأثاث الراقي، المطابخ الحديثة والميكانزم، الدريسينج روم، الديكورات، والشبابيك UPVC). تواصل مباشرة مع واتساب الفرع الأقرب إليك للتسعير الفوري وحجز المعاينة.
               </p>
             </div>
           </div>
@@ -222,7 +220,7 @@ export default function ProductsPage() {
           style={{ backgroundColor: "#fbf9f5" }}
         >
           <div className="max-w-[1380px] mx-auto px-5 sm:px-8 lg:px-12 space-y-3">
-            {/* Category Tabs (5 DRD Sections Section 2) */}
+            {/* Category Tabs (Dynamic from categories registry: defaults + custom) */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
               <button
                 type="button"
@@ -233,63 +231,37 @@ export default function ProductsPage() {
                     : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
                 }`}
               >
-                كافة الأقسام
+                كافة الأقسام ({allProducts.length})
               </button>
-              <button
-                type="button"
-                onClick={() => setSelectedCategory("kitchens")}
-                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "kitchens"
-                    ? "bg-[#1E2225] text-white shadow-sm"
-                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
-                }`}
-              >
-                المطابخ الحديثة (60%)
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedCategory("dressing_rooms")}
-                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "dressing_rooms" || selectedCategory === "dressing"
-                    ? "bg-[#1E2225] text-white shadow-sm"
-                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
-                }`}
-              >
-                الدريسينج ووحدات التخزين
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedCategory("furniture")}
-                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "furniture"
-                    ? "bg-[#1E2225] text-white shadow-sm"
-                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
-                }`}
-              >
-                الأثاث المنزلي الراقي
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedCategory("decor")}
-                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "decor" || selectedCategory === "cladding"
-                    ? "bg-[#1E2225] text-white shadow-sm"
-                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
-                }`}
-              >
-                الديكورات وتجاليد الحوائط
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedCategory("windows")}
-                className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "windows"
-                    ? "bg-[#1E2225] text-white shadow-sm"
-                    : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
-                }`}
-              >
-                الشبابيك والقطاعات UPVC
-              </button>
+              {categories.map((cat) => {
+                const isSelected =
+                  selectedCategory === cat.key ||
+                  (cat.key === "dressing_rooms" && selectedCategory === "dressing") ||
+                  (cat.key === "decor" && selectedCategory === "cladding");
+
+                const count = allProducts.filter(
+                  (p) =>
+                    p.mainSection === cat.key ||
+                    (p.category as any) === cat.key ||
+                    (cat.key === "dressing_rooms" && p.category === "dressing") ||
+                    (cat.key === "decor" && p.category === "cladding")
+                ).length;
+
+                return (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat.key)}
+                    className={`shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-[#1E2225] text-white shadow-sm"
+                        : "bg-[#F3EFEA] hover:bg-[#eae5de] text-charcoal"
+                    }`}
+                  >
+                    {cat.labelAr} {count > 0 ? `(${count})` : cat.sharePercent ? `(${cat.sharePercent})` : ""}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Advanced Filters: Search + Branch + Style + Material + Sorting */}
@@ -340,20 +312,19 @@ export default function ProductsPage() {
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
 
-              {/* Material Dropdown */}
+              {/* Material Dropdown (Dynamic from materials registry) */}
               <div className="lg:col-span-2 relative">
                 <select
                   value={selectedMaterial}
                   onChange={(e) => setSelectedMaterial(e.target.value as MaterialFilter)}
                   className="w-full appearance-none bg-white border border-gray-300 rounded-lg px-3 pl-8 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#1F5E4B] cursor-pointer transition-all font-medium"
                 >
-                  <option value="all">كافة الخامات</option>
-                  <option value="polylac">بولي لاك تركي</option>
-                  <option value="hpl">HPL ألماني</option>
-                  <option value="natural_walnut">جوز أمريكي</option>
-                  <option value="massive_oak">أرو وبلوط ماسيف</option>
-                  <option value="fume_glass">زجاج فاميه</option>
-                  <option value="upvc">قطاعات UPVC</option>
+                  <option value="all">كافة الخامات ({materials.length})</option>
+                  {materials.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
+                  ))}
                 </select>
                 <ChevronDown className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
@@ -466,7 +437,7 @@ export default function ProductsPage() {
                   ملقتش التصميم أو المقاس اللي يناسب بيتك؟
                 </h3>
                 <p className="text-xs sm:text-sm text-on-primary-container max-w-xl">
-                  يقوم مهندسونا بتصميم وتنفيذ أي مقاس أو خامة تناسب مخطط منزلك بالكامل مع رسم ثلاثي الأبعاد 3D مجاني قبل البدء.
+                  يقوم مهندسونا بتصميم وتنفيذ أي مقاس أو خامة تناسب مخطط منزلك بالكامل مع رسم ثلاثي الأبعاد 3D قبل البدء.
                 </p>
               </div>
 

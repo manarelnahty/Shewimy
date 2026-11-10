@@ -18,7 +18,8 @@ import {
   useAdminProducts,
   useAdminRequests,
   useBranches,
-} from "@/lib/firebase/hooks";
+  useCategories,
+} from "@/lib/firebase";
 import { updateInspectionRequestStatus } from "@/lib/firebase/firestore";
 import { MAIN_SECTIONS_INFO, MainSection } from "@/types/shewimy";
 
@@ -26,6 +27,7 @@ export default function AdminDashboardPage() {
   const { products, loading: loadingProducts } = useAdminProducts();
   const { requests, loading: loadingRequests, refetch: refetchRequests } = useAdminRequests();
   const { branches } = useBranches();
+  const { categories } = useCategories();
 
   const newRequests = requests.filter((r) => r.status === "new" || !r.status);
   const scheduledRequests = requests.filter((r) => r.status === "visit_scheduled");
@@ -99,7 +101,7 @@ export default function AdminDashboardPage() {
               <span className="text-xs text-[#1F5E4B] font-semibold">موديل نشط</span>
             </div>
             <p className="text-[11px] text-[#5e6368] mt-1.5">
-              موزعة على 5 أقسام رئيسية حسب معايير DRD
+              موزعة على {categories.length} أقسام رئيسية حسب معايير DRD وتصنيفات المعرض
             </p>
           </div>
         </div>
@@ -189,25 +191,30 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-          {(Object.keys(MAIN_SECTIONS_INFO) as MainSection[]).map((key) => {
-            const info = MAIN_SECTIONS_INFO[key];
-            const count = sectionCounts[key] || 0;
+          {categories.map((cat) => {
+            const count = products.filter(
+              (p) =>
+                p.mainSection === cat.key ||
+                (p.category as any) === cat.key ||
+                (cat.key === "dressing_rooms" && (p.category as any) === "dressing") ||
+                (cat.key === "decor" && (p.category as any) === "cladding")
+            ).length;
             return (
               <div
-                key={key}
+                key={cat.key}
                 className="bg-[#f8f6f2] border border-[#e7e5e0] rounded-xl p-4 flex flex-col justify-between hover:border-[#855224]/50 transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-[#1b1c1a] font-readex">
-                      {info.labelAr.split(" ")[0]}
+                      {cat.labelAr.split(" ")[0]}
                     </span>
                     <span className="text-[10px] bg-[#855224]/10 text-[#855224] font-bold px-2 py-0.5 rounded-full font-mono border border-[#855224]/20">
-                      {info.sharePercent}
+                      {cat.sharePercent || "مخصص"}
                     </span>
                   </div>
                   <p className="text-[11px] text-[#5e6368] line-clamp-1 leading-relaxed">
-                    {info.labelAr}
+                    {cat.labelAr}
                   </p>
                 </div>
                 <div className="mt-4 pt-3 border-t border-[#e7e5e0] flex items-baseline justify-between">

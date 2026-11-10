@@ -3,6 +3,16 @@ import { SHOWROOM_BRANCHES, BranchExtended } from "./branches";
 
 export type BranchKey = "mansoura" | "mahalla" | "samanoud" | "samanoud_mahalla";
 
+export type ProductCategory =
+  | "kitchens"
+  | "dressing"
+  | "furniture"
+  | "cladding"
+  | "dressing_rooms"
+  | "decor"
+  | "windows"
+  | (string & {});
+
 export interface Product {
   id: string;
   code: string;
@@ -10,7 +20,7 @@ export interface Product {
   title?: string;
   slug: string;
   subtitle: string;
-  category: "kitchens" | "dressing" | "furniture" | "cladding" | "dressing_rooms" | "decor" | "windows";
+  category: ProductCategory;
   mainSection: MainSection;
   categoryLabel: string;
   subCategory: string;
@@ -24,6 +34,7 @@ export interface Product {
   badgeSecondary: string;
   branches: ("mansoura" | "mahalla" | "samanoud")[];
   price: number;
+  originalPrice?: number | null; // السعر قبل الخصم (اختياري) — يظهر مشطوباً جانب السعر الحالي
   basePrice?: number | null;
   pricingMode: "whatsapp_quote" | "per_meter" | "fixed_price";
   status: "published" | "draft" | "archived";

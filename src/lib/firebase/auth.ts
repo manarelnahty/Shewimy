@@ -11,23 +11,17 @@ import {
   User,
   Auth,
 } from "firebase/auth";
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { firebaseConfig, isFirebaseConfigured } from "./config";
+import { firebaseConfig, isFirebaseConfigured, getFirebaseApp } from "./config";
 import { syncAdminAccountToFirestore } from "./firestore";
-
-function getFirebaseApp() {
-  if (!getApps().length) {
-    return initializeApp(firebaseConfig);
-  }
-  return getApp();
-}
 
 let cachedAuth: Auth | null = null;
 
 export function getFirebaseAuth(): Auth | null {
+  if (!isFirebaseConfigured()) return null;
   if (cachedAuth) return cachedAuth;
   try {
     const app = getFirebaseApp();
+    if (!app) return null;
     cachedAuth = getAuth(app);
     return cachedAuth;
   } catch (err) {

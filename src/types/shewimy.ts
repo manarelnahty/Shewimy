@@ -8,24 +8,35 @@ import { Timestamp } from "firebase/firestore";
  */
 
 // Section 2: Taxonomy & Main Sections
-export type MainSection =
+export type StandardMainSection =
   | "kitchens"
   | "dressing_rooms"
   | "furniture"
   | "decor"
   | "windows";
 
-export const MAIN_SECTIONS_INFO: Record<
-  MainSection,
-  {
-    key: MainSection;
-    labelAr: string;
-    sharePercent: string;
-    subCategories: string[];
-    materials: string[];
-    features: string[];
-  }
-> = {
+export type MainSection = StandardMainSection | (string & {});
+
+export interface CategoryInfo {
+  key: string;
+  labelAr: string;
+  sharePercent?: string;
+  subCategories?: string[];
+  materials?: string[];
+  features?: string[];
+  isCustom?: boolean;
+}
+
+export interface MaterialItem {
+  id: string;
+  name: string;
+  origin?: string;
+  description?: string;
+  isCustom?: boolean;
+  order?: number;
+}
+
+export const MAIN_SECTIONS_INFO: Record<string, CategoryInfo> = {
   kitchens: {
     key: "kitchens",
     labelAr: "المطابخ الحديثة والميكانزم",
@@ -339,15 +350,15 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     {
       step: "04",
       title: "شهادة ضمان 15 سنة",
-      desc: "تسليم وثيقة الضمان المعتمدة مع خدمة ما بعد البيع ومتابعة صيانة دورية مجانية للمفصلات والأسطح.",
+      desc: "تسليم وثيقة الضمان المعتمدة مع خدمة ما بعد البيع ومتابعة صيانة دورية للمفصلات والأسطح.",
     },
   ],
 
   // 5. Consultation & Booking CTA
-  ctaBadge: "استشارة معمارية مجانية",
+  ctaBadge: "استشارة معمارية",
   ctaHeadline: "جاهز لتصميم مطبخ أحلامك؟",
-  ctaSubheadline: "احصل على استشارة هندسية ومعاينة ثلاثية الأبعاد 3D مجاناً لمساحتك بمساعدة نخبة مهندسي التصميم المعماري في مطابخ الشويمي.",
-  ctaPrimaryBtnText: "احجز معاينتك المجانية الآن",
+  ctaSubheadline: "احصل على استشارة هندسية ومعاينة ثلاثية الأبعاد 3D لمساحتك بمساعدة نخبة مهندسي التصميم المعماري في مطابخ الشويمي.",
+  ctaPrimaryBtnText: "احجز معاينتك الآن",
   ctaWhatsappBtnText: "محادثة واتساب مباشرة",
   ctaBgImage: "",
 
@@ -360,3 +371,57 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   // 7. Security & Admin Authentication
   adminEmail: "admin@shewimy.com",
 };
+
+// ==========================================
+// CART & CASH-ONLY ORDERS SPECIFICATION
+// ==========================================
+
+export interface CartItem {
+  id: string; // Product ID
+  code: string; // e.g. "SHW-204"
+  name: string; // e.g. "مطبخ بولاك رمادي مات"
+  slug: string;
+  mainSection: MainSection;
+  categoryLabel?: string;
+  coverImage: string;
+  price: number; // Base unit price in EGP (0 for whatsapp_quote)
+  originalPrice?: number | null; // السعر قبل الخصم (اختياري)
+  priceDisplay: string;
+  pricingMode: "whatsapp_quote" | "per_meter" | "fixed_price";
+  selectedMaterial?: string;
+  customDimensions?: string;
+  quantity: number;
+  warrantyYears: number;
+}
+
+export type OrderStatus =
+  | "new"             // جديد بانتظار التواصل
+  | "contacted"       // تم التواصل هاتفياً / واتساب
+  | "visit_scheduled" // تم تحديد موعد المعاينة والرفع الهندسي
+  | "contracted"      // تم توقيع العقد وسداد العربون نقداً
+  | "completed"       // تم التصنيع والتركيب الفندقي
+  | "cancelled";      // ملغي
+
+export interface CustomerOrder {
+  id: string;
+  orderNumber: string; // Human readable code e.g. "#SHW-8491"
+  clientName: string;
+  phoneNumber: string;
+  alternatePhone?: string;
+  city: string;
+  addressDetails: string;
+  selectedBranch: BranchId;
+  branchName: string;
+  branchWhatsapp: string;
+  paymentMethod: "cash_on_contract"; // Strictly Cash Only
+  items: CartItem[];
+  totalItemsCount: number;
+  estimatedTotal: number;
+  customerNotes?: string;
+  priceDisclaimerAcknowledged: boolean;
+  status: OrderStatus;
+  statusNotes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+

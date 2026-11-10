@@ -1,0 +1,126 @@
+[
+  {
+    "id": "ord_1794325575989_l3cxj",
+    "orderNumber": "#SHW-7883",
+    "clientName": "منار",
+    "phoneNumber": "01033043005",
+    "alternatePhone": "",
+    "city": "المنصورة / الدقهلية",
+    "addressDetails": "test",
+    "selectedBranch": "mansoura",
+    "branchName": "فرع المنصورة (صالة عرض رئيسية)",
+    "branchWhatsapp": "201005557109",
+    "paymentMethod": "cash_on_contract",
+    "items": [
+      {
+        "id": "prod-3",
+        "code": "CLS-402",
+        "name": "مطبخ خشب طبيعي أرو أبيض نيوكلاسيك",
+        "title": "مطبخ خشب طبيعي أرو أبيض نيوكلاسيك",
+        "slug": "classic-oak-white-polyurethane",
+        "subtitle": "تصاميم كلاسيك فاخرة",
+        "category": "kitchens",
+        "mainSection": "kitchens",
+        "categoryLabel": "مطابخ كلاسيك ونيوكلاسيك",
+        "subCategory": "نيو كلاسيك خشب أرو",
+        "style": "neoclassic",
+        "styleLabel": "نيو كلاسيك",
+        "material": "massive_oak",
+        "materialLabel": "خشب أرو ماسيف طبيعي",
+        "materials": [
+          "خشب زان أحمر روماني مجفف",
+          "شاسيه كونتر أوروبي",
+          "دهانات بولي يوريثان"
+        ],
+        "features": [
+          "ميكانزم إيطالي",
+          "مفصلات ومجاري هيدروليك بلوم",
+          "حفر ليزر دقيق"
+        ],
+        "badgePrimary": "نيو كلاسيك",
+        "badgeSecondary": "خشب أرو ماسيف",
+        "branches": [
+          "samanoud",
+          "mahalla"
+        ],
+        "price": 160000,
+        "basePrice": 160000,
+        "pricingMode": "whatsapp_quote",
+        "status": "published",
+        "priceDisplay": "160,000 ج.م",
+        "priceNote": "سعر النموذج المتكامل للأخشاب الطبيعية",
+        "description": "فخامة القصور الملكية بلمسة نيوكلاسيك متطورة، أخشاب أرو روماني مجفف بدهانات أوف وايت مطعمة بمقابض نحاسية أصلية.",
+        "specs": [
+          "أرو روماني صلب",
+          "دهانات بولي يوريثان",
+          "زجاج بلجيكي عاكس",
+          "تجميع زوايا ليزر"
+        ],
+        "imageUrl": "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80",
+        "coverImage": "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80",
+        "gallery": [
+          "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "galleryImages": [
+          "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "dimensions": "مساحة 4.5م × 3.5م مع دولاب بيلت إن وبوفيه زجاجي",
+        "hardware": "مفصلات بلوم نمساوي مخفية + مقابض نحاس أثري معتق",
+        "finish": "دهانات بولي يوريثان إيطالي ناصعة الأوف وايت لا تتغير مع الزمن",
+        "chassis": "خشب أرو ماسيف روماني طبيعي 100% مجفف في أفران حرارية",
+        "leadTime": "من 35 إلى 45 يوم عمل لدقة الصنعة والحفر النيوكلاسيكي",
+        "featured": true,
+        "isFeatured": true,
+        "warrantyYears": 15
+      }
+    ],
+    "totalItemsCount": 1,
+    "estimatedTotal": 160000,
+    "customerNotes": "",
+    "priceDisclaimerAcknowledged": true,
+    "status": "new",
+    "statusNotes": "طلب جديد وارد من الموقع الإلكتروني بانتظار اتصال خدمة العملاء.",
+    "createdAt": "2026-11-10T15:46:15.988Z",
+    "updatedAt": "2026-11-10T15:46:15.988Z"
+  },
+  {
+    "id": "ord-sample-1",
+    "orderNumber": "#SHW-8192",
+    "clientName": "م. أحمد الشربيني",
+    "phoneNumber": "01012345678",
+    "alternatePhone": "01234567890",
+    "city": "الدقهلية - المنصورة",
+    "addressDetails": "شارع المشاية السفلية، برج النور، الدور السادس",
+    "selectedBranch": "mansoura",
+    "branchName": "فرع المنصورة (صالة العرض الرئيسية)",
+    "branchWhatsapp": "+201005557109",
+    "paymentMethod": "cash_on_contract",
+    "items": [
+      {
+        "id": "prod-1",
+        "code": "SHW-204",
+        "name": "مطبخ بولاك رمادي مات - ميكانزم بلوم",
+        "slug": "pollak-island-italian",
+        "mainSection": "kitchens",
+        "categoryLabel": "المطابخ الحديثة والميكانزم",
+        "coverImage": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
+        "price": 95000,
+        "priceDisplay": "95,000 ج.م",
+        "pricingMode": "per_meter",
+        "selectedMaterial": "بولي لاك تركي + شاسيه كونتر أوروبي",
+        "customDimensions": "مساحة تقريبية 3.8م × 2.6م",
+        "quantity": 1,
+        "warrantyYears": 15
+      }
+    ],
+    "totalItemsCount": 1,
+    "estimatedTotal": 95000,
+    "customerNotes": "الوحدة تحت التشطيب النهائي، نرجو التنسيق للمعاينة يوم السبت عصراً.",
+    "priceDisclaimerAcknowledged": true,
+    "status": "new",
+    "statusNotes": "تم استلام الطلب من الموقع بانتظار اتصال خدمة العملاء لتحديد الموعد.",
+    "createdAt": "2026-11-10T08:30:00.000Z",
+    "updatedAt": "2026-11-10T08:30:00.000Z"
+  }
+]

@@ -16,4 +16,6 @@ export {
   useAdminAuth,
   useAdminProducts,
   useAdminRequests,
+  useCategories,
+  useMaterials,
 } from "./hooks";

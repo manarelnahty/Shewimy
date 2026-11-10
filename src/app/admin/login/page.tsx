@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Lock, Mail, ArrowRight, Loader2, AlertCircle, ShieldCheck } from "lucide-react";
+import { Lock, Mail, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { useAdminAuth } from "@/lib/firebase/hooks";
 
 export default function AdminLoginPage() {
@@ -61,15 +61,10 @@ export default function AdminLoginPage() {
             لوحة الإدارة الذكية
           </h1>
           <p className="text-xs text-[#5e6368] mt-1.5 font-medium">
-            مطابخ وديكورات الشويمي • منصة التحكم السحابية الآمنة
+            أثاث ومطابخ الشويمي • منصة التحكم السحابية الآمنة
           </p>
         </div>
 
-        {/* Secure Environment Badge */}
-        <div className="mb-5 py-2 px-3 rounded-xl bg-[#1F5E4B]/5 border border-[#1F5E4B]/15 text-[#1F5E4B] text-[11px] font-semibold flex items-center justify-center gap-2">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#1F5E4B] shrink-0" />
-          <span>نظام مصادقة مشفر ومحمي (Firebase Auth & Secure API)</span>
-        </div>
 
         {/* Error Alert */}
         {error && (

@@ -16,6 +16,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useAdminRequests } from "@/lib/firebase/hooks";
+import { useBranches } from "@/lib/firebase/hooks";
 import {
   updateInspectionRequestStatus,
   deleteInspectionRequest,
@@ -24,6 +25,7 @@ import { InspectionRequest, BranchId } from "@/types/shewimy";
 
 export default function AdminRequestsPage() {
   const { requests, loading, error, refetch } = useAdminRequests();
+  const { branches } = useBranches();
 
   const [branchFilter, setBranchFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -68,17 +70,9 @@ export default function AdminRequestsPage() {
     setTimeout(() => setNotice(null), 3000);
   };
 
-  const getBranchLabel = (id: BranchId) => {
-    switch (id) {
-      case "mansoura":
-        return "فرع المنصورة";
-      case "mahalla":
-        return "فرع المحلة الكبرى";
-      case "samanoud":
-        return "فرع سمنود";
-      default:
-        return "الفرع الرئيسي";
-    }
+  const getBranchLabel = (id: BranchId): string => {
+    const found = branches.find((b) => b.id === id);
+    return found?.name ?? id;
   };
 
   const getServiceLabel = (srv: string) => {

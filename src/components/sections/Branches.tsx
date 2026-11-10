@@ -9,13 +9,16 @@ import {
   Clock,
   Calendar,
   MessageCircle,
-  Navigation,
 } from "lucide-react";
+import { motion, useReducedMotion, Variants } from "framer-motion";
 import { useBranches } from "@/lib/firebase";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 
+const EASE_CUBIC = [0.16, 1, 0.3, 1] as const;
+
 export function Branches() {
-  const { branches, loading } = useBranches();
+  const { branches } = useBranches();
+  const shouldReduceMotion = useReducedMotion();
 
   const getBranchIcon = (id: string) => {
     switch (id) {
@@ -27,6 +30,28 @@ export function Branches() {
       default:
         return <Factory className="w-5 h-5 text-secondary" />;
     }
+  };
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.12,
+      },
+    },
+  };
+
+  const cardVariants: Variants = {
+    hidden: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.5,
+        ease: EASE_CUBIC,
+      },
+    },
   };
 
   return (
@@ -52,11 +77,26 @@ export function Branches() {
           </div>
         </div>
 
-        {/* 3 Focused Branch Cards Grid (Firestore Dynamic Collection) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* 3 Focused Branch Cards Grid with Staggered Entrance & Micro-Interactions */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+        >
           {branches.map((branch) => (
-            <article
+            <motion.article
               key={branch.id}
+              variants={cardVariants}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      y: -5,
+                      transition: { duration: 0.25, ease: "easeOut" },
+                    }
+              }
               className="bg-white p-6 sm:p-7 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-charcoal/10 hover:border-secondary/30 space-y-6"
             >
               <div className="space-y-5">
@@ -66,7 +106,7 @@ export function Branches() {
                     <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
                     <span>{branch.badge}</span>
                   </span>
-                  <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shadow-2xs border border-charcoal/5">
+                  <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shadow-2xs border border-charcoal/5 transition-transform duration-300 group-hover:scale-105">
                     {getBranchIcon(branch.id)}
                   </div>
                 </div>
@@ -109,7 +149,7 @@ export function Branches() {
                   </div>
                 </div>
 
-                {/* Direct Phone Numbers List */}
+                {/* Direct Phone Numbers List with Gentle WhatsApp Pulse */}
                 <div className="space-y-2 pt-1">
                   <span className="text-[11px] font-bold text-charcoal/60 uppercase tracking-wider block">
                     أرقام التواصل المباشرة
@@ -143,7 +183,7 @@ export function Branches() {
                           <div className="flex items-center gap-1.5 shrink-0">
                             <a
                               href={`tel:${telNumber}`}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white text-charcoal/80 hover:text-primary hover:bg-charcoal/5 border border-charcoal/10 text-[11px] font-semibold transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white text-charcoal/80 hover:text-primary hover:bg-charcoal/5 border border-charcoal/10 text-[11px] font-semibold transition-all shadow-2xs hover:-translate-y-0.5 active:translate-y-0"
                             >
                               <Phone className="w-3 h-3 text-charcoal/60" />
                               <span>اتصال</span>
@@ -152,9 +192,9 @@ export function Branches() {
                               href={waUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#25D366]/10 text-[#128C7E] hover:bg-[#25D366] hover:text-white transition-colors text-[11px] font-semibold shadow-2xs"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#25D366]/10 text-[#128C7E] hover:bg-[#25D366] hover:text-white transition-all text-[11px] font-semibold shadow-2xs hover:-translate-y-0.5 active:translate-y-0 group/wa"
                             >
-                              <MessageCircle className="w-3 h-3" />
+                              <MessageCircle className="w-3.5 h-3.5 text-[#25D366] group-hover/wa:text-white animate-pulse-subtle shrink-0" />
                               <span>واتساب</span>
                             </a>
                           </div>
@@ -164,32 +204,9 @@ export function Branches() {
                   </div>
                 </div>
               </div>
-
-              {/* Bottom Card Actions */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-4 border-t border-charcoal/10 mt-2">
-                <a
-                  className="inline-flex items-center justify-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-bold py-2.5 px-3 rounded-xl shadow-sm transition-all duration-200 cursor-pointer"
-                  href={generateWhatsAppLink(branch.whatsappNumber, branch.name)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MessageCircle className="w-4 h-4 shrink-0 text-white" />
-                  <span>واتساب الفرع</span>
-                </a>
-
-                <a
-                  className="inline-flex items-center justify-center gap-2 bg-surface-container-high/60 hover:bg-surface-container-high text-primary hover:text-secondary text-xs sm:text-sm font-bold py-2.5 px-3 rounded-xl border border-charcoal/10 transition-all duration-200"
-                  href={branch.googleMapsUrl}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <Navigation className="w-4 h-4 shrink-0 text-secondary" />
-                  <span>الموقع بالخريطة</span>
-                </a>
-              </div>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

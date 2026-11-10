@@ -10,6 +10,7 @@ interface ConsultationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   defaultBranch?: BranchId;
+  initialNotes?: string;
 }
 
 const SERVICE_OPTIONS: {
@@ -43,6 +44,7 @@ export function ConsultationDrawer({
   isOpen,
   onClose,
   defaultBranch = "mansoura",
+  initialNotes = "",
 }: ConsultationDrawerProps) {
   const { branches } = useBranches();
   const [submitted, setSubmitted] = useState(false);
@@ -56,8 +58,18 @@ export function ConsultationDrawer({
       | "dressing_inspection"
       | "full_home_decor"
       | "other",
-    customerNotes: "",
+    customerNotes: initialNotes,
   });
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setFormData((prev) => ({
+        ...prev,
+        branch: defaultBranch || prev.branch,
+        customerNotes: initialNotes || prev.customerNotes,
+      }));
+    }
+  }, [isOpen, defaultBranch, initialNotes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,7 +330,7 @@ export function ConsultationDrawer({
                 </span>
               </button>
               <p className="text-[11px] text-center text-charcoal/50 mt-2">
-                * لن يتم إلزامك بأي رسوم شراء أو حجز، المعاينة والاستشارة الهندسية مبدئية ومجانية.
+                * لن يتم إلزامك بأي رسوم شراء أو حجز، المعاينة والاستشارة الهندسية مبدئية للتنسيق الهندسي.
               </p>
             </div>
           </form>

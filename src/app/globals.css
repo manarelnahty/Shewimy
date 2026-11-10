@@ -83,3 +83,51 @@ body {
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
+
+/* Luxury micro-interaction animations (Respects prefers-reduced-motion) */
+@keyframes pulse-subtle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(37, 211, 102, 0);
+  }
+}
+
+@keyframes glow-emerald {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(31, 94, 75, 0.25);
+  }
+  50% {
+    box-shadow: 0 6px 18px rgba(31, 94, 75, 0.45);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-glow-emerald {
+  animation: glow-emerald 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-subtle,
+  .animate-glow-pulse,
+  .animate-glow-emerald {
+    animation: none !important;
+  }
+}

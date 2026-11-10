@@ -4,7 +4,10 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, User, Menu, X } from "lucide-react";
+import { Phone, User, Menu, X, ShoppingBag } from "lucide-react";
+import { ConsultationDrawer } from "@/components/common/ConsultationDrawer";
+import { useCart } from "@/lib/cart";
+import { useBranches } from "@/lib/firebase";
 
 interface HeaderProps {
   onOpenConsultation?: () => void;
@@ -12,10 +15,36 @@ interface HeaderProps {
 
 export function Header({ onOpenConsultation }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [internalConsultationOpen, setInternalConsultationOpen] = useState(false);
   const pathname = usePathname();
+  const { openCart, totalCount } = useCart();
+  const { branches } = useBranches();
+  const primaryPhone = branches[0]?.phones?.[0] ?? "201005557109";
 
   const isProductsActive = pathname === "/products";
   const isHomeActive = pathname === "/";
+
+  const handleOpenConsultation = () => {
+    if (onOpenConsultation) {
+      onOpenConsultation();
+      return;
+    }
+
+    let handled = false;
+    if (typeof window !== "undefined") {
+      const event = new CustomEvent("shewimy_open_consultation", {
+        cancelable: true,
+      });
+      window.dispatchEvent(event);
+      if (event.defaultPrevented) {
+        handled = true;
+      }
+    }
+
+    if (!handled) {
+      setInternalConsultationOpen(true);
+    }
+  };
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
@@ -90,17 +119,33 @@ export function Header({ onOpenConsultation }: HeaderProps) {
 
         {/* CTA & Actions */}
         <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+          {/* Cart Drawer Trigger */}
           <button
             type="button"
-            onClick={onOpenConsultation}
-            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 px-5 rounded-lg shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer active:translate-y-0.5 whitespace-nowrap"
+            onClick={openCart}
+            aria-label="سلة الطلبات والموديلات"
+            className="relative p-2 sm:p-2.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-[#1b1c1a] hover:text-[#1F5E4B] transition-all cursor-pointer border border-stone-200/80 flex items-center justify-center group active:scale-95"
+            title="سلة الطلبات والموديلات"
           >
-            <Phone className="w-4 h-4 shrink-0" />
-            <span>احجز معاينة مجانية</span>
+            <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:scale-110" />
+            {totalCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-[#855224] text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-in zoom-in font-readex">
+                {totalCount > 9 ? "9+" : totalCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleOpenConsultation}
+            className="inline-flex items-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 px-5 rounded-lg shadow-[0_4px_12px_rgba(31,94,75,0.2)] transition-all cursor-pointer active:translate-y-0.5 whitespace-nowrap animate-glow-emerald hover:-translate-y-0.5"
+          >
+            <Phone className="w-4 h-4 shrink-0 animate-pulse-subtle" />
+            <span>احجز معاينة</span>
           </button>
 
           <a
-            href="tel:+201005557109"
+            href={`tel:+${primaryPhone}`}
             aria-label="اتصال بالفرع"
             className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"
           >
@@ -165,7 +210,48 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           >
             فروعنا
           </Link>
+
+          <div className="pt-2 border-t border-surface-container mt-2 space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openCart();
+              }}
+              className="w-full inline-flex items-center justify-between bg-stone-100 hover:bg-stone-200 text-[#1b1c1a] text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-lg transition-all"
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="w-4 h-4 text-[#1F5E4B]" />
+                <span>سلة الطلبات والموديلات</span>
+              </div>
+              {totalCount > 0 && (
+                <span className="bg-[#855224] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {totalCount} موديل
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleOpenConsultation();
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-lg shadow-sm transition-all"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span>احجز معاينة</span>
+            </button>
+          </div>
         </div>
+      )}
+
+      {/* Internal Fallback Consultation Drawer (Active when no consumer catches the event) */}
+      {internalConsultationOpen && (
+        <ConsultationDrawer
+          isOpen={internalConsultationOpen}
+          onClose={() => setInternalConsultationOpen(false)}
+        />
       )}
     </header>
   );

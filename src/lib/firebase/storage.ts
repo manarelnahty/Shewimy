@@ -5,22 +5,16 @@ import {
   getDownloadURL,
   FirebaseStorage,
 } from "firebase/storage";
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { firebaseConfig, isFirebaseConfigured } from "./config";
-
-function getFirebaseApp() {
-  if (!getApps().length) {
-    return initializeApp(firebaseConfig);
-  }
-  return getApp();
-}
+import { firebaseConfig, isFirebaseConfigured, getFirebaseApp } from "./config";
 
 let cachedStorage: FirebaseStorage | null = null;
 
 export function getFirebaseStorage(): FirebaseStorage | null {
+  if (!isFirebaseConfigured()) return null;
   if (cachedStorage) return cachedStorage;
   try {
     const app = getFirebaseApp();
+    if (!app) return null;
     cachedStorage = getStorage(app);
     return cachedStorage;
   } catch (err) {

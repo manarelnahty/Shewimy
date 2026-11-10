@@ -17,8 +17,10 @@ import {
   Layers,
   Image as ImageIcon,
   CheckCircle2,
+  Tag,
+  SlidersHorizontal,
 } from "lucide-react";
-import { useAdminProducts } from "@/lib/firebase/hooks";
+import { useAdminProducts, useCategories } from "@/lib/firebase/hooks";
 import {
   createProduct,
   updateProduct,
@@ -39,6 +41,7 @@ interface ProductFormData {
   materialsText: string;
   hardware: string;
   price: number;
+  originalPrice: number | null;
   priceDisplay: string;
   pricingMode: "whatsapp_quote" | "per_meter" | "fixed_price";
   priceNote: string;
@@ -59,6 +62,7 @@ const initialForm: ProductFormData = {
   materialsText: "شاسيه كونتر أوروبي، لزق ألماني PUR، مفصلات بلوم",
   hardware: "مفصلات ومجاري هيدروليك بلوم نمساوي أصلي",
   price: 95000,
+  originalPrice: null,
   priceDisplay: "طلب مقايسة وتسعير",
   pricingMode: "whatsapp_quote",
   priceNote: "السعر يشمل الرفع الهندسي، التصنيع، والتركيب الفندقي",
@@ -75,6 +79,7 @@ const initialForm: ProductFormData = {
 
 export default function AdminProductsPage() {
   const { products, loading, refetch } = useAdminProducts();
+  const { categories, addCategory, updateCategory, deleteCategory } = useCategories();
 
   const [activeSection, setActiveSection] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -85,6 +90,73 @@ export default function AdminProductsPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [newGalleryUrlInput, setNewGalleryUrlInput] = useState("");
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Category modal state
+  const [catModalOpen, setCatModalOpen] = useState(false);
+  const [catModalMode, setCatModalMode] = useState<"add" | "list">("add");
+  const [catEditKey, setCatEditKey] = useState<string | null>(null);
+  const [catFormLabelAr, setCatFormLabelAr] = useState("");
+  const [catFormSharePercent, setCatFormSharePercent] = useState("");
+  const [catSaving, setCatSaving] = useState(false);
+  const [catMessage, setCatMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const handleOpenCatModal = (mode: "add" | "list") => {
+    setCatModalMode(mode);
+    setCatEditKey(null);
+    setCatFormLabelAr("");
+    setCatFormSharePercent("");
+    setCatMessage(null);
+    setCatModalOpen(true);
+  };
+
+  const handleSaveCategory = async () => {
+    if (!catFormLabelAr.trim()) {
+      setCatMessage({ type: "error", text: "يرجى كتابة اسم القسم بالعربية" });
+      return;
+    }
+    setCatSaving(true);
+    setCatMessage(null);
+    try {
+      if (catEditKey) {
+        const res = await updateCategory(catEditKey, {
+          labelAr: catFormLabelAr.trim(),
+          sharePercent: catFormSharePercent.trim() || undefined,
+        });
+        if (res.success) {
+          setCatMessage({ type: "success", text: "تم تحديث القسم بنجاح!" });
+          setCatEditKey(null);
+          setCatFormLabelAr("");
+          setCatFormSharePercent("");
+        } else {
+          setCatMessage({ type: "error", text: res.error || "فشل تحديث القسم" });
+        }
+      } else {
+        const res = await addCategory({
+          labelAr: catFormLabelAr.trim(),
+          sharePercent: catFormSharePercent.trim() || undefined,
+        });
+        if (res.success) {
+          setCatMessage({ type: "success", text: "تمت إضافة القسم بنجاح!" });
+          setCatFormLabelAr("");
+          setCatFormSharePercent("");
+        } else {
+          setCatMessage({ type: "error", text: res.error || "فشل إضافة القسم" });
+        }
+      }
+    } finally {
+      setCatSaving(false);
+    }
+  };
+
+  const handleDeleteCategory = async (key: string, label: string) => {
+    if (!confirm(`هل أنت متأكد من حذف قسم "${label}"؟`)) return;
+    const res = await deleteCategory(key);
+    if (res.success) {
+      setCatMessage({ type: "success", text: `تم حذف القسم "${label}"` });
+    } else {
+      setCatMessage({ type: "error", text: res.error || "فشل حذف القسم" });
+    }
+  };
 
   // Filter products
   const filteredProducts = products.filter((p) => {
@@ -131,6 +203,7 @@ export default function AdminProductsPage() {
       materialsText: product.materials.join("، "),
       hardware: product.hardware || "مفصلات ومجاري هيدروليك بلوم",
       price: product.price || 0,
+      originalPrice: product.originalPrice ?? null,
       priceDisplay: product.priceDisplay || "",
       pricingMode: product.pricingMode || "whatsapp_quote",
       priceNote: product.priceNote || "",
@@ -281,6 +354,9 @@ export default function AdminProductsPage() {
         hardware: formData.hardware,
         price: Number(formData.price),
         basePrice: Number(formData.price),
+        originalPrice: formData.originalPrice != null && formData.originalPrice > 0
+          ? Number(formData.originalPrice)
+          : null,
         priceDisplay: formData.priceDisplay,
         pricingMode: formData.pricingMode,
         priceNote: formData.priceNote,
@@ -409,19 +485,19 @@ export default function AdminProductsPage() {
             >
               الكل ({products.length})
             </button>
-            {(Object.keys(MAIN_SECTIONS_INFO) as MainSection[]).map((secKey) => (
+            {categories.map((cat) => (
               <button
-                key={secKey}
+                key={cat.key}
                 type="button"
-                onClick={() => setActiveSection(secKey)}
+                onClick={() => setActiveSection(cat.key)}
                 className={`text-xs px-3.5 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                  activeSection === secKey
+                  activeSection === cat.key
                     ? "bg-[#1F5E4B] text-white shadow-xs"
                     : "text-[#5e6368] hover:text-[#1b1c1a] hover:bg-white"
                 }`}
               >
-                {MAIN_SECTIONS_INFO[secKey].labelAr.split(" ")[0]} (
-                {products.filter((p) => p.mainSection === secKey).length})
+                {cat.labelAr.split(" ")[0]} (
+                {products.filter((p) => p.mainSection === cat.key).length})
               </button>
             ))}
           </div>
@@ -693,9 +769,19 @@ export default function AdminProductsPage() {
 
                   {/* Main Section */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
-                      القسم الرئيسي (DRD) *
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-semibold text-[#1b1c1a] font-readex">
+                        القسم الرئيسي *
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenCatModal("add")}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#1F5E4B] hover:text-[#164638] hover:underline cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>إضافة قسم</span>
+                      </button>
+                    </div>
                     <select
                       value={formData.mainSection}
                       onChange={(e) =>
@@ -706,9 +792,9 @@ export default function AdminProductsPage() {
                       }
                       className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                     >
-                      {(Object.keys(MAIN_SECTIONS_INFO) as MainSection[]).map((k) => (
-                        <option key={k} value={k}>
-                          {MAIN_SECTIONS_INFO[k].labelAr} ({MAIN_SECTIONS_INFO[k].sharePercent})
+                      {categories.map((c) => (
+                        <option key={c.key} value={c.key}>
+                          {c.labelAr} {c.sharePercent ? `(${c.sharePercent})` : ""}
                         </option>
                       ))}
                     </select>
@@ -781,6 +867,24 @@ export default function AdminProductsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, price: Number(e.target.value) })
                       }
+                      className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
+                      السعر قبل الخصم (اختياري)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.originalPrice ?? ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          originalPrice: e.target.value ? Number(e.target.value) : null,
+                        })
+                      }
+                      placeholder="اتركه فارغاً إذا لا يوجد خصم"
                       className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
                     />
                   </div>
@@ -1086,6 +1190,132 @@ export default function AdminProductsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Category Management Modal */}
+      {catModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white border border-[#e7e5e0] rounded-2xl w-full max-w-lg p-6 shadow-2xl relative text-[#1b1c1a]">
+            <div className="flex items-center justify-between border-b border-[#e7e5e0] pb-4 mb-5">
+              <div>
+                <h2 className="text-base font-bold text-[#1b1c1a] font-readex flex items-center gap-2">
+                  <Tag className="w-4 h-4 text-[#855224]" />
+                  {catModalMode === "add" ? "إضافة قسم جديد" : "إدارة الأقسام"}
+                </h2>
+                <p className="text-xs text-[#5e6368] mt-0.5">
+                  الأقسام تظهر في فلاتر الموقع ولوحة إدارة المنتجات
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setCatModalOpen(false); setCatMessage(null); }}
+                className="text-[#5e6368] hover:text-[#1b1c1a] p-1 rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {catMessage && (
+              <div className={`mb-4 p-3 rounded-xl text-xs flex items-center gap-2 ${
+                catMessage.type === "success"
+                  ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                  : "bg-rose-50 border border-rose-200 text-rose-800"
+              }`}>
+                {catMessage.type === "success"
+                  ? <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  : <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />}
+                <span>{catMessage.text}</span>
+              </div>
+            )}
+
+            {/* Add / Edit Form */}
+            <div className="space-y-3 mb-5">
+              <div className="flex items-end gap-2">
+                <div className="flex-1">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
+                    {catEditKey ? "تعديل اسم القسم" : "اسم القسم بالعربية"}
+                  </label>
+                  <input
+                    type="text"
+                    value={catFormLabelAr}
+                    onChange={(e) => setCatFormLabelAr(e.target.value)}
+                    placeholder="مثال: مطابخ حديثة"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3.5 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224] focus:ring-1 focus:ring-[#855224]"
+                  />
+                </div>
+                <div className="w-24">
+                  <label className="block text-xs font-semibold text-[#1b1c1a] mb-1 font-readex">
+                    النسبة %
+                  </label>
+                  <input
+                    type="text"
+                    value={catFormSharePercent}
+                    onChange={(e) => setCatFormSharePercent(e.target.value)}
+                    placeholder="60%"
+                    className="w-full bg-[#fbf9f5] border border-[#d6d3cd] rounded-xl px-3 py-2.5 text-xs text-[#1b1c1a] focus:outline-none focus:border-[#855224]"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveCategory}
+                  disabled={catSaving}
+                  className="inline-flex items-center gap-1.5 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                >
+                  {catSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  <span>{catEditKey ? "تحديث" : "إضافة"}</span>
+                </button>
+              </div>
+              {catEditKey && (
+                <button
+                  type="button"
+                  onClick={() => { setCatEditKey(null); setCatFormLabelAr(""); setCatFormSharePercent(""); }}
+                  className="text-xs text-[#5e6368] hover:underline"
+                >
+                  إلغاء التعديل
+                </button>
+              )}
+            </div>
+
+            {/* Existing Categories List */}
+            <div className="border-t border-[#e7e5e0] pt-4 space-y-2">
+              <p className="text-xs font-semibold text-[#5e6368] mb-2">الأقسام الحالية ({categories.length})</p>
+              {categories.map((cat) => (
+                <div key={cat.key} className="flex items-center justify-between bg-[#fbf9f5] border border-[#e7e5e0] rounded-xl px-3.5 py-2">
+                  <div>
+                    <span className="text-xs font-semibold text-[#1b1c1a]">{cat.labelAr}</span>
+                    {cat.sharePercent && (
+                      <span className="mr-2 text-[10px] text-[#855224] font-mono">({cat.sharePercent})</span>
+                    )}
+                    <span className="mr-2 text-[10px] text-[#9ca3af] font-mono">{cat.key}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCatEditKey(cat.key);
+                        setCatFormLabelAr(cat.labelAr);
+                        setCatFormSharePercent(cat.sharePercent || "");
+                        setCatModalMode("add");
+                      }}
+                      className="p-1.5 rounded-lg bg-white border border-[#e7e5e0] text-[#5e6368] hover:text-[#1b1c1a] transition-colors cursor-pointer"
+                      title="تعديل"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCategory(cat.key, cat.labelAr)}
+                      className="p-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
+                      title="حذف"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

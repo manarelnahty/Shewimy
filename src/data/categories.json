@@ -1,0 +1,60 @@
+[
+  {
+    "key": "kitchens",
+    "labelAr": "المطابخ الحديثة والميكانزم",
+    "sharePercent": "60%",
+    "isCustom": false,
+    "subCategories": [
+      "بولاك مودرن",
+      "نيو كلاسيك خشب أرو",
+      "عصري HPL",
+      "ألمنيوم حديث / كلادينج",
+      "مطابخ آيلاند (Island)"
+    ]
+  },
+  {
+    "key": "dressing_rooms",
+    "labelAr": "الدريسينج ووحدات التخزين",
+    "sharePercent": "15%",
+    "isCustom": false,
+    "subCategories": [
+      "غرف ملابس متكاملة (Walk-in)",
+      "دواليب زجاج بروفايل إيطالي",
+      "وحدات تخزين مدمجة للمساحات المحدودة"
+    ]
+  },
+  {
+    "key": "furniture",
+    "labelAr": "الأثاث المنزلي الراقي",
+    "sharePercent": "10%",
+    "isCustom": false,
+    "subCategories": [
+      "غرف نوم رئيسية",
+      "غرف سفرة مودرن",
+      "طاولات طعام خشب طبيعي",
+      "صالونات وأنتريهات نيو كلاسيك"
+    ]
+  },
+  {
+    "key": "decor",
+    "labelAr": "الديكورات وتجاليد الحوائط",
+    "sharePercent": "10%",
+    "isCustom": false,
+    "subCategories": [
+      "بانوهات بديل خشب ورخام",
+      "وحدات تلفزيون جدارية (TV Units)",
+      "بارتشن خشب فواصل صالات"
+    ]
+  },
+  {
+    "key": "windows",
+    "labelAr": "الشبابيك والقطاعات",
+    "sharePercent": "5%",
+    "isCustom": false,
+    "subCategories": [
+      "شبابيك بي في سي (UPVC)",
+      "قطاعات ألمنيوم عازل",
+      "شبابيك خشب شتر مدمج"
+    ]
+  }
+]

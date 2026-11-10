@@ -11,7 +11,11 @@ import {
   SiteSettings,
   DEFAULT_SITE_SETTINGS,
   InspectionRequest,
+  CategoryInfo,
+  MaterialItem,
 } from "@/types/shewimy";
+import defaultCategoriesData from "@/data/categories.json";
+import defaultMaterialsData from "@/data/materials.json";
 import {
   fetchProducts,
   fetchBranches,
@@ -557,5 +561,240 @@ export function useAdminRequests() {
   }, [loadRequests]);
 
   return { requests, loading, error, refetch: loadRequests };
+}
+
+/**
+ * Hook for dynamic categories registry (DRD defaults + custom categories added by admin).
+ */
+export function useCategories() {
+  const [categories, setCategories] = useState<CategoryInfo[]>(
+    () => defaultCategoriesData as CategoryInfo[]
+  );
+  const [loading, setLoading] = useState(false);
+
+  const loadCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/categories?_t=${Date.now()}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.categories)) {
+          setCategories(data.categories);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load categories:", e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const addCategory = async (newCat: {
+    key?: string;
+    labelAr: string;
+    sharePercent?: string;
+  }): Promise<{ success: boolean; category?: CategoryInfo; error?: string }> => {
+    try {
+      const res = await fetch("/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCat),
+      });
+      const data = await res.json();
+      if (data.success && data.category) {
+        setCategories((prev) => {
+          const exists = prev.some((c) => c.key === data.category.key);
+          if (exists) {
+            return prev.map((c) => (c.key === data.category.key ? data.category : c));
+          }
+          return [...prev, data.category];
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("shewimy_categories_updated", { detail: data.category })
+          );
+        }
+        return { success: true, category: data.category };
+      }
+      return { success: false, error: data.error || "فشل إضافة القسم" };
+    } catch (err: any) {
+      return { success: false, error: err?.message || "حدث خطأ أثناء إضافة القسم" };
+    }
+  };
+
+  const updateCategory = async (
+    key: string,
+    updates: { labelAr?: string; sharePercent?: string; subCategories?: string[] }
+  ): Promise<{ success: boolean; category?: CategoryInfo; error?: string }> => {
+    try {
+      const res = await fetch("/api/categories", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, ...updates }),
+      });
+      const data = await res.json();
+      if (data.success && data.category) {
+        setCategories((prev) =>
+          prev.map((c) => (c.key === key ? data.category : c))
+        );
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("shewimy_categories_updated", { detail: data.category })
+          );
+        }
+        return { success: true, category: data.category };
+      }
+      return { success: false, error: data.error || "فشل تعديل القسم" };
+    } catch (err: any) {
+      return { success: false, error: err?.message || "حدث خطأ أثناء تعديل القسم" };
+    }
+  };
+
+  const deleteCategory = async (
+    key: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch(`/api/categories?key=${encodeURIComponent(key)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCategories((prev) => prev.filter((c) => c.key !== key));
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("shewimy_categories_updated", { detail: { deletedKey: key } })
+          );
+        }
+        return { success: true };
+      }
+      return { success: false, error: data.error || "فشل حذف القسم" };
+    } catch (err: any) {
+      return { success: false, error: err?.message || "حدث خطأ أثناء حذف القسم" };
+    }
+  };
+
+  useEffect(() => {
+    loadCategories();
+
+    const handleUpdate = () => {
+      loadCategories();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("shewimy_categories_updated", handleUpdate);
+      return () => {
+        window.removeEventListener("shewimy_categories_updated", handleUpdate);
+      };
+    }
+  }, [loadCategories]);
+
+  return { categories, loading, addCategory, updateCategory, deleteCategory, refetch: loadCategories };
+}
+
+/**
+ * Hook for dynamic materials registry (defaults + custom materials added/edited by admin).
+ */
+export function useMaterials() {
+  const [materials, setMaterials] = useState<MaterialItem[]>(
+    () => defaultMaterialsData as MaterialItem[]
+  );
+  const [loading, setLoading] = useState(false);
+
+  const loadMaterials = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/materials?_t=${Date.now()}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.materials)) {
+          setMaterials(data.materials);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load materials:", e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const saveMaterial = async (mat: {
+    id?: string;
+    name: string;
+    origin?: string;
+    description?: string;
+  }): Promise<{ success: boolean; material?: MaterialItem; error?: string }> => {
+    try {
+      const res = await fetch("/api/materials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mat),
+      });
+      const data = await res.json();
+      if (data.success && data.material) {
+        setMaterials((prev) => {
+          const exists = prev.some((m) => m.id === data.material.id);
+          if (exists) {
+            return prev.map((m) => (m.id === data.material.id ? data.material : m));
+          }
+          return [...prev, data.material];
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("shewimy_materials_updated", { detail: data.material })
+          );
+        }
+        return { success: true, material: data.material };
+      }
+      return { success: false, error: data.error || "فشل حفظ الخامة" };
+    } catch (err: any) {
+      return { success: false, error: err?.message || "حدث خطأ أثناء حفظ الخامة" };
+    }
+  };
+
+  const deleteMaterial = async (
+    id: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch(`/api/materials?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMaterials((prev) => prev.filter((m) => m.id !== id));
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("shewimy_materials_updated", { detail: { id } })
+          );
+        }
+        return { success: true };
+      }
+      return { success: false, error: data.error || "فشل حذف الخامة" };
+    } catch (err: any) {
+      return { success: false, error: err?.message || "حدث خطأ أثناء حذف الخامة" };
+    }
+  };
+
+  useEffect(() => {
+    loadMaterials();
+
+    const handleUpdate = () => {
+      loadMaterials();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("shewimy_materials_updated", handleUpdate);
+      return () => {
+        window.removeEventListener("shewimy_materials_updated", handleUpdate);
+      };
+    }
+  }, [loadMaterials]);
+
+  return {
+    materials,
+    loading,
+    saveMaterial,
+    deleteMaterial,
+    refetch: loadMaterials,
+  };
 }
 

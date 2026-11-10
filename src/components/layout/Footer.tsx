@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,8 +13,13 @@ import { useBranches } from "@/lib/firebase";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 
 export function Footer() {
-  const currentYear = 2026;
+  const [currentYear, setCurrentYear] = useState(2026);
   const { branches } = useBranches();
+  const primaryPhone = branches[0]?.phones?.[0] ?? "201005557109";
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   return (
     <footer className="w-full bg-primary-container text-inverse-on-surface">
@@ -55,7 +60,7 @@ export function Footer() {
                 <Mail className="w-4 h-4" />
               </a>
               <a
-                href="tel:+201005557109"
+                href={`tel:+${primaryPhone}`}
                 aria-label="رقم الهاتف"
                 className="w-8 h-8 rounded-full bg-surface-container-high/10 hover:bg-secondary flex items-center justify-center text-inverse-on-surface transition-colors"
               >
@@ -129,7 +134,7 @@ export function Footer() {
               استشارة معمارية وتصميم 3D
             </h3>
             <p className="text-xs sm:text-[13px] text-on-primary-container leading-relaxed">
-              تواصل مباشرة مع مسؤولي الفروع لتحديد موعد زيارة للموقع ومعاينة المساحات بدقة مع رسم ثلاثي الأبعاد مجاني.
+              تواصل مباشرة مع مسؤولي الفروع لتحديد موعد زيارة للموقع ومعاينة المساحات بدقة مع رسم وتخطيط ثلاثي الأبعاد 3D.
             </p>
             <div className="space-y-2 pt-1">
               {branches.map((b) => (

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Cairo, Readex_Pro } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "@/lib/cart";
+import { CartDrawer, CartToast } from "@/components/cart";
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
@@ -76,7 +78,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
       </head>
       <body className="min-h-screen flex flex-col font-cairo bg-surface text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container">
-        {children}
+        <CartProvider>
+          {children}
+          <CartDrawer />
+          <CartToast />
+        </CartProvider>
       </body>
     </html>
   );

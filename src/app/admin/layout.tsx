@@ -42,7 +42,7 @@ export default function AdminLayout({
         </div>
         <h1 className="text-2xl font-bold font-readex text-[#1b1c1a] mb-2">منطقة الإدارة محمية</h1>
         <p className="text-[#5e6368] max-w-sm mb-6 text-sm">
-          يرجى تسجيل الدخول بحساب مسؤول لوحة تحكم مطابخ وديكورات الشويمي للمتابعة.
+          يرجى تسجيل الدخول بحساب مسؤول لوحة تحكم أثاث ومطابخ الشويمي للمتابعة.
         </p>
         <Link
           href="/admin/login"

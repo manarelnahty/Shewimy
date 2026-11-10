@@ -50,18 +50,18 @@ export function CtaSection({ onOpenConsultation }: CtaSectionProps) {
             <button
               type="button"
               onClick={onOpenConsultation}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-3 px-6 rounded shadow-lg transition-transform hover:-translate-y-0.5 cursor-pointer active:translate-y-0"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs sm:text-sm font-semibold py-3 px-6 rounded shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer active:translate-y-0 animate-glow-emerald"
             >
               <Calendar className="w-4 h-4 shrink-0 text-white" />
               <span>{primaryBtn}</span>
             </button>
             <a
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-semibold py-3 px-5 rounded transition-colors shadow-md"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb956] text-white text-xs sm:text-sm font-semibold py-3 px-5 rounded transition-all shadow-md hover:-translate-y-0.5 active:translate-y-0 animate-glow-pulse group"
               href={waLink}
               rel="noopener noreferrer"
               target="_blank"
             >
-              <MessageCircle className="w-4 h-4 shrink-0 text-white" />
+              <MessageCircle className="w-4 h-4 shrink-0 text-white animate-pulse-subtle" />
               <span>{waBtn}</span>
             </a>
           </div>

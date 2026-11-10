@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  ShoppingBag,
 } from "lucide-react";
 import { Product, BRANCH_CONTACTS } from "@/data/products";
 import { BRANCHES_LIST, SHOWROOM_BRANCHES } from "@/data/branches";
@@ -23,6 +24,7 @@ import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { ConsultationDrawer } from "@/components/common/ConsultationDrawer";
 import { BranchSelectionModal } from "@/components/common/BranchSelectionModal";
 import { useBranches } from "@/lib/firebase";
+import { useCart } from "@/lib/cart";
 import { isValidImageUrl } from "@/lib/image";
 
 const FALLBACK_DETAIL_IMG = "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80";
@@ -63,6 +65,28 @@ export function ProductDetailClient({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isConsultationOpen, setIsConsultationOpen] = useState(false);
   const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  const { addItem, openCart } = useCart();
+
+  const handleAddToCart = () => {
+    addItem(product);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
+  };
+
+  // Synchronize with global Header consultation triggers
+  React.useEffect(() => {
+    const handleGlobalConsultation = (e: Event) => {
+      e.preventDefault();
+      setIsConsultationOpen(true);
+    };
+
+    window.addEventListener("shewimy_open_consultation", handleGlobalConsultation);
+    return () => {
+      window.removeEventListener("shewimy_open_consultation", handleGlobalConsultation);
+    };
+  }, []);
 
   const { branches } = useBranches();
 
@@ -211,8 +235,19 @@ export function ProductDetailClient({
         <div className="lg:col-span-5 space-y-6">
           {/* Header & Subtitle */}
           <div className="space-y-2 text-right">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold">
-              <span>{product.subtitle}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold">
+                <span>{product.subtitle}</span>
+              </div>
+              <span className="text-xs font-mono font-bold text-[#855224] bg-[#855224]/10 px-2.5 py-1 rounded-lg">
+                كود: {product.code}
+              </span>
+              {product.dimensions && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/80 text-amber-900 border border-amber-300/80 text-xs font-bold shadow-2xs">
+                  <Ruler className="w-3.5 h-3.5 text-amber-800" />
+                  <span>{product.dimensions.split("مع")[0].trim()}</span>
+                </span>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-primary font-readex leading-tight">
               {product.name}
@@ -240,6 +275,32 @@ export function ProductDetailClient({
             <p className="text-xs text-gray-600 leading-relaxed border-t border-charcoal/10 pt-2.5 font-normal">
               {product.priceNote}. يشمل السعر التصميم الهندسي 3D المخصص لمساحتك، الشاسيه الداخلي، المفصلات الهيدروليكية، التوريد وضمان 15 سنة.
             </p>
+          </div>
+
+          {/* EXPLICIT DIMENSIONS SECTION (Prominently displayed above the fold) */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 border border-amber-200 shadow-2xs space-y-2.5 text-right">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-primary font-bold text-xs sm:text-sm font-readex">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 shadow-2xs border border-amber-200">
+                  <Ruler className="w-4 h-4 text-amber-800" />
+                </div>
+                <span className="text-sm font-bold text-[#1b1c1a]">مقاسات وأبعاد الموديل:</span>
+              </div>
+              <span className="text-[11px] font-bold text-amber-900 bg-white px-2.5 py-0.5 rounded-full border border-amber-300 shadow-2xs">
+                قابلة للتفصيل بالكامل
+              </span>
+            </div>
+
+            <p className="text-sm sm:text-[15px] font-extrabold text-[#1b1c1a] leading-relaxed font-readex bg-white/70 p-3 rounded-xl border border-amber-200/60">
+              {product.dimensions || "مساحة قياسية تفصل وتعدل بالكامل وفق أبعاد مساحتك بالمليمتر."}
+            </p>
+
+            <div className="flex items-start gap-1.5 text-xs text-charcoal/80 pt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0" />
+              <p className="leading-relaxed">
+                يقوم فريقنا برفع مقاسات مساحتك على الطبيعة وتطويع هذا التصميم بدقة لمطبخك عند التعاقد.
+              </p>
+            </div>
           </div>
 
           {/* Approved Materials Badges (DRD Section 2 & 3) */}
@@ -281,6 +342,30 @@ export function ProductDetailClient({
 
           {/* Dynamic Branch WhatsApp & Consultation CTAs */}
           <div className="space-y-2.5 pt-1">
+            {/* Add to Cart — Primary CTA */}
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className={`w-full inline-flex items-center justify-center gap-2.5 text-sm font-bold py-3.5 px-5 rounded-xl shadow-md transition-all cursor-pointer active:translate-y-0.5 ${
+                addedToCart
+                  ? "bg-emerald-600 text-white shadow-emerald-200"
+                  : "bg-[#1b1c1a] hover:bg-[#333] text-white"
+              }`}
+              aria-label="إضافة إلى العربة"
+            >
+              {addedToCart ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 shrink-0" />
+                  <span>تمت الإضافة إلى العربة!</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="w-5 h-5 shrink-0" />
+                  <span>إضافة إلى العربة</span>
+                </>
+              )}
+            </button>
+
             <div className="space-y-2">
               <span className="text-xs font-bold text-charcoal/70 block">
                 تواصل مباشر وفوري عبر واتساب الفرع:
@@ -349,15 +434,23 @@ export function ProductDetailClient({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Card 1: Dimensions */}
-          <div className="p-5 rounded-2xl bg-white border border-charcoal/10 shadow-2xs space-y-2 text-right">
-            <div className="w-9 h-9 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
-              <Ruler className="w-5 h-5" />
+          <div className="p-5 rounded-2xl bg-white border border-amber-200/90 shadow-2xs space-y-2.5 text-right">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center">
+                <Ruler className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                رفع مقاسات ليزر دقيق
+              </span>
             </div>
             <h3 className="text-sm font-bold text-primary font-readex">
-              المقاسات والأبعاد المقترحة
+              المقاسات والأبعاد الهندسية
             </h3>
-            <p className="text-xs text-gray-600 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-primary font-bold leading-relaxed font-readex">
               {product.dimensions || "يتم تفصيل وتعديل كافة المقاسات بدقة بالملي لتطابق مساحة مطبخك ومنزلك."}
+            </p>
+            <p className="text-[11px] text-gray-500 leading-normal">
+              يتضمن التعاقد رفع مقاسات ليزر 3D لمعالجة الزوايا وأماكن الصرف والغاز والكهرباء بدقة بالغة قبل بدء خط الإنتاج.
             </p>
           </div>
 
@@ -422,7 +515,7 @@ export function ProductDetailClient({
               الضمان وخدمات ما بعد البيع
             </h3>
             <p className="text-xs text-gray-600 leading-relaxed font-normal">
-              ضمان {product.warrantyYears} سنة معتمد رسمياً وموثق بعقد، مع صيانة دورية مجانية وتوفير قطع غيار أصلية.
+              ضمان {product.warrantyYears} سنة معتمد رسمياً وموثق بعقد، مع صيانة دورية معتمدة وتوفير قطع غيار أصلية.
             </p>
           </div>
         </div>
@@ -490,6 +583,7 @@ export function ProductDetailClient({
         isOpen={isConsultationOpen}
         onClose={() => setIsConsultationOpen(false)}
         defaultBranch={product.branches[0]}
+        initialNotes={`استفسار ومعاينة خاصة لموديل: ${product.name} [كود: ${product.code}]`}
       />
 
       {/* Branch Selection Modal */}

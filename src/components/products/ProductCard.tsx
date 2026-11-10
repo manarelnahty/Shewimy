@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, ArrowLeft, Sparkles, Layers } from "lucide-react";
+import { MessageCircle, ArrowLeft, Sparkles, Layers, Ruler, ShoppingBag } from "lucide-react";
 import { Product } from "@/data/products";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { isValidImageUrl } from "@/lib/image";
+import { useCart } from "@/lib/cart";
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80";
 
@@ -40,6 +41,7 @@ export function ProductCard({
   const [isHovered, setIsHovered] = useState(false);
   const [shouldLoadGallery, setShouldLoadGallery] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { addItem } = useCart();
 
   // Auto-cycling slideshow on hover or touch
   useEffect(() => {
@@ -177,27 +179,35 @@ export function ProductCard({
       </div>
 
       {/* Content & Action Buttons */}
-      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+      <div className="p-5 flex-1 flex flex-col justify-between space-y-3.5">
         <div>
+          {/* Header row: Model Code & Category */}
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <span className="text-[10px] font-mono font-bold text-[#855224] uppercase tracking-wider">
+            <span className="text-[11px] font-mono font-bold text-[#855224] bg-[#855224]/10 px-2.5 py-0.5 rounded-md tracking-wider">
               {product.code || "SHW-PROD"}
             </span>
-            {product.priceDisplay && (
-              <span className="text-xs font-bold text-[#1F5E4B] font-mono">
-                {product.price ? `${product.price.toLocaleString()} ج.م` : product.priceDisplay}
-              </span>
-            )}
+            <span className="text-[11px] text-[#5e6368] font-semibold">
+              {product.subCategory || "تصميم مخصص"}
+            </span>
           </div>
 
-          <Link href={detailUrl} className="block">
-            <h3 className="text-base sm:text-lg text-[#1b1c1a] font-bold group-hover:text-[#855224] transition-colors font-readex leading-snug">
+          {/* Model Name */}
+          <Link href={detailUrl} className="block mt-1">
+            <h3 className="text-base sm:text-lg text-[#1b1c1a] font-bold group-hover:text-[#855224] transition-colors font-readex leading-snug line-clamp-1">
               {product.name}
             </h3>
           </Link>
 
+          {/* Dimensions Snippet (if available) */}
+          {product.dimensions && (
+            <div className="flex items-center gap-1.5 text-[11px] text-[#5e6368] mt-1.5">
+              <Ruler className="w-3.5 h-3.5 text-[#855224] shrink-0" />
+              <span className="truncate font-medium">{product.dimensions}</span>
+            </div>
+          )}
+
           {/* Key Materials Tags */}
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
+          <div className="flex flex-wrap gap-1.5 mt-2">
             {(product.materials || []).slice(0, 3).map((mat, i) => (
               <span
                 key={i}
@@ -207,34 +217,78 @@ export function ProductCard({
               </span>
             ))}
           </div>
+
+          {/* Prominent Bold Price Display (Large & Clear) */}
+          <div className="mt-3.5 pt-3 border-t border-[#e7e5e0]/90 flex items-baseline justify-between gap-2 bg-[#fcfbfa] -mx-5 px-5 py-2.5">
+            <div className="space-y-0.5">
+              <span className="text-[10px] text-[#5e6368] block font-semibold">
+                السعر الاسترشادي للموديل:
+              </span>
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <div className="flex items-baseline gap-1 text-[#1F5E4B]">
+                  <span className="text-xl sm:text-2xl font-black font-mono tracking-tight">
+                    {product.price ? product.price.toLocaleString() : (product.priceDisplay || "عند الطلب")}
+                  </span>
+                  {product.price > 0 && <span className="text-xs font-bold font-readex text-[#1F5E4B]">ج.م</span>}
+                </div>
+                {/* السعر قبل الخصم مشطوباً */}
+                {product.originalPrice && product.originalPrice > product.price && (
+                  <span className="text-sm font-semibold text-[#9ca3af] line-through font-mono">
+                    {product.originalPrice.toLocaleString()} ج.م
+                  </span>
+                )}
+              </div>
+              {/* بادج نسبة الخصم */}
+              {product.originalPrice && product.originalPrice > product.price && product.price > 0 && (
+                <span className="inline-block text-[10px] font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-md border border-rose-200">
+                  خصم {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}٪
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] font-bold text-[#1F5E4B] bg-emerald-50 border border-emerald-200/80 px-2 py-1 rounded-md shadow-2xs">
+              شامل التصنيع
+            </span>
+          </div>
         </div>
 
         {/* Bottom Actions */}
         <div className="space-y-2 pt-3 border-t border-[#e7e5e0]">
-          {onWhatsAppClick ? (
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              onClick={() => onWhatsAppClick(product)}
-              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs sm:text-sm font-semibold py-2.5 rounded-xl transition-all duration-200 cursor-pointer shadow-2xs hover:shadow"
+              onClick={() => addItem(product)}
+              className="inline-flex items-center justify-center gap-1.5 bg-[#1F5E4B] hover:bg-[#164638] text-white text-xs font-bold py-2.5 px-2 rounded-xl transition-all duration-200 cursor-pointer shadow-xs active:scale-95 group/btn"
+              title="أضف الموديل لسلة الطلبات"
             >
-              <MessageCircle className="w-4 h-4 shrink-0" />
-              <span>استفسر عبر واتساب الموديل</span>
+              <ShoppingBag className="w-3.5 h-3.5 shrink-0 transition-transform group-hover/btn:scale-110" />
+              <span>أضف للسلة</span>
             </button>
-          ) : (
-            <a
-              href={waUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs sm:text-sm font-semibold py-2.5 rounded-xl transition-all duration-200 cursor-pointer shadow-2xs hover:shadow"
-            >
-              <MessageCircle className="w-4 h-4 shrink-0" />
-              <span>استفسر عبر واتساب الموديل</span>
-            </a>
-          )}
+
+            {onWhatsAppClick ? (
+              <button
+                type="button"
+                onClick={() => onWhatsAppClick(product)}
+                className="inline-flex items-center justify-center gap-1.5 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs font-semibold py-2.5 px-2 rounded-xl transition-all duration-200 cursor-pointer shadow-2xs hover:shadow"
+              >
+                <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>واتساب</span>
+              </button>
+            ) : (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-xs font-semibold py-2.5 px-2 rounded-xl transition-all duration-200 cursor-pointer shadow-2xs hover:shadow"
+              >
+                <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>واتساب</span>
+              </a>
+            )}
+          </div>
 
           <Link
             href={detailUrl}
-            className="w-full inline-flex items-center justify-center gap-1.5 text-xs text-[#5e6368] hover:text-[#1F5E4B] font-bold py-1.5 transition-colors"
+            className="w-full inline-flex items-center justify-center gap-1.5 text-xs text-[#5e6368] hover:text-[#1F5E4B] font-bold py-1 transition-colors"
           >
             <span>عرض تفاصيل الموديل والمقايسة</span>
             <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />

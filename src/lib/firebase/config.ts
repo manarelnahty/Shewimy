@@ -1,3 +1,5 @@
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+
 /**
  * Firebase Client & Service Configuration
  * Follows security-by-design principles: sensitive keys are guarded via environment variables.
@@ -15,26 +17,53 @@ export interface FirebaseClientConfig {
 }
 
 export const firebaseConfig: FirebaseClientConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "placeholder-api-key",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "dawrah-test.firebaseapp.com",
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL ?? "https://dawrah-test-default-rtdb.firebaseio.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "dawrah-test",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? "dawrah-test.firebasestorage.app",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "613358099601",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "1:613358099601:web:2112a3eb4e3fdf5ae83330",
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "G-5XBMQN24BV",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "placeholder-api-key",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "shewimy-app.firebaseapp.com",
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || "https://shewimy-app-default-rtdb.firebaseio.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "shewimy-app",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "shewimy-app.firebasestorage.app",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789012",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:123456789012:web:abcdef1234567890abcdef",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-XXXXXXXXXX",
 };
 
 /**
- * Returns true if real Firebase environment credentials have been supplied.
+ * Returns true only if real Firebase environment credentials have been supplied.
+ * Strict check prevents invalid API keys from hanging SDK network calls.
  */
 export function isFirebaseConfigured(): boolean {
-  const key = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  const key = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || firebaseConfig.apiKey;
   return (
-    Boolean(key) &&
+    typeof key === "string" &&
+    key.trim().length > 15 &&
     key !== "placeholder-api-key" &&
-    !key?.toLowerCase().includes("placeholder") &&
-    !key?.toLowerCase().includes("yourkey") &&
-    !key?.toLowerCase().includes("youractualapikey")
+    !key.toLowerCase().includes("placeholder") &&
+    !key.toLowerCase().includes("yourkey") &&
+    !key.toLowerCase().includes("youractualapikey")
   );
+}
+
+let cachedApp: FirebaseApp | null = null;
+
+/**
+ * Safe singleton getter for FirebaseApp.
+ * Returns null immediately if Firebase credentials are missing or placeholders,
+ * preventing SDK auth/invalid-api-key errors and hanging network loops.
+ */
+export function getFirebaseApp(): FirebaseApp | null {
+  if (!isFirebaseConfigured()) {
+    return null;
+  }
+  if (cachedApp) return cachedApp;
+  try {
+    if (!getApps().length) {
+      cachedApp = initializeApp(firebaseConfig);
+    } else {
+      cachedApp = getApp();
+    }
+    return cachedApp;
+  } catch (err) {
+    console.warn("Firebase App initialization skipped:", err);
+    return null;
+  }
 }

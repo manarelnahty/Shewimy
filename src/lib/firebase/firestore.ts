@@ -1,4 +1,3 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getFirestore,
   collection,
@@ -16,7 +15,7 @@ import {
   writeBatch,
   Firestore,
 } from "firebase/firestore";
-import { firebaseConfig, isFirebaseConfigured } from "./config";
+import { firebaseConfig, isFirebaseConfigured, getFirebaseApp } from "./config";
 import {
   InspectionRequest,
   ShewimyProduct,
@@ -30,20 +29,14 @@ import siteSettingsData from "@/data/siteSettings.json";
 import { productsData, Product } from "@/data/products";
 import { SHOWROOM_BRANCHES, BRANCHES_LIST, BranchExtended } from "@/data/branches";
 
-// Initialize Firebase App safely for SSR and Client
-function getFirebaseApp() {
-  if (!getApps().length) {
-    return initializeApp(firebaseConfig);
-  }
-  return getApp();
-}
-
 let cachedDb: Firestore | null = null;
 
 export function getDb(): Firestore | null {
+  if (!isFirebaseConfigured()) return null;
   if (cachedDb) return cachedDb;
   try {
     const app = getFirebaseApp();
+    if (!app) return null;
     cachedDb = getFirestore(app);
     return cachedDb;
   } catch (err) {
@@ -89,6 +82,7 @@ function mapDocToProduct(docId: string, data: Record<string, any>): Product {
       : ["mansoura", "mahalla", "samanoud"],
     price: typeof data.basePrice === "number" ? data.basePrice : (typeof data.price === "number" ? data.price : 95000),
     basePrice: data.basePrice ?? data.price ?? null,
+    originalPrice: typeof data.originalPrice === "number" ? data.originalPrice : null,
     pricingMode: data.pricingMode || "whatsapp_quote",
     status: data.status || "published",
     priceDisplay: data.priceDisplay || (data.basePrice ? `${data.basePrice.toLocaleString()} ج.م` : "طلب مقايسة وتسعير"),
@@ -631,7 +625,10 @@ export async function createProduct(
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         };
-        await setDoc(itemRef, payload, { merge: true });
+        await Promise.race([
+          setDoc(itemRef, payload, { merge: true }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 4000)),
+        ]);
       } catch (fsErr) {
         console.warn("Firestore setDoc product warning:", fsErr);
       }
@@ -683,7 +680,10 @@ export async function updateProduct(
         if (updates.coverImage !== undefined) payload.imageUrl = updates.coverImage;
         if (updates.galleryImages !== undefined) payload.gallery = updates.galleryImages;
 
-        await updateDoc(itemRef, payload);
+        await Promise.race([
+          updateDoc(itemRef, payload),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 4000)),
+        ]);
       } catch (fsErr) {
         console.warn("Firestore updateDoc product warning:", fsErr);
       }
@@ -723,7 +723,10 @@ export async function deleteProduct(
     if (db && isFirebaseConfigured()) {
       try {
         const itemRef = doc(db, "items", id);
-        await deleteDoc(itemRef);
+        await Promise.race([
+          deleteDoc(itemRef),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 4000)),
+        ]);
       } catch (fsErr) {
         console.warn("Firestore deleteDoc product warning:", fsErr);
       }
@@ -915,14 +918,17 @@ export async function updateBranch(
     if (db && isFirebaseConfigured()) {
       try {
         const docRef = doc(db, "branches", branchId);
-        await setDoc(
-          docRef,
-          {
-            ...data,
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
+        await Promise.race([
+          setDoc(
+            docRef,
+            {
+              ...data,
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true }
+          ),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 4000)),
+        ]);
       } catch (fsErr) {
         console.warn("Firestore setDoc branch warning:", fsErr);
       }
@@ -1039,19 +1045,22 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
  */
 export async function updateSiteSettings(
   settings: Partial<SiteSettings>
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; settings?: SiteSettings }> {
   try {
     const sanitized: Record<string, any> = { ...settings };
+    delete (sanitized as any).id;
 
     // Deep check for oversized string payloads (like raw base64 data URLs > 1MB)
     for (const [key, val] of Object.entries(sanitized)) {
-      if (typeof val === "string" && val.length > 500000) {
+      if (typeof val === "string" && val.length > 500000 && val.startsWith("data:image/")) {
         return {
           success: false,
           error: `حجم الصورة في (${key}) كبير جداً كـ Base64، يرجى إعادة رفعها عبر زر الرفع لتتحول لمسار ملف.`,
         };
       }
     }
+
+    let savedResult: SiteSettings | undefined;
 
     // 1. In browser, save to localStorage and broadcast event for instant multi-tab sync
     if (typeof window !== "undefined") {
@@ -1069,35 +1078,49 @@ export async function updateSiteSettings(
 
       // 2. Persist to server /api/settings
       try {
-        await fetch("/api/settings", {
+        const res = await fetch("/api/settings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(sanitized),
         });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.settings) {
+            savedResult = json.settings;
+            localStorage.setItem("shewimy_site_settings", JSON.stringify(json.settings));
+          }
+        } else {
+          console.warn("Could not save to /api/settings:", res.statusText);
+        }
       } catch (apiErr) {
         console.warn("Could not save to /api/settings:", apiErr);
       }
     }
 
-    // 3. Persist to Firestore if available
+    // 3. Persist to Firestore if available and configured
     const db = getDb();
-    if (db) {
+    if (db && isFirebaseConfigured()) {
       try {
         const docRef = doc(db, "site_settings", "general");
-        await setDoc(
-          docRef,
-          {
-            ...sanitized,
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
+        await Promise.race([
+          setDoc(
+            docRef,
+            {
+              ...sanitized,
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true }
+          ),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Firestore write timeout")), 4000)
+          ),
+        ]);
       } catch (fsErr) {
         console.warn("Firestore setDoc warning:", fsErr);
       }
     }
 
-    return { success: true };
+    return { success: true, settings: savedResult };
   } catch (error: any) {
     return { success: false, error: error?.message || "فشل تحديث إعدادات الموقع" };
   }
@@ -1114,23 +1137,28 @@ export async function syncAdminAccountToFirestore(account: {
   passwordUpdatedAt?: string;
 }): Promise<{ success: boolean; error?: string }> {
   const db = getDb();
-  if (!db) {
+  if (!db || !isFirebaseConfigured()) {
     return { success: true };
   }
   try {
     const adminRef = doc(db, "admins", account.uid || "admin-master");
-    await setDoc(
-      adminRef,
-      {
-        uid: account.uid || "admin-master",
-        email: account.email,
-        displayName: account.displayName || "مدير النظام (الشويمي)",
-        role: account.role || "super_admin",
-        updatedAt: serverTimestamp(),
-        ...(account.passwordUpdatedAt ? { passwordUpdatedAt: account.passwordUpdatedAt } : {}),
-      },
-      { merge: true }
-    );
+    await Promise.race([
+      setDoc(
+        adminRef,
+        {
+          uid: account.uid || "admin-master",
+          email: account.email,
+          displayName: account.displayName || "مدير النظام (الشويمي)",
+          role: account.role || "super_admin",
+          updatedAt: serverTimestamp(),
+          ...(account.passwordUpdatedAt ? { passwordUpdatedAt: account.passwordUpdatedAt } : {}),
+        },
+        { merge: true }
+      ),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Firestore write timeout")), 4000)
+      ),
+    ]);
 
     // Also sync adminEmail into settings collection
     try {
